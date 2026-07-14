@@ -599,21 +599,16 @@ body.light-mode .nav-item:hover {
   color: #ff3366 !important;
 }
 
-/* 侧边栏导航高亮状态 */
+/* 侧边栏导航高亮状态（滚动跟随：无入场动画；点击后加 .animated 才播放） */
 .nav-item.active {
   background: linear-gradient(135deg, #ff3366, #ff5a8a);
   color: #fff !important;
   position: relative;
   overflow: visible;
   z-index: 10;
-
-  /* 优化版：减少同时运行的动画数量 */
-  animation:
-    smoothGravityDrop 0.7s cubic-bezier(0.4, 0.1, 0.3, 1.2) forwards,
-    gentleBounceBack 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) 0.7s forwards;
-
-  /* 延迟启动其他动画，避免同时加载 */
-  animation-delay: 0s, 0.7s;
+  box-shadow:
+    0 10px 30px rgba(255, 51, 102, 0.5),
+    0 5px 15px rgba(255, 51, 102, 0.3);
 }
 
 /* 1. 顺滑重力下坠 - 优化性能版 */
@@ -907,6 +902,13 @@ body.light-mode .nav-item.active {
   background: linear-gradient(135deg, #7b2cff, #ff4fd8);
   border-color: rgba(0, 151, 167, 0.5);
   color: #fff;
+  box-shadow:
+    0 10px 30px rgba(123, 44, 255, 0.45),
+    0 5px 15px rgba(255, 79, 216, 0.35);
+}
+
+body.light-mode .nav-item.active .nav-item-title {
+  color: #fff !important;
 }
 
 .nav-item-title {
