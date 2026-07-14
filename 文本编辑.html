@@ -3973,6 +3973,8 @@
 
           flushPendingImages();
           syncViewState();
+          // 调整标题偏移，确保锚点跳转位置正确
+          adjustHeadingScrollOffset();
         }
 
         // ===== 标题创建功能 =====
@@ -4107,11 +4109,11 @@
         function scrollToSection(id) {
           const element = document.getElementById(id);
           if (element) {
-            // 计算正确的偏移量（导航栏高度 + 额外间距）
-            const navHeight =
-              document.querySelector(".sidebar").offsetHeight || 0;
-            const offset = 25; // 你想要的30px间距
-            const targetPosition = element.offsetTop - offset;
+            // 计算正确的偏移量（顶部工具栏高度 + 额外间距）
+            const topbarEl = document.getElementById("topbar");
+            const topbarHeight = topbarEl ? topbarEl.getBoundingClientRect().height : 0;
+            const extra = 12; // 额外空隙
+            const targetPosition = element.getBoundingClientRect().top + window.scrollY - (topbarHeight + extra);
             const startPosition = window.pageYOffset;
             const distance = targetPosition - startPosition;
             const duration = 500;
@@ -4139,6 +4141,17 @@
 
             requestAnimationFrame(animation);
           }
+        }
+
+        // 根据顶部工具栏高度调整所有标题的 scroll-margin-top，以支持原生锚点跳转
+        function adjustHeadingScrollOffset() {
+          const topbarEl = document.getElementById("topbar");
+          const topbarHeight = topbarEl ? topbarEl.getBoundingClientRect().height : 0;
+          const extra = 12;
+          const margin = topbarHeight + extra;
+          document.querySelectorAll('.h3-heading, .h4-heading, .h5-heading').forEach(h => {
+            h.style.setProperty('scroll-margin-top', margin + 'px', 'important');
+          });
         }
 
         function resolveImageSource(imagePath) {
@@ -4723,6 +4736,9 @@
 
         // ===== 初始化应用 =====
         init();
+        // 首次调整标题偏移，并在窗口尺寸变化时更新
+        adjustHeadingScrollOffset();
+        window.addEventListener('resize', adjustHeadingScrollOffset);
       })();
 
       // ===== 自定义 Tooltip 功能导航鼠标悬停显示 =====
