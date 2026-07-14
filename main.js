@@ -220,6 +220,74 @@ function refreshContent() {
   renderNavItems();
   renderContent();
   updateEmptyStateVisibility();
+  requestAnimationFrame(() => updateActiveNavFromScroll());
+}
+
+/**
+ * 根据当前滚动位置高亮左侧导航（刷新后默认选中首项）
+ */
+function updateActiveNavFromScroll() {
+  if (!navItemsContainer) return;
+
+  const sections = document.querySelectorAll(".main-title");
+  const navItems = navItemsContainer.querySelectorAll(".nav-item");
+
+  if (!sections.length || !navItems.length) {
+    navItems.forEach((nav) => {
+      nav.classList.remove("active", "animated", "breathing", "after-bounce");
+    });
+    return;
+  }
+
+  const probeLine = getNavScrollOffset();
+
+  let currentId = sections[0].dataset.id || "";
+
+  sections.forEach((section) => {
+    if (section.getBoundingClientRect().top <= probeLine) {
+      currentId = section.dataset.id || section.id.replace("item-", "");
+    }
+  });
+
+  navItems.forEach((nav) => {
+    const isActive = nav.dataset.id === String(currentId);
+    nav.classList.toggle("active", isActive);
+    if (!isActive) {
+      nav.classList.remove("animated", "breathing", "after-bounce");
+    }
+  });
+}
+
+function getContentScrollRoot() {
+  if (!contentArea) {
+    return document.scrollingElement || document.documentElement;
+  }
+
+  const canScroll = contentArea.scrollHeight > contentArea.clientHeight + 1;
+  return canScroll ? contentArea : document.scrollingElement || document.documentElement;
+}
+
+function getNavScrollOffset() {
+  const navHeight =
+    parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+      10,
+    ) || 50;
+  return navHeight + 24;
+}
+
+function getElementDocumentTop(element, scrollRoot) {
+  if (scrollRoot === contentArea) {
+    let top = 0;
+    let node = element;
+    while (node && node !== contentArea) {
+      top += node.offsetTop;
+      node = node.offsetParent;
+    }
+    return top;
+  }
+
+  return element.getBoundingClientRect().top + window.scrollY;
 }
 
 function updateEmptyStateVisibility() {
@@ -847,7 +915,24 @@ function showContextMenu(e) {
 function scrollToItem(itemId) {
   const itemElement = document.getElementById(`item-${itemId}`);
   if (itemElement) {
-    itemElement.scrollIntoView({ behavior: "auto", block: "start" });
+    const scrollRoot = getContentScrollRoot();
+
+    if (scrollRoot === contentArea) {
+      const targetTop = getElementDocumentTop(itemElement, scrollRoot);
+      contentArea.scrollTo({
+        top: Math.max(0, targetTop - getNavScrollOffset()),
+        behavior: "auto",
+      });
+    } else {
+      const targetTop =
+        itemElement.getBoundingClientRect().top +
+        window.scrollY -
+        getNavScrollOffset();
+      window.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: "auto",
+      });
+    }
 
     const originalBackground = itemElement.style.background;
     if (isLightMode) {
@@ -858,7 +943,8 @@ function scrollToItem(itemId) {
 
     setTimeout(() => {
       itemElement.style.background = originalBackground;
-    }, 1500);
+      updateActiveNavFromScroll();
+    }, 150);
   }
 }
 
@@ -2997,7 +3083,8 @@ function initNavItemAnimations() {
     if (!itemId) return;
 
     navItemsContainer.querySelectorAll(".nav-item").forEach((nav) => {
-      nav.classList.remove("active", "animated", "breathing", "after-bounce");
+      nav.classList.remove("animated", "breathing", "after-bounce");
+      nav.classList.toggle("active", nav === item);
     });
 
     item.classList.add("active");
@@ -3063,47 +3150,28 @@ function initializeApp() {
  * 滚动监听功能：自动高亮导航栏
  */
 function initScrollSpy() {
+  if (window.__scrollSpyBound) return;
+  window.__scrollSpyBound = true;
+
   let scrollTicking = false;
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (scrollTicking) return;
-      scrollTicking = true;
+  const onScroll = () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
 
-      requestAnimationFrame(() => {
-        scrollTicking = false;
+    requestAnimationFrame(() => {
+      scrollTicking = false;
+      updateActiveNavFromScroll();
+    });
+  };
 
-        let currentId = "";
-        const sections = document.querySelectorAll(".main-title");
+  window.addEventListener("scroll", onScroll, { passive: true });
+  if (contentArea) {
+    contentArea.addEventListener("scroll", onScroll, { passive: true });
+  }
+  window.addEventListener("resize", onScroll, { passive: true });
 
-        const scrollPosition =
-          window.pageYOffset || document.documentElement.scrollTop;
-        const offset = 150;
-
-        sections.forEach((section) => {
-          const sectionTop = section.offsetTop;
-          if (scrollPosition >= sectionTop - offset) {
-            const idAttr = section.getAttribute("id");
-            if (idAttr) {
-              currentId = idAttr.replace("item-", "");
-            }
-          }
-        });
-
-        const navItems = navItemsContainer.querySelectorAll(".nav-item");
-
-        navItems.forEach((nav) => {
-          if (nav.dataset.id === currentId.toString()) {
-            nav.classList.add("active");
-          } else {
-            nav.classList.remove("active");
-          }
-        });
-      });
-    },
-    { passive: true },
-  );
+  requestAnimationFrame(() => updateActiveNavFromScroll());
 }
 
 // 页面加载完成后初始化
