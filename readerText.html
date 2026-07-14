@@ -1661,7 +1661,7 @@
               media[0].load();
             } else if (first.type === "image") {
               $("#background-video").replaceWith(`
-                <img id="background-video" src="${first.src}" style="margin-left: 10px;" alt="background">
+                <img id="background-video" src="${first.src}" alt="background">
               `);
               media = $("#background-video");
             }
@@ -1926,7 +1926,8 @@
       #background-wrapper img {
         width: 100%;
         height: 100%;
-        margin-left: 0px;
+        margin-left: 0;
+        display: block;
         object-fit: cover;
       }
 
@@ -2015,7 +2016,7 @@
       }
 
       div > img {
-        margin-left: 10px;
+        margin-left: 0;
       }
 
       input[type="file"] {
