@@ -1,0 +1,4430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>出款风控</title>
+    <style>
+      /* ===== CSS 变量定义 ===== */
+      :root {
+        --primary-color: #1890ff;
+        --primary-dark: #096dd9;
+        --primary-light: #e6f7ff;
+        --success-color: #52c41a;
+        --success-light: #f6ffed;
+        --warning-color: #faad14;
+        --warning-light: #fffbe6;
+        --error-color: #f5222d;
+        --error-light: #fff2f0;
+        --border-radius: 6px;
+        --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      /* ===== 全局样式 ===== */
+      body {
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 90px 20px 20px 170px; /* 上方留出工具栏 60px + 30px 间距，左侧导航栏空间 */
+        background-color: #f5f5f5;
+        word-break: break-word;
+        position: relative;
+      }
+
+      /* 整个页面的滚动条样式 */
+      body::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      body::-webkit-scrollbar-track {
+        width: 4px;
+        height: 4px;
+      }
+
+      .container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 2px;
+      }
+
+      .container::-webkit-scrollbar-thumb {
+        background: rgba(24, 144, 255, 0.3);
+        border-radius: 2px;
+      }
+
+      .container::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+      }
+
+      /* ===== 标题样式 ===== */
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        word-break: break-word;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-light);
+      }
+
+      .h3-heading {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #fff;
+        margin: 25px 0 20px 0;
+        position: relative;
+        padding: 12px 20px;
+        word-break: break-word;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        border-left: 5px solid var(--primary-dark);
+        scroll-margin-top: 30px;
+      }
+
+      .h4-heading {
+        width: fit-content;
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 6px 0 6px;
+        padding: 4px 10px;
+        background: linear-gradient(90deg, #a8ff78, #78ffd6) !important;
+        border-radius: 10px;
+        border: 1px solid rgba(51, 102, 255, 0.3) !important;
+        border-left: 4px solid rgba(102, 153, 255, 0.25) !important;
+        color: #6699ff !important;
+        position: relative;
+        word-break: break-word;
+        box-shadow: 0 4px 12px rgba(51, 102, 255, 0.1);
+      }
+
+      .h5-heading {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin: 15px 0 10px 0;
+        position: relative;
+        padding-left: 15px;
+        word-break: break-word;
+      }
+
+      .h5-heading::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 60%;
+        width: 4px;
+        background: linear-gradient(
+          to bottom,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        border-radius: 2px;
+      }
+
+      /* ===== 内容块样式 ===== */
+      .content {
+        white-space: pre-wrap;
+        margin-bottom: 0;
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .block-line {
+        white-space: pre-wrap;
+        margin: 0 0 0.8em 0;
+        word-break: break-word;
+        line-height: 1.7;
+      }
+
+      .empty-line {
+        height: 1.6em;
+        display: block;
+        content: " ";
+      }
+
+      .p-line {
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin: 8px 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        border-left: 4px solid #4caf50;
+        box-shadow: 0 2px 6px rgba(76, 175, 80, 0.1);
+      }
+
+      #fileContent {
+        width: 100%;
+        overflow-x: auto;
+        word-break: break-word;
+      }
+
+      /* ===== 彩色区块样式 ===== */
+      .bgb-block {
+        background: linear-gradient(135deg, var(--primary-light), #e6f7ff);
+        padding: 18px 18px 10px 18px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 5px solid #69c0ff;
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+      }
+
+      .bgy-block {
+        background: linear-gradient(135deg, var(--warning-light), #fffbe6);
+        padding: 15px 15px 8px 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 5px solid #ffe58f;
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-shadow: 0 2px 8px rgba(250, 173, 20, 0.1);
+      }
+
+      .bgr-block {
+        background: linear-gradient(135deg, var(--error-light), #fff2f0);
+        padding: 18px 18px 10px 18px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 5px solid #ffccc7;
+        color: var(--error-color);
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-shadow: 0 2px 8px rgba(245, 34, 45, 0.1);
+      }
+
+      .bgg-block {
+        background: linear-gradient(135deg, var(--success-light), #f6ffed);
+        padding: 18px 18px 10px 18px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 5px solid #b7eb8f;
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-shadow: 0 2px 8px rgba(82, 196, 26, 0.1);
+      }
+
+      .custom-color-block {
+        padding: 16px 16px 10px;
+        border-radius: 10px;
+        margin: 15px 0;
+        border-left: 5px solid var(--accent-color);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92));
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        white-space: pre-wrap;
+        word-break: break-word;
+        cursor: pointer;
+      }
+
+      .bgb-block, .bgy-block, .bgr-block, .bgg-block, .custom-color-block {
+        position: relative;
+      }
+
+      .block-body {
+        margin: 0 0 10px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .block-children {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 8px;
+        padding-left: 10px;
+        border-left: 2px solid rgba(15, 23, 42, 0.08);
+      }
+
+      .bgb-block .block-children,
+      .bgy-block .block-children,
+      .bgr-block .block-children,
+      .bgg-block .block-children,
+      .custom-color-block .block-children {
+        border-left-color: rgba(15, 23, 42, 0.12);
+      }
+
+      .block-actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 6px;
+        z-index: 5;
+      }
+
+      .block-action {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        cursor: pointer;
+        display: inline-grid;
+        place-items: center;
+        font-size: 14px;
+      }
+
+      .block-action:hover {
+        transform: translateY(-1px);
+      }
+
+      .box-block {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      /* ===== 列表区块样式 ===== */
+      .ul-block {
+        background: linear-gradient(135deg, var(--success-light), #f6ffed);
+        padding: 20px 20px 15px 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 5px solid #b7eb8f;
+        word-break: break-word;
+        box-shadow: 0 2px 8px rgba(82, 196, 26, 0.1);
+      }
+
+      .ul-block ul {
+        margin: 0;
+        padding-left: 20px;
+        list-style-position: outside;
+        word-break: break-word;
+      }
+
+      .ul-block li {
+        margin-bottom: 8px;
+        word-break: break-word;
+        white-space: pre-wrap;
+        padding-left: 5px;
+        line-height: 1.6;
+      }
+
+      .ul-block li::marker {
+        color: var(--success-color);
+        font-weight: bold;
+      }
+
+      /* ===== 表格样式 ===== */
+      .table-block {
+        background-color: white;
+        padding: 0;
+        border-radius: 12px;
+        margin: 20px 0;
+        overflow-x: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .data-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 14px;
+      }
+
+      .data-table th,
+      .data-table td {
+        border: 1px solid #e8e8e8;
+        padding: 14px 16px;
+        text-align: left;
+        word-wrap: break-word;
+        transition: background-color 0.2s ease;
+      }
+
+      .data-table th {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        font-size: 15px;
+        padding: 16px;
+      }
+
+      .data-table tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      .data-table tr:nth-child(odd) {
+        background-color: white;
+      }
+
+      .data-table tr:hover {
+        background-color: #f0f7ff;
+      }
+
+      .data-table tr:hover td {
+        background-color: transparent;
+      }
+
+      .data-table {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .data-table tr td:first-child {
+        font-weight: 600;
+        background-color: #f8f9fa;
+      }
+
+      .data-table tr:hover td:first-child {
+        background-color: #e3f2fd;
+      }
+
+      /* ===== 文件输入样式 ===== */
+      .file-input {
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      .file-input label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: white;
+        padding: 14px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 550;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+        gap: 8px;
+      }
+
+      .file-input label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
+      }
+
+      .file-input label:active {
+        transform: translateY(0);
+      }
+
+      .file-input input[type="file"] {
+        display: none;
+      }
+
+      /* ===== 图片样式 ===== */
+      .image-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        width: 100%;
+        margin: 15px 0;
+      }
+
+      .image-container {
+        min-width: 0;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+      }
+
+      .image-container:hover {
+        transform: translateY(-5px);
+      }
+
+      .thumbnail {
+        width: 100%;
+        max-height: 220px;
+        height: 180px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        object-fit: cover;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f0f0f0;
+      }
+
+      .thumbnail:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .thumbnail.loading {
+        opacity: 0.7;
+        filter: blur(2px);
+      }
+
+      /* 区块内的图片行样式 */
+      .box-block .image-row,
+      .bgb-block .image-row,
+      .bgy-block .image-row,
+      .bgr-block .image-row,
+      .bgg-block .image-row,
+      .ul-block .image-row {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .box-block .image-row {
+        margin-left: 0;
+        margin-right: 0;
+        width: calc(100% + 15px);
+      }
+
+      @media (max-width: 900px) {
+        .image-row {
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .image-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== 图片查看器模态框样式 ===== */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.95);
+        overflow: auto;
+      }
+
+      /* 模态框滚动条样式 */
+      .modal::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+      }
+
+      .modal::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 1.5px;
+      }
+
+      .modal::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 1.5px;
+      }
+
+      .modal::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        transform-origin: center center;
+        transition: transform 0.3s ease;
+        cursor: zoom-in;
+        border-radius: 8px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-content.draggable {
+        cursor: grab;
+      }
+
+      .modal-content.dragging {
+        cursor: grabbing;
+      }
+
+      .close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #f1f1f1;
+        font-size: 45px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: var(--transition);
+        z-index: 1001;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+      }
+
+      .close:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+
+      .prev,
+      .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: 15px;
+        height: 15px;
+        padding: 16px;
+        margin-top: -30px;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        transition: var(--transition);
+        user-select: none;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+      }
+
+      .next {
+        right: 0px;
+      }
+
+      .prev {
+        left: 0px;
+      }
+
+      .prev:hover,
+      .next:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+
+      .image-info {
+        color: #fff;
+        text-align: center;
+        padding: 15px 20px;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+        min-width: 120px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      /* 缩放控制按钮 */
+      .zoom-controls {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        display: flex;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+      }
+
+      .zoom-controls button {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 12px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: var(--transition);
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .zoom-controls button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      /* 加载指示器 */
+      .loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 18px;
+        z-index: 1002;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 20px 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+      }
+
+      /* ===== 示例内容样式 ===== */
+      .demo-content {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #e7fae8, #f0fdf4);
+        border-radius: 12px;
+        border-left: 5px solid var(--primary-color);
+        box-shadow: 0 4px 15px rgba(24, 144, 255, 0.15);
+      }
+
+      .demo-title {
+        display: block;
+        font-weight: 700;
+        margin: 18px 0 12px 0;
+        color: var(--primary-color);
+        font-size: 1.35em;
+        line-height: 1.3;
+        word-break: break-word;
+      }
+      .table-block > .demo-title {
+        padding: 18px 20px 0 20px;
+      }
+
+      .demo-content > div {
+        margin-bottom: 8px;
+        padding: 5px 0;
+        border-bottom: 1px dashed #d4edda;
+      }
+
+      .demo-content > div:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      /* ===== 左侧导航栏样式 ===== */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 150px;
+        height: 100vh;
+        background-color: #fff;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        overflow-y: auto;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      /* 导航栏滚动条样式 */
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .sidebar::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(24, 144, 255, 0.3);
+        border-radius: 2px;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+      }
+
+      /* 收起状态仅宽度变小，不再translateX隐藏 */
+      .sidebar.collapsed {
+        width: 50px;
+        transition: width 0.3s ease;
+      }
+
+      .sidebar.hidden,
+      .sidebar-toggle.hidden {
+        display: none;
+      }
+
+      .sidebar.collapsed .sidebar-title {
+        justify-content: center;
+        padding: 0 0 15px;
+      }
+
+      .sidebar.collapsed .sidebar-title-text {
+        display: none;
+      }
+
+      .sidebar.collapsed .sidebar-title-icon {
+        margin: 0;
+      }
+
+      /* 收起时导航项只显示图标 */
+      .sidebar.collapsed .nav-item-text {
+        display: none;
+      }
+
+      /* 收起时调整导航项样式 */
+      .sidebar.collapsed .nav-item {
+        text-align: center;
+        padding: 8px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* 确保图标在收起状态下正常显示 */
+      .sidebar.collapsed .nav-item-icon {
+        display: inline-block !important; /* 使用important确保优先级 */
+        margin-right: 0;
+        font-size: 18px; /* 稍微增大图标 */
+      }
+
+      .sidebar-title {
+        padding: 0 15px 15px;
+        font-weight: bold;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .sidebar-title:hover {
+        background-color: var(--primary-light);
+        border-radius: 6px;
+      }
+
+      .sidebar-title-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+      }
+
+      .sidebar-title-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-item {
+        padding: 8px 15px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-left: 3px solid transparent;
+      }
+
+      .nav-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+        border-left-color: var(--primary-color);
+      }
+
+      .nav-item.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-left-color: var(--primary-dark);
+      }
+
+      /* 导航项里的图标 */
+      .nav-item-icon {
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        margin-right: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item-icon.primary {
+        color: var(--primary-color);
+      }
+      .nav-item-icon.success {
+        color: var(--success-color);
+      }
+      .nav-item-icon.warning {
+        color: var(--warning-color);
+      }
+      .nav-item-icon.error {
+        color: var(--error-color);
+      }
+      .nav-item-icon.purple {
+        color: #722ed1;
+      }
+      .nav-item-icon.cyan {
+        color: #13c2c2;
+      }
+      .nav-item-icon.magenta {
+        color: #eb2f96;
+      }
+      .nav-item-icon.orange {
+        color: #fa8c16;
+      }
+
+      /* 导航栏切换按钮样式 */
+      .sidebar-toggle {
+        position: fixed;
+        left: 150px;
+        top: 10px;
+        width: 26px;
+        height: 44px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 101;
+        transition: left 0.3s ease, opacity 0.2s ease;
+      }
+
+      .sidebar-toggle span {
+        font-size: 14px;
+        transition: transform 0.3s ease;
+        user-select: none;
+      }
+
+      .sidebar-toggle.collapsed span {
+        transform: rotate(180deg);
+      }
+
+      .empty-state {
+        display: block;
+        padding: 32px 24px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 10px;
+        background: #fafafa;
+        color: #666;
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      /* 收起时调整 toggle 按钮位置 */
+      .sidebar-toggle.collapsed {
+        left: 50px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ===== 自定义 Tooltip 样式 左侧导航悬停提示===== */
+      /*
+      .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(-50%) scale(0.95);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 2000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .tooltip.show {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+        */
+      /* ===== 美化后的 Tooltip 样式 ===== */
+      .tooltip {
+        position: absolute;
+        background: linear-gradient(135deg, #1890ff, #096dd9);
+        color: #fff;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(-50%) scale(0.95);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        z-index: 2000;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      }
+      .tooltip.show {
+        opacity: 1;
+        transform: translateY(-50%) translateX(4px) scale(1);
+      }
+      .tooltip::after {
+        content: "";
+        position: absolute;
+        left: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 6px;
+        border-style: solid;
+        border-color: transparent #1890ff transparent transparent;
+      }
+
+      /* 不同主题颜色 */
+      .tooltip.warning {
+        background: linear-gradient(135deg, #faad14, #ffc53d);
+      }
+      .tooltip.warning::after {
+        border-color: transparent #faad14 transparent transparent;
+      }
+
+      .tooltip.success {
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+      }
+      .tooltip.success::after {
+        border-color: transparent #52c41a transparent transparent;
+      }
+
+      .tooltip.error {
+        background: linear-gradient(135deg, #f5222d, #ff7875);
+      }
+      .tooltip.error::after {
+        border-color: transparent #f5222d transparent transparent;
+      }
+
+      .tooltip.info {
+        background: linear-gradient(135deg, #1890ff, #40a9ff);
+      }
+      .tooltip.info::after {
+        border-color: transparent #1890ff transparent transparent;
+      }
+
+      /* ===== 无障碍优化 ===== */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      /* ===== 响应式设计 ===== */
+      @media (max-width: 1024px) {
+        .image-container {
+          flex: 0 0 calc(33.333% - 15px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .sidebar {
+          transform: translateX(-150px);
+        }
+
+        .sidebar-toggle {
+          left: 0;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.8em;
+          margin-bottom: 20px;
+        }
+
+        .file-input label {
+          padding: 12px 20px;
+          font-size: 15px;
+        }
+
+        .image-container {
+          flex: 0 0 calc(50% - 15px);
+        }
+
+        .data-table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+
+        .data-table th,
+        .data-table td {
+          min-width: 120px;
+          padding: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .image-container {
+          flex: 0 0 100%;
+        }
+      }
+
+      /* 列表项样式重置 */
+      li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ===== 顶部工具栏 ===== */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 150px;
+        right: 0;
+        height: 48px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0px 10px;
+        z-index: 201;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid #f0f0f0;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.collapsed ~ .topbar {
+        left: 50px;
+      }
+
+      .topbar .btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      .topbar .btn.secondary {
+        background: #fafafa;
+        color: #333;
+        border: 1px solid #e8e8e8;
+      }
+
+      .topbar .btn.icon {
+        width: 40px;
+        height: 36px;
+        padding: 0;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 8px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #f6f9ff);
+        color: var(--primary-color);
+        border: 1px solid rgba(24,144,255,0.12);
+      }
+
+      .topbar .btn.secondary#btnOpenFile {
+        background: linear-gradient(135deg, #fff, #f3fbff);
+        color: var(--primary-dark);
+        border: 1px solid rgba(24,144,255,0.12);
+        box-shadow: 0 6px 14px rgba(24,144,255,0.06);
+      }
+
+      .topbar .spacer {
+        flex: 1 1 auto;
+      }
+
+      .context-menu {
+        position: fixed;
+        z-index: 400;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        padding: 8px;
+        min-width: 150px;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        display: none;
+      }
+
+      .context-menu .has-submenu {
+        position: relative;
+      }
+
+      .context-menu .submenu-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .context-menu .context-submenu {
+        display: none;
+        margin-top: 6px;
+        margin-left: 6px;
+        padding-left: 6px;
+        border-left: 1px dashed rgba(0,0,0,0.06);
+      }
+
+      .context-menu .has-submenu.open .context-submenu {
+        display: block;
+      }
+
+      /* 悬停时显示的独立二级卡片 */
+      .context-subcard {
+        position: fixed;
+        z-index: 450;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        border-radius: 8px;
+        padding: 8px;
+        min-width: 160px;
+        display: none;
+      }
+
+      .context-subcard button {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 8px 10px;
+        text-align: left;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .context-subcard button:hover {
+        background: var(--primary-light);
+        color: var(--primary-color);
+      }
+
+      .context-menu button {
+        width: 100%;
+        border: none;
+        background: #fafafa;
+        color: #333;
+        padding: 8px 10px;
+        margin: 3px 0;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .context-menu button:hover {
+        background: var(--primary-light);
+        color: var(--primary-color);
+      }
+
+      .custom-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 600;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(8px);
+      }
+
+      .custom-modal {
+        position: relative;
+        width: min(92vw, 460px);
+        max-height: min(90vh, 760px);
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
+        padding: 20px 20px 18px;
+        animation: modalFadeIn 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .custom-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .custom-modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+      }
+
+      .custom-modal-message {
+        margin-top: 6px;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .custom-modal-close {
+        border: none;
+        background: #f3f4f6;
+        color: #64748b;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+      }
+
+      .custom-modal-content {
+        margin: 10px 0 16px;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .custom-modal-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 10px;
+        font-size: 20px;
+        color: white;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      }
+
+      .custom-modal-input,
+      .custom-modal-select,
+      .custom-modal-textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #dbe3ef;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #111827;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .custom-modal-input:focus,
+      .custom-modal-select:focus,
+      .custom-modal-textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.16);
+      }
+
+      .custom-modal-textarea {
+        min-height: 92px;
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      .custom-modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+      }
+
+      .custom-modal-tabs {
+        display: flex;
+        gap: 8px;
+        padding: 4px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 6px;
+      }
+
+      .custom-modal-tab {
+        flex: 1;
+        border: none;
+        border-radius: 999px;
+        background: transparent;
+        color: #64748b;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .custom-modal-tab.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(24, 144, 255, 0.18);
+      }
+
+      .custom-modal-tab-card {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+      }
+
+      .custom-modal-tab-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 4px;
+      }
+
+      .custom-modal-tab-hint {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+      }
+
+      .import-dropzone {
+        border: 2px dashed #e6edf6;
+        border-radius: 12px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        cursor: pointer;
+        transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+      }
+
+      .import-dropzone .import-drop-inner {
+        text-align: center;
+      }
+
+      .import-dropzone .import-icon {
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      .import-dropzone .import-text {
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .import-dropzone .import-sub {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      .import-dropzone.drag-over {
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 18px rgba(24,144,255,0.12);
+        transform: translateY(-2px);
+      }
+
+      .custom-modal-form .image-row {
+        max-height: min(42vh, 320px);
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .custom-modal-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        position: relative;
+      }
+
+      .color-field-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .color-more-btn {
+        border: 1px solid #dbe3ef;
+        background: #ffffff;
+        color: #334155;
+        border-radius: 10px;
+        padding: 0 12px;
+        min-height: 34px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .color-more-btn:hover {
+        background: #f8fafc;
+      }
+
+      .color-swatch-list {
+        display: grid;
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .color-swatch-main {
+        margin-top: 6px;
+      }
+
+      .color-swatch-main .color-swatch {
+        border-radius: 14px;
+        height: 28px;
+      }
+
+      .color-swatch-more {
+        margin-top: 8px;
+      }
+
+      .color-swatch-more .color-swatch {
+        border-radius: 10px;
+        height: 32px;
+      }
+
+      .color-swatch:hover {
+        transform: translateY(-1px);
+      }
+
+      .color-swatch.active {
+        border-color: #111827;
+        transform: scale(1.05);
+      }
+
+      .color-more-card {
+        position: fixed;
+        width: 240px;
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+        background: white;
+        z-index: 1200;
+        display: none;
+      }
+
+      .color-more-card .color-swatch-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .custom-modal-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      .color-swatch-list {
+        display: grid;
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .color-swatch {
+        width: 100%;
+        height: 34px;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+      }
+
+      .color-swatch:hover {
+        transform: translateY(-1px);
+      }
+
+      .color-swatch.active {
+        border-color: #111827;
+      }
+
+      .color-picker-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .color-picker-row input[type="color"] {
+        width: 42px;
+        height: 42px;
+        border: none;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .color-picker-value {
+        font-size: 13px;
+        color: #475569;
+      }
+
+      .custom-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-shrink: 0;
+        padding-top: 4px;
+      }
+
+      .custom-modal-btn {
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .custom-modal-btn.secondary {
+        background: #f8fafc;
+        color: #334155;
+        border-color: #e2e8f0;
+      }
+
+      .custom-modal-btn.primary {
+        color: white;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        box-shadow: 0 8px 18px rgba(24, 144, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 左侧导航栏 -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-title" id="sidebarTitle" title="点击收起/展开侧栏">
+        <span class="sidebar-title-icon">🛡️</span>
+        <span class="sidebar-title-text">风控规则导航</span>
+      </div>
+      <ul class="nav-list" id="navList"></ul>
+    </div>
+
+    <!-- 导航栏切换按钮 -->
+    <!-- <div class="sidebar-toggle" id="sidebarToggle">
+      <span>‹</span>
+    </div> -->
+
+    <!-- 顶部工具栏 -->
+    <div class="topbar" id="topbar">
+      <button class="btn" id="btnAddContent">新增内容</button>
+      <button class="btn" id="btnImage">图片</button>
+      <button class="btn" id="btnTable">表格</button>
+      <div class="spacer"></div>
+      <button class="btn icon" id="btnImpExp" title="导入/导出">⇅</button>
+      <button class="btn secondary" id="btnOpenFile">打开文件</button>
+    </div>
+
+    <div id="contextMenu" class="context-menu">
+      <button type="button" id="ctxEdit">编辑内容</button>
+      <button type="button" id="ctxInsert">插入编辑</button>
+      <button type="button" id="ctxInsertAfter">内容后插入</button>
+      <div class="has-submenu" id="ctxModifyWrap">
+        <button type="button" id="ctxModify" class="submenu-toggle">修改 ▸</button>
+        <div class="context-submenu" id="ctxSubmenu">
+          <button type="button" id="ctxH3">大标题</button>
+          <button type="button" id="ctxH4">小标题</button>
+          <button type="button" id="ctxP">段落</button>
+          <button type="button" id="ctxColor">色块</button>
+        </div>
+      </div>
+      <button type="button" id="ctxDelete">删除</button>
+    </div>
+
+    <input type="file" id="importInput" accept=".json,.txt" style="display:none" />
+
+    <div class="custom-modal-overlay" id="customModalOverlay">
+      <div class="custom-modal" role="dialog" aria-modal="true">
+        <div class="custom-modal-header">
+          <div>
+            <div class="custom-modal-title" id="customModalTitle">提示</div>
+            <div class="custom-modal-message" id="customModalMessage"></div>
+          </div>
+          <button class="custom-modal-close" id="customModalClose" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="custom-modal-content" id="customModalContent"></div>
+        <div class="custom-modal-actions">
+          <button class="custom-modal-btn secondary" id="customModalCancel" type="button">取消</button>
+          <button class="custom-modal-btn primary" id="customModalConfirm" type="button">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加包装器 -->
+    <div class="wrapper">
+      <div class="container">
+
+        <div class="file-input" id="fileInputContainer" style="display: none">
+          <input
+            type="file"
+            id="fileInput"
+            accept=".txt"
+            aria-label="选择TXT文件"
+          />
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          还没有内容，点击顶部“新增内容”按钮添加标题、段落、白色卡片或色块，也可以直接打开 TXT 文件。
+        </div>
+
+        <div id="fileContent"></div>
+      </div>
+    </div>
+
+    <!-- 图片查看器模态框 -->
+    <div
+      id="imageModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="imageInfo"
+    >
+      <span class="close" aria-label="关闭图片">&times;</span>
+      <span class="prev" aria-label="上一张图片">&#10094;</span>
+      <span class="next" aria-label="下一张图片">&#10095;</span>
+      <div class="zoom-controls">
+        <button class="zoom-in" aria-label="放大图片">+</button>
+        <button class="zoom-out" aria-label="缩小图片">-</button>
+        <button class="zoom-reset" aria-label="重置图片大小">↺</button>
+      </div>
+      <div class="loading-indicator" id="loadingIndicator">🔄 加载中...</div>
+      <img class="modal-content" id="modalImage" alt="预览图片" />
+      <div class="image-info" id="imageInfo"></div>
+    </div>
+
+    <script>
+      // ===== 主应用程序 =====
+      // 使用模块模式封装代码，避免全局污染
+      (function () {
+        // ===== DOM 元素缓存 =====
+        const domCache = {
+          fileInputContainer: document.getElementById("fileInputContainer"),
+          emptyState: document.getElementById("emptyState"),
+          fileContent: document.getElementById("fileContent"),
+          imageModal: document.getElementById("imageModal"),
+          modalImage: document.getElementById("modalImage"),
+          imageInfo: document.getElementById("imageInfo"),
+          loadingIndicator: document.getElementById("loadingIndicator"),
+          zoomInBtn: document.querySelector(".zoom-in"),
+          zoomOutBtn: document.querySelector(".zoom-out"),
+          zoomResetBtn: document.querySelector(".zoom-reset"),
+          closeBtn: document.querySelector(".close"),
+          prevBtn: document.querySelector(".prev"),
+          nextBtn: document.querySelector(".next"),
+          navList: document.getElementById("navList"),
+          sidebar: document.getElementById("sidebar"),
+          sidebarTitle: document.getElementById("sidebarTitle"),
+          sidebarToggle: document.getElementById("sidebarToggle"),
+          fileInput: document.getElementById("fileInput"),
+          btnImage: document.getElementById("btnImage"),
+          btnTable: document.getElementById("btnTable"),
+          btnImpExp: document.getElementById("btnImpExp"),
+          btnAddContent: document.getElementById("btnAddContent"),
+          btnOpenFile: document.getElementById("btnOpenFile"),
+          btnExport: document.getElementById("btnExport"),
+          btnImport: document.getElementById("btnImport"),
+          importInput: document.getElementById("importInput"),
+          ctxDelete: document.getElementById("ctxDelete"),
+          ctxModify: document.getElementById("ctxModify"),
+          ctxSubmenu: document.getElementById("ctxSubmenu"),
+          ctxModifyWrap: document.getElementById("ctxModifyWrap"),
+          customModalOverlay: document.getElementById("customModalOverlay"),
+          customModalTitle: document.getElementById("customModalTitle"),
+          customModalMessage: document.getElementById("customModalMessage"),
+          customModalContent: document.getElementById("customModalContent"),
+          customModalClose: document.getElementById("customModalClose"),
+          customModalCancel: document.getElementById("customModalCancel"),
+          customModalConfirm: document.getElementById("customModalConfirm"),
+          contextMenu: document.getElementById("contextMenu"),
+          ctxEdit: document.getElementById("ctxEdit"),
+          ctxInsert: document.getElementById("ctxInsert"),
+          ctxInsertAfter: document.getElementById("ctxInsertAfter"),
+          ctxH3: document.getElementById("ctxH3"),
+          ctxH4: document.getElementById("ctxH4"),
+          ctxP: document.getElementById("ctxP"),
+          ctxColor: document.getElementById("ctxColor"),
+          topbar: document.getElementById("topbar"),
+        };
+
+        // ===== 全局状态管理 =====
+        const state = {
+          allImages: [],
+          currentImageIndex: 0,
+          currentImageRow: null,
+          currentScale: 1,
+          isDragging: false,
+          translateX: 0,
+          translateY: 0,
+          lastClickTime: 0,
+          startX: 0,
+          startY: 0,
+          preloadIndex: -1,
+          h3Headings: [], // 存储所有h3标题
+          lastActiveIndex: -1, // 记录上次激活的导航项索引
+          sidebarCollapsed: false, // 侧边栏状态
+          currentContextTarget: null,
+        };
+
+        // ===== 初始化函数 =====
+        function init() {
+          setupEventListeners();
+          const loaded = loadFromStorage();
+          if (!loaded) showEmptyState();
+          syncViewState();
+          setupScrollSpy();
+        }
+
+        function showCustomModal(options = {}) {
+          return new Promise((resolve) => {
+            const overlay = domCache.customModalOverlay;
+            const titleEl = domCache.customModalTitle;
+            const messageEl = domCache.customModalMessage;
+            const contentEl = domCache.customModalContent;
+            const confirmBtn = domCache.customModalConfirm;
+            const cancelBtn = domCache.customModalCancel;
+            const closeBtn = domCache.customModalClose;
+            const mode = options.type || "input";
+
+            titleEl.textContent = options.title || "提示";
+            messageEl.textContent = options.message || "";
+            confirmBtn.textContent = options.confirmText || "确定";
+            cancelBtn.textContent = options.cancelText || "取消";
+            contentEl.innerHTML = "";
+
+            const finish = (value) => {
+              overlay.style.display = "none";
+              document.body.style.overflow = "";
+              document.removeEventListener("keydown", handleKeyDown);
+              resolve(value);
+            };
+
+            const handleKeyDown = (event) => {
+              if (event.key === "Escape") {
+                finish(null);
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                if (mode === "alert") {
+                  finish(true);
+                } else if (mode === "select") {
+                  finish(selectedValue);
+                } else {
+                  finish(inputEl.value);
+                }
+              }
+            };
+
+            let inputEl = null;
+            let selectEl = null;
+            let selectedValue = options.defaultValue || null;
+
+            if (mode === "select") {
+              const optionList = options.options || [];
+              if (!selectedValue && optionList.length) {
+                selectedValue = optionList[0].value;
+              }
+
+              const tabBar = document.createElement("div");
+              tabBar.className = "custom-modal-tabs";
+
+              const infoCard = document.createElement("div");
+              infoCard.className = "custom-modal-tab-card";
+
+              const title = document.createElement("div");
+              title.className = "custom-modal-tab-title";
+              const hint = document.createElement("div");
+              hint.className = "custom-modal-tab-hint";
+
+              const updateSelection = (value) => {
+                selectedValue = value;
+                Array.from(tabBar.querySelectorAll(".custom-modal-tab")).forEach((tab) => {
+                  tab.classList.toggle("active", tab.dataset.value === value);
+                });
+                const activeOption = optionList.find((item) => item.value === value) || optionList[0] || {};
+
+                // 如果是导入模式，则渲染可点击 + 拖拽的区域
+                if (value === 'import') {
+                  infoCard.innerHTML = '';
+                  const dz = document.createElement('div');
+                  dz.className = 'import-dropzone';
+                  dz.tabIndex = 0;
+                  dz.innerHTML = `<div class="import-drop-inner"><div class="import-icon">📁</div><div class="import-text">点击或拖拽文件到此处进行导入</div><div class="import-sub">支持 .json / .txt 文件</div></div>`;
+                  infoCard.appendChild(dz);
+
+                  const fileInput = domCache.importInput;
+                  const openFile = () => { if (fileInput) fileInput.click(); };
+
+                  dz.addEventListener('click', openFile);
+                  dz.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFile(); } });
+
+                  dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
+                  dz.addEventListener('dragenter', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
+                  dz.addEventListener('dragleave', (e) => { dz.classList.remove('drag-over'); });
+                  dz.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dz.classList.remove('drag-over');
+                    const files = e.dataTransfer && e.dataTransfer.files;
+                    if (files && files.length) {
+                      // 复用已有的导入处理函数
+                      handleImportFile({ target: { files } });
+                    }
+                  });
+
+                } else {
+                  // 恢复默认信息卡片内容
+                  infoCard.innerHTML = '';
+                  infoCard.appendChild(title);
+                  infoCard.appendChild(hint);
+                  title.textContent = activeOption.label || '请选择';
+                  hint.textContent = activeOption.description || (value === 'export'
+                    ? '将当前内容导出为文件，方便后续分享或备份。'
+                    : '从本地文件中导入内容，替换当前页面内容。'
+                  );
+                }
+              };
+
+              optionList.forEach((item) => {
+                const tab = document.createElement("button");
+                tab.type = "button";
+                tab.className = "custom-modal-tab";
+                tab.textContent = item.label;
+                tab.dataset.value = item.value;
+                if (item.value === selectedValue) {
+                  tab.classList.add("active");
+                }
+                tab.addEventListener("click", () => updateSelection(item.value));
+                tabBar.appendChild(tab);
+              });
+
+              infoCard.appendChild(title);
+              infoCard.appendChild(hint);
+              contentEl.appendChild(tabBar);
+              contentEl.appendChild(infoCard);
+              updateSelection(selectedValue);
+            } else if (mode === "alert") {
+              const badge = document.createElement("div");
+              badge.className = "custom-modal-badge";
+              badge.textContent = "✦";
+              contentEl.appendChild(badge);
+            } else {
+              inputEl = document.createElement("input");
+              inputEl.type = options.inputType || "text";
+              inputEl.className = "custom-modal-input";
+              inputEl.placeholder = options.placeholder || "请输入内容";
+              inputEl.value = options.defaultValue || "";
+              contentEl.appendChild(inputEl);
+            }
+
+            confirmBtn.onclick = () => {
+              if (mode === "alert") {
+                finish(true);
+              } else if (mode === "select") {
+                finish(selectedValue);
+              } else {
+                finish(inputEl ? inputEl.value : null);
+              }
+            };
+            cancelBtn.onclick = () => finish(null);
+            closeBtn.onclick = () => finish(null);
+            overlay.onclick = (event) => {
+              if (event.target === overlay) {
+                finish(null);
+              }
+            };
+
+            overlay.style.display = "flex";
+            document.body.style.overflow = "hidden";
+            document.addEventListener("keydown", handleKeyDown);
+
+            setTimeout(() => {
+              if (inputEl) {
+                inputEl.focus();
+                inputEl.select();
+              } else if (mode === "select") {
+                const firstTab = contentEl.querySelector(".custom-modal-tab");
+                if (firstTab) firstTab.focus();
+              }
+            }, 0);
+          });
+        }
+
+        function showCustomAlertModal(title, message) {
+          return showCustomModal({ type: "alert", title, message });
+        }
+
+        function showBlockComposerModal(defaultType = "color", allowedTypes = null) {
+          return new Promise((resolve) => {
+            const overlay = domCache.customModalOverlay;
+            const titleEl = domCache.customModalTitle;
+            const messageEl = domCache.customModalMessage;
+            const contentEl = domCache.customModalContent;
+            const confirmBtn = domCache.customModalConfirm;
+            const cancelBtn = domCache.customModalCancel;
+            const closeBtn = domCache.customModalClose;
+            const supportedTypes = allowedTypes || ["color", "h4", "h3", "p", "image", "whitecard", "table"];
+            const paletteColors = ["#4096ff","#ec4899","#f97316","#22c55e","#0ea5e9","#7c3aed","#f472b6","#f59e0b","#eab308","#f43f5e","#2f7df6","#1e90ff","#60a5fa","#93c5fd","#06b6d4","#22d3ee","#0f766e","#14b8a6","#34d399","#16a34a","#bef264","#facc15","#f6d860","#f4a261","#fb923c","#fb7185","#fbcfe8","#e11d48","#8b5cf6","#a78bfa","#c084fc","#64748b","#f3f4f6","#111827","#0f172a","#fafafa"];
+
+            titleEl.textContent = "新增内容";
+            messageEl.textContent = "可选择颜色、内容类型和输入内容";
+            confirmBtn.textContent = "插入";
+            cancelBtn.textContent = "取消";
+            contentEl.innerHTML = `
+              <div class="custom-modal-form">
+                <div class="custom-modal-field" id="blockColorField">
+                  <div class="color-field-top">
+                    <label class="custom-modal-label">颜色</label>
+                    <button type="button" class="color-more-btn" id="colorMoreBtn">更多颜色</button>
+                  </div>
+                  <div class="color-swatch-list color-swatch-main">
+                    ${paletteColors.slice(0, 10).map((color) => `<button class="color-swatch" type="button" data-color="${color}" style="background:${color}"></button>`).join("")}
+                  </div>
+                  <div class="color-picker-row">
+                    <input type="color" id="blockColorPicker" value="${paletteColors[0]}" />
+                    <span class="color-picker-value" id="blockColorValue">${paletteColors[0]}</span>
+                  </div>
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label" for="blockComposerType">内容类型</label>
+                  <select class="custom-modal-select" id="blockComposerType">
+                    ${[
+                      { value: "color", label: "色块" },
+                      { value: "h4", label: "小标题" },
+                      { value: "h3", label: "大标题" },
+                      { value: "p", label: "段落" },
+                      { value: "image", label: "图片" },
+                      { value: "whitecard", label: "白色卡片" },
+                      { value: "table", label: "表格" },
+                    ]
+                      .filter((option) => supportedTypes.includes(option.value))
+                      .map((option) => `<option value="${option.value}">${option.label}</option>`)
+                      .join("")}
+                  </select>
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label" for="blockComposerContent">内容</label>
+                  <textarea class="custom-modal-textarea" id="blockComposerContent" placeholder="请输入内容"></textarea>
+                </div>
+              </div>
+              <div class="color-more-card" id="colorMoreCard" style="display:none;">
+                <div class="color-popover-header">
+                  <span>更多颜色</span>
+                  <button type="button" class="color-popover-close" id="colorPopoverClose">×</button>
+                </div>
+                <div class="color-swatch-list color-swatch-more">
+                  ${paletteColors.map((color) => `<button class="color-swatch" type="button" data-color="${color}" style="background:${color}"></button>`).join("")}
+                </div>
+              </div>
+            `;
+
+            const typeSelect = contentEl.querySelector("#blockComposerType");
+            const colorField = contentEl.querySelector("#blockColorField");
+            const colorMoreBtn = contentEl.querySelector("#colorMoreBtn");
+            const colorMoreCard = contentEl.querySelector("#colorMoreCard");
+            const colorPopoverClose = contentEl.querySelector("#colorPopoverClose");
+            const contentInput = contentEl.querySelector("#blockComposerContent");
+            const colorPicker = contentEl.querySelector("#blockColorPicker");
+            const colorValue = contentEl.querySelector("#blockColorValue");
+            const swatches = Array.from(contentEl.querySelectorAll(".color-swatch"));
+
+            let selectedColor = paletteColors[0];
+            const applyColor = (color) => {
+              selectedColor = color;
+              colorPicker.value = color;
+              colorValue.textContent = color;
+              swatches.forEach((swatch) => {
+                swatch.classList.toggle("active", swatch.dataset.color === color);
+              });
+            };
+
+            // 快捷操作：在内容类型下显示两个快速按钮，方便插入图片或白色卡片
+            (function addQuickInsertButtons() {
+              try {
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.gap = '8px';
+                wrapper.style.marginTop = '8px';
+
+                const imgBtn = document.createElement('button');
+                imgBtn.type = 'button';
+                imgBtn.className = 'custom-modal-btn secondary';
+                imgBtn.textContent = '插入图片';
+
+                const wcBtn = document.createElement('button');
+                wcBtn.type = 'button';
+                wcBtn.className = 'custom-modal-btn secondary';
+                wcBtn.textContent = '插入白色卡片';
+
+                wrapper.appendChild(imgBtn);
+                wrapper.appendChild(wcBtn);
+
+                // 把快捷按钮放到类型选择的父容器后面
+                if (typeSelect && typeSelect.parentNode) {
+                  typeSelect.parentNode.appendChild(wrapper);
+                } else {
+                  contentEl.appendChild(wrapper);
+                }
+
+                if (supportedTypes.includes('image')) {
+                  imgBtn.addEventListener('click', async function () {
+                    const sources = await showImageModal([]);
+                    if (!sources || !sources.length) return;
+                    finish({ type: 'image', content: JSON.stringify(sources), color: null });
+                  });
+                } else {
+                  imgBtn.style.display = 'none';
+                }
+
+                if (supportedTypes.includes('whitecard')) {
+                  wcBtn.addEventListener('click', async function () {
+                    const val = await showCustomModal({ type: 'input', title: '白色卡片内容', message: '请输入白色卡片内容', placeholder: '内容' });
+                    if (val === null) return;
+                    finish({ type: 'whitecard', content: String(val || ''), color: null });
+                  });
+                } else {
+                  wcBtn.style.display = 'none';
+                }
+              } catch (e) { /* ignore */ }
+            })();
+
+            swatches.forEach((swatch) => {
+              swatch.addEventListener("click", () => applyColor(swatch.dataset.color));
+            });
+            colorPicker.addEventListener("input", () => applyColor(colorPicker.value));
+
+            let moreCardClickGuard = null;
+            const hideMoreCard = () => {
+              if (colorMoreCard) {
+                colorMoreCard.style.display = "none";
+              }
+              if (moreCardClickGuard) {
+                document.removeEventListener("click", moreCardClickGuard);
+                moreCardClickGuard = null;
+              }
+            };
+
+            if (colorMoreBtn && colorMoreCard) {
+              colorMoreBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                const isOpen = colorMoreCard.style.display === "block";
+                if (isOpen) {
+                  hideMoreCard();
+                  return;
+                }
+
+                const modalBox = domCache.customModalOverlay.querySelector('.custom-modal');
+                if (modalBox) {
+                  const rect = modalBox.getBoundingClientRect();
+                  const cardWidth = colorMoreCard.offsetWidth || 240;
+                  const cardHeight = colorMoreCard.offsetHeight || 180;
+                  let left = rect.right + 12;
+                  let top = rect.top;
+                  if (left + cardWidth > window.innerWidth - 16) {
+                    left = Math.max(16, rect.left - cardWidth - 12);
+                  }
+                  if (top + cardHeight > window.innerHeight - 16) {
+                    top = Math.max(16, window.innerHeight - 16 - cardHeight);
+                  }
+                  colorMoreCard.style.left = `${left}px`;
+                  colorMoreCard.style.top = `${top}px`;
+                }
+
+                colorMoreCard.style.display = "block";
+                moreCardClickGuard = (clickEvent) => {
+                  if (
+                    !colorMoreCard.contains(clickEvent.target) &&
+                    clickEvent.target !== colorMoreBtn
+                  ) {
+                    hideMoreCard();
+                  }
+                };
+                document.addEventListener("click", moreCardClickGuard);
+              });
+            }
+
+            if (colorPopoverClose) {
+              colorPopoverClose.addEventListener("click", hideMoreCard);
+            }
+
+            const updateColorVisibility = () => {
+              colorField.style.display = "flex";
+            };
+            // defaultType may be a string or an object with { defaultType, color, content }
+            let settings = { defaultType: typeof defaultType === 'string' ? defaultType : (defaultType && defaultType.defaultType) || 'color', color: null, content: '' };
+            if (typeof defaultType === 'object' && defaultType !== null) {
+              settings = Object.assign(settings, defaultType);
+            }
+            // 清理可能来自旧版的操作字符（移除单字符和代理对表情）
+            settings.content = Array.from(String(settings.content || '')).filter(c => {
+              const cp = c.codePointAt(0);
+              return cp !== 0x270E && cp !== 0x1F5D1;
+            }).join('').trim();
+
+            typeSelect.value = settings.defaultType;
+            updateColorVisibility();
+            typeSelect.addEventListener("change", updateColorVisibility);
+            applyColor(settings.color || selectedColor);
+            if (settings.content) contentInput.value = settings.content;
+
+            // 额外保证赋值（覆盖可能的旧值污染）
+            setTimeout(() => { if (contentInput) contentInput.value = settings.content || ''; }, 30);
+
+            const finish = (value) => {
+              hideMoreCard();
+              overlay.style.display = "none";
+              document.body.style.overflow = "";
+              document.removeEventListener("keydown", handleKeyDown);
+              resolve(value);
+            };
+
+            const handleKeyDown = (event) => {
+              if (event.key === "Escape") {
+                finish(null);
+              }
+            };
+
+            confirmBtn.onclick = () => {
+              const type = typeSelect.value;
+              const text = contentInput.value.trim();
+              const requiresText = ["h3", "h4", "p", "color"].includes(type);
+              if (requiresText && !text) {
+                contentInput.focus();
+                return;
+              }
+              finish({ type, content: text, color: selectedColor });
+            };
+            cancelBtn.onclick = () => finish(null);
+            closeBtn.onclick = () => finish(null);
+            overlay.onclick = (event) => {
+              if (event.target === overlay) {
+                finish(null);
+              }
+            };
+
+            overlay.style.display = "flex";
+            document.body.style.overflow = "hidden";
+            document.addEventListener("keydown", handleKeyDown);
+            setTimeout(() => contentInput.focus(), 0);
+          });
+        }
+
+        function showImageModal(defaultImages = []) {
+          return new Promise((resolve) => {
+            const overlay = domCache.customModalOverlay;
+            domCache.customModalTitle.textContent = '插入图片';
+            domCache.customModalMessage.textContent = '可同时上传多张图片，系统会自动按 3-5 张一行显示';
+            domCache.customModalConfirm.textContent = '插入';
+            domCache.customModalCancel.textContent = '取消';
+            const contentEl = domCache.customModalContent;
+            const sources = Array.isArray(defaultImages) ? defaultImages.filter(Boolean) : [];
+            contentEl.innerHTML = `
+              <div class="custom-modal-form">
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">图片地址（可选）</label>
+                  <input class="custom-modal-input" id="imageUrlInput" placeholder="https://..." value="" />
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">或上传多张图片</label>
+                  <input type="file" accept="image/*" id="imageFileUploader" multiple />
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">预览</label>
+                  <div id="imagePreview" class="image-row" style="margin:0"></div>
+                </div>
+              </div>
+            `;
+
+            const urlInput = contentEl.querySelector('#imageUrlInput');
+            const fileInput = contentEl.querySelector('#imageFileUploader');
+            const preview = contentEl.querySelector('#imagePreview');
+            let selectedSources = sources.slice();
+
+            function updatePreview() {
+              preview.innerHTML = '';
+              if (!selectedSources.length) return;
+              selectedSources.forEach((src, index) => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'image-container';
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'thumbnail';
+                img.alt = `图片${index + 1}`;
+                imageContainer.appendChild(img);
+                preview.appendChild(imageContainer);
+              });
+            }
+
+            if (selectedSources.length) {
+              updatePreview();
+            }
+
+            urlInput.addEventListener('input', () => {
+              const value = urlInput.value.trim();
+              if (value) {
+                selectedSources = [value];
+                updatePreview();
+              } else if (!fileInput.files || !fileInput.files.length) {
+                selectedSources = [];
+                updatePreview();
+              }
+            });
+
+            fileInput.addEventListener('change', function () {
+              const files = Array.from(this.files || []);
+              if (!files.length) return;
+              const nextSources = [];
+              let pending = files.length;
+              files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                  nextSources.push(ev.target.result);
+                  pending -= 1;
+                  if (pending === 0) {
+                    selectedSources = nextSources;
+                    updatePreview();
+                  }
+                };
+                reader.readAsDataURL(file);
+              });
+            });
+
+            const finish = (value) => {
+              overlay.style.display = 'none';
+              document.body.style.overflow = '';
+              resolve(value);
+            };
+
+            domCache.customModalConfirm.onclick = () => {
+              const v = urlInput.value && urlInput.value.trim();
+              const finalSources = selectedSources.length ? selectedSources : (v ? [v] : []);
+              if (!finalSources.length) {
+                urlInput.focus();
+                return;
+              }
+              finish(finalSources);
+            };
+            domCache.customModalCancel.onclick = () => finish(null);
+            domCache.customModalClose.onclick = () => finish(null);
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => urlInput.focus(), 0);
+          });
+        }
+
+        async function insertImageFromToolbar() {
+          const sources = await showImageModal([]);
+          if (!sources || !sources.length) return;
+          const card = document.createElement('div');
+          card.className = 'box-block';
+          const row = createImageRow(sources);
+          card.appendChild(row);
+          domCache.fileContent.appendChild(card);
+          rebuildStateFromDOM();
+          saveToStorage();
+        }
+
+        function showTableModal(defaultSettings = {}) {
+          return new Promise((resolve) => {
+            const overlay = domCache.customModalOverlay;
+            domCache.customModalTitle.textContent = '插入表格';
+            domCache.customModalMessage.textContent = '设置表格标题、行数与列数，编辑内容后插入';
+            domCache.customModalConfirm.textContent = '插入';
+            domCache.customModalCancel.textContent = '取消';
+            const contentEl = domCache.customModalContent;
+            contentEl.innerHTML = `
+              <div class="custom-modal-form">
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">表格标题（用 / \\ - , &#96; ~ 、 ， 等分隔）</label>
+                  <input class="custom-modal-input" id="tableTitle" value="${(defaultSettings.title||'')}" />
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">表格预览</label>
+                  <div id="tablePreviewWrap" style="max-height:240px;overflow:auto;border:1px solid #eee;padding:6px;border-radius:6px;background:#fff">
+                    <table class="data-table" id="tablePreview" style="width:100%;border-collapse:collapse"></table>
+                  </div>
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+                    <button type="button" class="custom-modal-btn secondary" id="addTableRow">新增行</button>
+                    <span style="color:#666;font-size:12px">(可直接在表格单元格编辑)</span>
+                  </div>
+                </div>
+                <div class="custom-modal-field">
+                  <label class="custom-modal-label">表单域（粘贴表格或多行数据，支持制表符/逗号/竖线分隔）</label>
+                  <textarea class="custom-modal-textarea" id="tableFormArea" placeholder="可粘贴 Excel/CSV 内容，或每行为 a|b|c"></textarea>
+                </div>
+              </div>
+            `;
+
+            const finish = (value) => {
+              overlay.style.display = 'none';
+              document.body.style.overflow = '';
+              resolve(value);
+            };
+
+            // 辅助函数：解析标题为列数组
+            function parseHeaders(title) {
+              if (!title) return [];
+              const parts = String(title).split(/[\/\\\-\,\`~、，\s]+/).map(s => s.trim()).filter(Boolean);
+              return parts;
+            }
+
+            const defaultCols = defaultSettings.cols || 1;
+            const defaultRows = defaultSettings.rows || 1;
+            function buildPreview(headers, initialLines) {
+              const table = contentEl.querySelector('#tablePreview');
+              table.innerHTML = '';
+              const thead = document.createElement('thead');
+              const trh = document.createElement('tr');
+              const cols = headers.length || defaultCols || (initialLines[0] ? initialLines[0].split(/[\t,|]/).length : 1);
+              const headCells = headers.length ? headers : Array.from({length: cols}, (_,i)=>('列'+(i+1)));
+              headCells.forEach(h => { const th = document.createElement('th'); th.textContent = h; th.contentEditable = true; th.style.padding='6px'; th.style.border='1px solid #f0f0f0'; trh.appendChild(th); });
+              thead.appendChild(trh);
+              table.appendChild(thead);
+              const tbody = document.createElement('tbody');
+              const rows = Math.max(initialLines.length, defaultRows, 1);
+              for (let r=0;r<rows;r++) {
+                const tr = document.createElement('tr');
+                const cells = initialLines[r] ? initialLines[r].split(/[\t,|]/).map(c=>c.trim()) : [];
+                for (let c=0;c<headCells.length;c++) {
+                  const td = document.createElement('td'); td.contentEditable = true; td.style.padding='6px'; td.style.border='1px solid #f7f7f7'; td.textContent = cells[c] || '';
+                  tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+              }
+              table.appendChild(tbody);
+            }
+
+            function parseFormArea(text) {
+              const lines = String(text || '').split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+              return lines;
+            }
+
+            // 初始化预览
+            const titleInput = contentEl.querySelector('#tableTitle');
+            const formArea = contentEl.querySelector('#tableFormArea');
+            const previewInitLines = (defaultSettings.data||'').split('\n').map(l=>l.trim()).filter(Boolean);
+            buildPreview(parseHeaders(titleInput.value || ''), previewInitLines);
+
+            // 标题变化时更新列头
+            titleInput.addEventListener('input', () => {
+              const headers = parseHeaders(titleInput.value || '');
+              const table = contentEl.querySelector('#tablePreview');
+              const tbody = table.querySelector('tbody');
+              const lines = [];
+              if (tbody) {
+                Array.from(tbody.rows).forEach(r => { lines.push(Array.from(r.cells).map(c=>c.textContent.trim()).join('|')); });
+              }
+              buildPreview(headers, lines);
+            });
+
+            // 新增行
+            const addBtn = contentEl.querySelector('#addTableRow');
+            addBtn.addEventListener('click', () => {
+              const table = contentEl.querySelector('#tablePreview');
+              const thead = table.querySelector('thead');
+              const cols = thead ? thead.rows[0].cells.length : 1;
+              const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
+              const tr = document.createElement('tr');
+              for (let i=0;i<cols;i++) { const td = document.createElement('td'); td.contentEditable = true; td.style.padding='6px'; td.style.border='1px solid #f7f7f7'; tr.appendChild(td); }
+              tbody.appendChild(tr);
+              // scroll preview to bottom
+              const wrap = contentEl.querySelector('#tablePreviewWrap'); if (wrap) wrap.scrollTop = wrap.scrollHeight;
+            });
+
+            // 表单域粘贴或输入处理
+            formArea.addEventListener('input', () => {
+              const text = formArea.value;
+              if (!text) return;
+              const lines = parseFormArea(text);
+              // 自动调整列头如果没有自定义标题
+              const titleVal = titleInput.value.trim();
+              const headers = parseHeaders(titleVal);
+              buildPreview(headers, lines);
+            });
+
+            domCache.customModalConfirm.onclick = () => {
+              const title = contentEl.querySelector('#tableTitle').value.trim();
+              const table = contentEl.querySelector('#tablePreview');
+              const thead = table.querySelector('thead');
+              const tbody = table.querySelector('tbody');
+              const cols = thead ? thead.rows[0].cells.length : 1;
+              const rows = tbody ? tbody.rows.length : 0;
+              const dataLines = [];
+              if (tbody) {
+                Array.from(tbody.rows).forEach((r) => {
+                  const cells = Array.from(r.cells).map(c => c.textContent.trim());
+                  dataLines.push(cells.join('|'));
+                });
+              }
+              const data = dataLines.join('\n');
+              finish({ title, cols, rows, data });
+            };
+            domCache.customModalCancel.onclick = () => finish(null);
+            domCache.customModalClose.onclick = () => finish(null);
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        function parseTableHeaders(title) {
+          if (!title) return [];
+          return String(title).split(/[\/\\\-,\`~、，\s]+/).map((s) => s.trim()).filter(Boolean);
+        }
+
+        function createTableBlock(res) {
+          const lines = (res.data || '').split('\n').map((l) => l.trim()).filter(Boolean);
+          const headers = parseTableHeaders(res.title);
+          const tableDiv = document.createElement('div');
+          tableDiv.className = 'table-block';
+          const table = document.createElement('table');
+          table.className = 'data-table';
+
+          if (headers.length) {
+            const thead = document.createElement('thead');
+            const trh = document.createElement('tr');
+            headers.forEach((headerText) => {
+              const th = document.createElement('th');
+              th.textContent = headerText;
+              trh.appendChild(th);
+            });
+            thead.appendChild(trh);
+            table.appendChild(thead);
+          }
+
+          const tbody = document.createElement('tbody');
+          const useFirstRowHeader = !headers.length && String(res.data || '').trim().startsWith('#');
+          const rowCount = Math.max(lines.length, res.rows, 1);
+          for (let r = 0; r < rowCount; r++) {
+            const tr = document.createElement('tr');
+            const cells = (lines[r] ? lines[r].split('|').map((c) => c.trim()) : []);
+            const colCount = headers.length || res.cols || cells.length || 1;
+            for (let c = 0; c < colCount; c++) {
+              const cell = document.createElement(useFirstRowHeader && r === 0 ? 'th' : 'td');
+              cell.textContent = cells[c] || '';
+              tr.appendChild(cell);
+            }
+            tbody.appendChild(tr);
+          }
+
+          table.appendChild(tbody);
+          tableDiv.appendChild(table);
+          return tableDiv;
+        }
+
+        async function insertTableFromToolbar() {
+          const res = await showTableModal();
+          if (!res) return;
+          domCache.fileContent.appendChild(createTableBlock(res));
+          rebuildStateFromDOM();
+          saveToStorage();
+        }
+
+        // ===== 持久化与辅助插入函数 =====
+        function saveToStorage() {
+          try {
+            const payload = {
+              content: domCache.fileContent.innerHTML,
+              sidebarCollapsed: state.sidebarCollapsed,
+              ts: Date.now(),
+            };
+            localStorage.setItem("renderContent_v1", JSON.stringify(payload));
+          } catch (err) {
+            console.warn("保存失败", err);
+          }
+        }
+
+        function loadFromStorage() {
+          try {
+            const raw = localStorage.getItem("renderContent_v1");
+            if (!raw) return false;
+            const payload = JSON.parse(raw);
+            if (payload && payload.content) {
+              domCache.fileContent.innerHTML = payload.content;
+              rebuildStateFromDOM();
+              syncViewState();
+              if (payload.sidebarCollapsed) {
+                state.sidebarCollapsed = true;
+                domCache.sidebar.classList.add("collapsed");
+                if (domCache.sidebarToggle) {
+                  domCache.sidebarToggle.classList.add("collapsed");
+                }
+                document.body.style.paddingLeft = "70px";
+              }
+              // 隐藏示例内容
+              hideDemoContent();
+              return true;
+            }
+          } catch (err) {
+            console.warn("加载本地数据失败", err);
+          }
+          return false;
+        }
+
+        function rebuildStateFromDOM() {
+          const legacyStyledBlocks = domCache.fileContent.querySelectorAll('.h3-heading, .h4-heading, .p-line, .block-line');
+          legacyStyledBlocks.forEach((el) => {
+            el.style.background = '';
+            el.style.borderLeft = '';
+            el.style.color = '';
+          });
+          // 重建 h3 列表
+          state.h3Headings = [];
+          const h3s = domCache.fileContent.querySelectorAll('.h3-heading');
+          h3s.forEach((el, idx) => {
+            if (!el.id) el.id = 'section-' + idx;
+            const text = (el.querySelector('.block-body') && el.querySelector('.block-body').textContent) || el.textContent;
+            state.h3Headings.push({ id: el.id, text: text, icon: getIconForSection(text) });
+          });
+          // 重建图片列表
+          state.allImages = [];
+          const imgs = domCache.fileContent.querySelectorAll('.thumbnail');
+          imgs.forEach((img) => state.allImages.push(img.src));
+          updateNavigation();
+          syncViewState();
+          // 规范化历史色块，确保有 .block-body 并绑定操作
+          normalizeColorBlocks();
+        }
+
+        function normalizeColorBlocks() {
+          const blocks = domCache.fileContent.querySelectorAll('.bgb-block, .bgy-block, .bgr-block, .bgg-block, .custom-color-block');
+          blocks.forEach(block => {
+            let body = block.querySelector('.block-body');
+            if (!body) {
+              body = document.createElement('div');
+              body.className = 'block-body';
+              const textParts = [];
+              Array.from(block.childNodes).forEach((node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                  textParts.push(node.textContent || '');
+                }
+              });
+              const text = (textParts.join('') || '').trim().replace(/[✎🗑]/g, '').trim();
+              body.textContent = text || '';
+              block.insertBefore(body, block.firstChild);
+            }
+
+            let childrenContainer = block.querySelector(':scope > .block-children');
+            if (!childrenContainer) {
+              childrenContainer = document.createElement('div');
+              childrenContainer.className = 'block-children';
+              block.appendChild(childrenContainer);
+            }
+
+            Array.from(block.childNodes).forEach((node) => {
+              if (node === body || node === childrenContainer || node.nodeType === Node.COMMENT_NODE) return;
+              if (node.nodeType === Node.TEXT_NODE) {
+                const text = (node.textContent || '').trim();
+                if (text) {
+                  body.textContent = [body.textContent, text].filter(Boolean).join('\n');
+                }
+                block.removeChild(node);
+              } else if (!childrenContainer.contains(node)) {
+                childrenContainer.appendChild(node);
+              }
+            });
+
+            const oldActions = block.querySelectorAll('.block-actions');
+            oldActions.forEach(a => a.remove());
+          });
+        }
+
+        function createBlockElement(type, text, options = {}) {
+          const div = document.createElement("div");
+          if (type === "h3") {
+            div.className = "h3-heading";
+            const id = "section-" + state.h3Headings.length;
+            div.id = id;
+          } else if (type === "h4") {
+            div.className = "h4-heading";
+          } else if (type === "p") {
+            div.className = "p-line";
+          } else if (type === "color") {
+            const colorMap = {
+              blue: "bgb-block",
+              yellow: "bgy-block",
+              red: "bgr-block",
+              green: "bgg-block",
+            };
+            const colorKey = String(options.color || "blue").toLowerCase();
+            if (colorMap[colorKey]) {
+              div.className = colorMap[colorKey];
+            } else {
+              div.className = "custom-color-block";
+              div.style.setProperty("--accent-color", options.color || "#4096ff");
+            }
+          } else {
+            div.className = "block-line";
+          }
+          // 只有色块类型才应用颜色背景；标题/段落保持自己的样式
+          (function applyBackgroundFromOptions() {
+            try {
+              if (type !== 'color') return;
+              const val = options.color || null;
+              if (val && String(val).trim().startsWith('#')) {
+                const bg = String(val).trim();
+                if (div.classList.contains('custom-color-block')) {
+                  div.style.setProperty('--accent-color', bg);
+                }
+                div.style.background = `linear-gradient(135deg, ${bg}33, ${bg}1a)`;
+                div.style.borderLeft = `4px solid ${bg}`;
+                const hex = bg.replace('#','');
+                if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+                  const r = parseInt(hex.substr(0,2),16);
+                  const g = parseInt(hex.substr(2,2),16);
+                  const b = parseInt(hex.substr(4,2),16);
+                  const lum = (0.2126*r + 0.7152*g + 0.0722*b)/255;
+                  div.style.color = lum < 0.6 ? '#fff' : '#0b1220';
+                }
+              } else if (div.classList.contains('custom-color-block')) {
+                const acc = div.style.getPropertyValue('--accent-color');
+                if (acc) {
+                  const c = acc.trim();
+                  div.style.background = `linear-gradient(135deg, ${c}33, ${c}1a)`;
+                  div.style.color = '#0b1220';
+                }
+              }
+            } catch (e) { /* ignore */ }
+          })();
+          const body = document.createElement('div');
+          body.className = 'block-body';
+          body.textContent = text;
+          div.appendChild(body);
+
+          const children = document.createElement('div');
+          children.className = 'block-children';
+          div.appendChild(children);
+
+          return div;
+        }
+
+        function applyColorToBlock(block, color) {
+          if (!block || !color) return;
+          const value = String(color).trim();
+          if (!value) return;
+          if (value.startsWith('#')) {
+            block.style.setProperty('--accent-color', value);
+            block.style.background = `linear-gradient(135deg, ${value}33, ${value}1a)`;
+            block.style.borderLeft = `4px solid ${value}`;
+            const hex = value.replace('#', '');
+            if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+              const r = parseInt(hex.substr(0, 2), 16);
+              const g = parseInt(hex.substr(2, 2), 16);
+              const b = parseInt(hex.substr(4, 2), 16);
+              const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+              block.style.color = lum < 0.6 ? '#fff' : '#0b1220';
+            }
+          }
+        }
+
+        function appendBlock(block) {
+          domCache.fileContent.appendChild(block);
+        }
+
+        async function insertHeadingFromToolbar(isH3) {
+          const result = await showBlockComposerModal(isH3 ? "h3" : "h4");
+          if (!result) return;
+          const { type, content, color } = result;
+          const blockType = type === "h3" || type === "h4" ? type : "p";
+          const div = createBlockElement(blockType, content, { color });
+          appendBlock(div);
+          if (type === "h3") {
+            state.h3Headings.push({ id: div.id, text: content, icon: getIconForSection(content) });
+            updateNavigation();
+          }
+          syncViewState();
+          saveToStorage();
+        }
+
+        async function insertParagraphFromToolbar() {
+          const result = await showBlockComposerModal("p");
+          if (!result) return;
+          const { type, content, color } = result;
+          const div = createBlockElement(type === "color" ? "color" : "p", content, { color });
+          appendBlock(div);
+          syncViewState();
+          saveToStorage();
+        }
+
+        async function insertContentFromToolbar() {
+          const result = await showBlockComposerModal("p", ["color", "h4", "h3", "p"]);
+          if (!result) return;
+          const { type, content, color } = result;
+          if (["h3", "h4", "p", "color"].includes(type)) {
+            const blockType = type === "color" ? "color" : type;
+            const div = createBlockElement(blockType, content, { color });
+            appendBlock(div);
+            if (type === "h3") {
+              state.h3Headings.push({ id: div.id, text: content, icon: getIconForSection(content) });
+              updateNavigation();
+            }
+            syncViewState();
+            saveToStorage();
+          }
+        }
+
+        async function insertWhiteCardFromToolbar() {
+          const action = await showCustomModal({
+            type: "select",
+            title: "新增白色卡片",
+            message: "请选择要插入的内容类型",
+            defaultValue: "h4",
+            options: [
+              { value: "h4", label: "小标题" },
+              { value: "color", label: "色块" },
+              { value: "image", label: "图片" },
+              { value: "table", label: "表格" },
+            ],
+          });
+          if (action === null) return;
+
+          const card = document.createElement("div");
+          card.className = "box-block";
+
+          if (action === "h4") {
+            const result = await showBlockComposerModal("h4");
+            if (!result) return;
+            const block = createBlockElement("h4", result.content, { color: result.color });
+            card.appendChild(block);
+          } else if (action === "color") {
+            const result = await showBlockComposerModal("color");
+            if (!result) return;
+            const block = createBlockElement("color", result.content, { color: result.color });
+            card.appendChild(block);
+          } else if (action === "image") {
+            const src = await showImageModal("");
+            if (!src) return;
+            const imageRow = document.createElement("div");
+            imageRow.className = "image-row";
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "image-container";
+            const img = document.createElement("img");
+            img.className = "thumbnail";
+            img.src = src;
+            img.alt = "插入图片";
+            img.onload = function () {
+              rebuildStateFromDOM();
+              saveToStorage();
+            };
+            img.onerror = function () {
+              showCustomAlertModal("图片加载失败", "请检查图片地址或重新上传图片");
+            };
+            imageContainer.appendChild(img);
+            imageRow.appendChild(imageContainer);
+            card.appendChild(imageRow);
+          } else if (action === "table") {
+            const res = await showTableModal();
+            if (!res) return;
+            card.appendChild(createTableBlock(res));
+          }
+
+          appendBlock(card);
+          rebuildStateFromDOM();
+          saveToStorage();
+        }
+
+        // ===== 事件监听器设置 =====
+        function setupEventListeners() {
+          domCache.fileInput.addEventListener("change", handleFileSelect);
+          // 顶部工具栏按钮
+          if (domCache.btnAddContent) domCache.btnAddContent.addEventListener("click", insertContentFromToolbar);
+          if (domCache.btnImage) domCache.btnImage.addEventListener("click", insertImageFromToolbar);
+          if (domCache.btnTable) domCache.btnTable.addEventListener("click", insertTableFromToolbar);
+          if (domCache.btnOpenFile) domCache.btnOpenFile.addEventListener("click", () => domCache.fileInput.click());
+          if (domCache.btnImpExp) domCache.btnImpExp.addEventListener("click", async () => {
+            // 使用自定义模态切换导出或导入
+            const action = await showCustomModal({ type: 'select', title: '导入 / 导出',  defaultValue: 'export', options: [{value:'export', label:'导出'}, {value:'import', label:'导入'}] });
+            if (!action) return;
+            if (action === 'export') exportCurrentContent();
+            else domCache.importInput.click();
+          });
+          if (domCache.btnExport) domCache.btnExport.style.display = 'none';
+          if (domCache.btnImport) domCache.btnImport.style.display = 'none';
+          if (domCache.importInput) domCache.importInput.addEventListener("change", handleImportFile);
+          if (domCache.ctxEdit) domCache.ctxEdit.addEventListener("click", editCurrentContextContent);
+          if (domCache.ctxInsert) domCache.ctxInsert.addEventListener("click", () => insertAtContext({ defaultType: 'color', insertMode: 'inside' }));
+          if (domCache.ctxInsertAfter) domCache.ctxInsertAfter.addEventListener("click", () => insertAtContext({ defaultType: 'color', insertMode: 'after' }));
+          if (domCache.ctxH3) domCache.ctxH3.addEventListener("click", () => applyContextStyle("h3"));
+          if (domCache.ctxH4) domCache.ctxH4.addEventListener("click", () => applyContextStyle("h4"));
+          if (domCache.ctxP) domCache.ctxP.addEventListener("click", () => applyContextStyle("p"));
+          if (domCache.ctxColor) domCache.ctxColor.addEventListener("click", () => applyContextStyle("color"));
+          if (domCache.ctxDelete) domCache.ctxDelete.addEventListener("click", deleteCurrentContextBlock);
+          if (domCache.ctxModify) domCache.ctxModify.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            const wrap = domCache.ctxModifyWrap || document.getElementById('ctxModifyWrap');
+            if (wrap) wrap.classList.toggle('open');
+          });
+
+          // 鼠标悬停在“修改”时展示独立的二级卡片，卡片靠近右键菜单并自动适配视口
+          let subcardHideTimer = null;
+          function createContextSubcard() {
+            if (domCache.contextSubcard) return domCache.contextSubcard;
+            const el = document.createElement('div');
+            el.id = 'contextSubcard';
+            el.className = 'context-subcard';
+
+            const btnH3 = document.createElement('button'); btnH3.textContent = '大标题'; btnH3.addEventListener('click', () => { applyContextStyle('h3'); hideContextMenu(); });
+            const btnH4 = document.createElement('button'); btnH4.textContent = '小标题'; btnH4.addEventListener('click', () => { applyContextStyle('h4'); hideContextMenu(); });
+            const btnP = document.createElement('button'); btnP.textContent = '段落'; btnP.addEventListener('click', () => { applyContextStyle('p'); hideContextMenu(); });
+            const btnColor = document.createElement('button'); btnColor.textContent = '色块'; btnColor.addEventListener('click', () => { applyContextStyle('color'); hideContextMenu(); });
+
+            el.appendChild(btnH3); el.appendChild(btnH4); el.appendChild(btnP); el.appendChild(btnColor);
+            document.body.appendChild(el);
+            el.addEventListener('mouseenter', () => { if (subcardHideTimer) { clearTimeout(subcardHideTimer); subcardHideTimer = null; } });
+            el.addEventListener('mouseleave', () => { scheduleHideSubcard(); });
+            domCache.contextSubcard = el;
+            return el;
+          }
+
+          function showContextSubcard() {
+            const menu = domCache.contextMenu;
+            if (!menu) return;
+            const sub = createContextSubcard();
+            sub.style.display = 'block';
+            const menuRect = menu.getBoundingClientRect();
+            const subRect = sub.getBoundingClientRect();
+            let left = menuRect.right + 8;
+            let top = menuRect.top;
+            if (left + subRect.width + 8 > window.innerWidth) {
+              left = menuRect.left - subRect.width - 8;
+            }
+            if (top + subRect.height + 8 > window.innerHeight) {
+              top = Math.max(8, window.innerHeight - subRect.height - 8);
+            }
+            sub.style.left = `${Math.max(8,left)}px`;
+            sub.style.top = `${Math.max(8,top)}px`;
+          }
+
+          function scheduleHideSubcard() {
+            if (subcardHideTimer) clearTimeout(subcardHideTimer);
+            subcardHideTimer = setTimeout(() => {
+              if (domCache.contextSubcard) domCache.contextSubcard.style.display = 'none';
+              subcardHideTimer = null;
+            }, 180);
+          }
+
+          if (domCache.ctxModify) {
+            domCache.ctxModify.addEventListener('mouseenter', (ev) => {
+              ev.stopPropagation();
+              showContextSubcard();
+            });
+            domCache.ctxModify.addEventListener('mouseleave', () => scheduleHideSubcard());
+          }
+
+          // 使用事件委托处理图片点击
+          domCache.fileContent.addEventListener("click", function (e) {
+            // 图片查看器
+            if (e.target.classList.contains("thumbnail")) {
+              openModal(e.target.src);
+              return;
+            }
+
+            const colorBlock = e.target.closest(
+              ".bgb-block, .bgy-block, .bgr-block, .bgg-block, .custom-color-block"
+            );
+            if (colorBlock && domCache.fileContent.contains(colorBlock)) {
+              e.stopPropagation();
+              return;
+            }
+          });
+
+          domCache.fileContent.addEventListener('dblclick', async function (e) {
+            const target = e.target.closest(
+              ".h3-heading, .h4-heading, .h5-heading, .p-line, .block-line, .bgb-block, .bgy-block, .bgr-block, .bgg-block, .custom-color-block, .box-block, .table-block"
+            );
+            if (!target || !domCache.fileContent.contains(target)) return;
+            e.preventDefault();
+            state.currentContextTarget = target;
+            await editCurrentContextContent();
+          });
+
+          domCache.fileContent.addEventListener("contextmenu", handleContentContextMenu);
+          document.addEventListener("click", function (e) {
+            if (
+              domCache.contextMenu &&
+              !domCache.contextMenu.contains(e.target) &&
+              !(domCache.contextSubcard && domCache.contextSubcard.contains(e.target))
+            ) {
+              hideContextMenu();
+            }
+          });
+
+          if (domCache.contextMenu) {
+            domCache.contextMenu.addEventListener("click", function (e) {
+              e.stopPropagation();
+            });
+          }
+
+          if (domCache.contextSubcard) {
+            domCache.contextSubcard.addEventListener("click", function (e) {
+              e.stopPropagation();
+            });
+          }
+
+          // 模态框相关事件
+          domCache.closeBtn.addEventListener("click", closeModal);
+          domCache.prevBtn.addEventListener("click", showPrevImage);
+          domCache.nextBtn.addEventListener("click", showNextImage);
+          domCache.zoomInBtn.addEventListener("click", handleZoomIn);
+          domCache.zoomOutBtn.addEventListener("click", handleZoomOut);
+          domCache.zoomResetBtn.addEventListener("click", handleZoomReset);
+
+          // 图片拖动相关事件
+          domCache.modalImage.addEventListener("mousedown", startDrag);
+          document.addEventListener("mousemove", handleDrag);
+          document.addEventListener("mouseup", endDrag);
+
+          // 新增滚轮缩放事件监听
+          domCache.modalImage.addEventListener("wheel", handleWheelZoom, {
+            passive: false,
+          });
+
+          // 新增点击放大/缩小功能
+          domCache.modalImage.addEventListener("click", function (e) {
+            // 只有当没有拖动操作时才处理点击
+            if (!state.isDragging) {
+              e.stopPropagation();
+              const now = Date.now();
+
+              // 双击处理
+              if (now - state.lastClickTime < 300) {
+                if (state.currentScale === 1) {
+                  zoomImage(2);
+                } else {
+                  resetImageZoom();
+                }
+              }
+              state.lastClickTime = now;
+            }
+            // 重置拖动状态
+            state.isDragging = false;
+            domCache.modalImage.classList.remove("dragging");
+          });
+
+          // 键盘导航
+          document.addEventListener("keydown", handleKeyDown);
+
+          // 点击模态框背景关闭
+          domCache.imageModal.addEventListener("click", function (e) {
+            if (e.target === domCache.imageModal) {
+              closeModal();
+            }
+          });
+
+          // 新增：侧边栏切换事件
+          if (domCache.sidebarToggle) {
+            domCache.sidebarToggle.addEventListener("click", toggleSidebar);
+          }
+          domCache.sidebarTitle.addEventListener("click", handleSidebarHeaderClick);
+        }
+
+        function handleContentContextMenu(e) {
+          const target = e.target.closest(
+            ".h3-heading, .h4-heading, .h5-heading, .p-line, .block-line, .bgb-block, .bgy-block, .bgr-block, .bgg-block, .custom-color-block, .box-block, .table-block"
+          );
+          if (!target || !domCache.fileContent.contains(target)) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+          state.currentContextTarget = target;
+
+          const menu = domCache.contextMenu;
+          menu.style.display = "block";
+
+          const menuWidth = menu.offsetWidth || 170;
+          const menuHeight = menu.offsetHeight || 220;
+          const padding = 8;
+          let left = e.clientX;
+          let top = e.clientY;
+
+          if (left + menuWidth + padding > window.innerWidth) {
+            left = Math.max(padding, window.innerWidth - menuWidth - padding);
+          }
+
+          if (top + menuHeight + padding > window.innerHeight) {
+            top = Math.max(padding, window.innerHeight - menuHeight - padding);
+          }
+
+          menu.style.left = `${left}px`;
+          menu.style.top = `${top}px`;
+        }
+
+        function hideContextMenu() {
+          if (domCache.contextMenu) {
+            domCache.contextMenu.style.display = "none";
+            if (domCache.contextSubcard) domCache.contextSubcard.style.display = 'none';
+          }
+        }
+
+        async function editCurrentContextContent() {
+          const target = state.currentContextTarget;
+          if (!target) return;
+          // 如果是色块，使用 block composer 编辑（支持颜色）
+          const isColorBlock = target.classList.contains('bgb-block') || target.classList.contains('bgy-block') || target.classList.contains('bgr-block') || target.classList.contains('bgg-block') || target.classList.contains('custom-color-block');
+          if (isColorBlock) {
+            let curColor = null;
+            if (target.classList.contains('bgb-block')) curColor = '#4096ff';
+            else if (target.classList.contains('bgy-block')) curColor = '#fff7cc';
+            else if (target.classList.contains('bgr-block')) curColor = '#ffd6d6';
+            else if (target.classList.contains('bgg-block')) curColor = '#e6ffed';
+            else curColor = target.style.getPropertyValue('--accent-color') || null;
+            const existingText = (target.querySelector && target.querySelector('.block-body')) ? target.querySelector('.block-body').textContent.trim() : target.textContent.trim();
+            const res = await showBlockComposerModal({ defaultType: 'color', content: existingText, color: curColor });
+            if (res) {
+              const { type, content, color } = res;
+              const newEl = createBlockElement(type === 'color' ? 'color' : type, content, { color });
+              if (target.parentNode) target.parentNode.replaceChild(newEl, target);
+              rebuildStateFromDOM();
+              saveToStorage();
+            }
+            hideContextMenu();
+            return;
+          }
+
+          // 如果是图片块（或包含图片），打开图片编辑器
+          const imageElements = Array.from(target.querySelectorAll('img.thumbnail'));
+          const imgEl = target.tagName === 'IMG' ? target : (imageElements[0] || null);
+          if (imgEl) {
+            const currentImages = imageElements.map((img) => img.getAttribute('src') || img.src || '').filter(Boolean);
+            const newSources = await showImageModal(currentImages);
+            if (newSources && newSources.length) {
+              const imageRow = target.closest('.image-row');
+              const newRow = createImageRow(newSources);
+              if (imageRow && imageRow.parentNode) {
+                imageRow.parentNode.replaceChild(newRow, imageRow);
+              } else if (target.parentNode) {
+                target.parentNode.replaceChild(newRow, target);
+              } else {
+                domCache.fileContent.appendChild(newRow);
+              }
+              rebuildStateFromDOM();
+              saveToStorage();
+            }
+            hideContextMenu();
+            return;
+          }
+
+          // 如果是表格块，打开表格编辑器
+          const tableEl = target.querySelector && (target.querySelector('table.data-table') || (target.classList && target.classList.contains('table-block') && target.querySelector('table')));
+          if (tableEl) {
+            // 收集表格信息
+            let headerCells = Array.from(tableEl.querySelectorAll('thead th'));
+            const hasNoTheadHeaders = !headerCells.length;
+            if (hasNoTheadHeaders) {
+              const firstRow = tableEl.tBodies[0] ? tableEl.tBodies[0].rows[0] : tableEl.rows[0];
+              if (firstRow) {
+                headerCells = Array.from(firstRow.cells).filter((cell) => cell.tagName === 'TH');
+              }
+            }
+            headerCells = headerCells.map(th => th.textContent.trim());
+            let tbodyRows = tableEl.tBodies[0] ? Array.from(tableEl.tBodies[0].rows) : Array.from(tableEl.rows || []);
+            if (hasNoTheadHeaders && headerCells.length && tbodyRows.length) {
+              // 第一行作为表头时，编辑时不重复包含到数据中
+              tbodyRows = tbodyRows.slice(1);
+            }
+            const cols = headerCells.length || (tbodyRows.length ? tbodyRows[0].cells.length : 0);
+            const lines = tbodyRows.map((r) => Array.from(r.cells).map(c => c.textContent.trim()).join('|')).join('\n');
+            const titleText = headerCells.length ? headerCells.join('-') : '';
+            const res = await showTableModal({ title: titleText, cols, rows: tbodyRows.length, data: lines });
+            if (res) {
+              const newTableDiv = createTableBlock(res);
+              if (target.parentNode) target.parentNode.replaceChild(newTableDiv, target);
+              rebuildStateFromDOM();
+              saveToStorage();
+            }
+            hideContextMenu();
+            return;
+          }
+
+          const value = await showCustomModal({
+            title: "编辑内容",
+            message: "请输入内容",
+            placeholder: "请输入内容",
+            defaultValue: target.textContent.trim(),
+          });
+          if (value !== null) {
+            target.textContent = String(value);
+            rebuildStateFromDOM();
+            saveToStorage();
+          }
+          hideContextMenu();
+        }
+
+        function deleteCurrentContextBlock() {
+          const target = state.currentContextTarget;
+          if (!target) return;
+          if (confirm && typeof confirm === 'function') {
+            // use custom alert instead of native confirm
+          }
+          // Ask via custom modal
+          showCustomModal({ type: 'alert', title: '删除内容', message: '确认删除当前区块？' }).then((ok) => {
+            if (ok) {
+              const parent = target.parentNode;
+              if (parent) parent.removeChild(target);
+              rebuildStateFromDOM();
+              saveToStorage();
+            }
+            hideContextMenu();
+          });
+        }
+
+        async function insertAtContext(opts = {}) {
+          const target = state.currentContextTarget;
+          if (!target) return;
+          const defaultType = opts.defaultType || 'p';
+          const insertMode = opts.insertMode || 'inside';
+          const res = await showBlockComposerModal({ defaultType: defaultType });
+          if (!res) {
+            hideContextMenu();
+            return;
+          }
+          const { type, content, color } = res;
+          let node = null;
+
+          if (type === 'image') {
+            let sources = [];
+            if (content) {
+              try {
+                const parsed = JSON.parse(String(content));
+                if (Array.isArray(parsed)) sources = parsed;
+              } catch (e) { /* ignore parse error */ }
+            }
+            if (!sources.length) {
+              sources = await showImageModal([]);
+            }
+            if (!sources || !sources.length) {
+              hideContextMenu();
+              return;
+            }
+            const card = document.createElement('div');
+            card.className = 'box-block';
+            card.appendChild(createImageRow(sources));
+            node = card;
+          } else if (type === 'whitecard') {
+            const card = document.createElement('div');
+            card.className = 'box-block';
+            const text = String(content || '').trim();
+            if (text) {
+              card.appendChild(createBlockElement('p', text, { color }));
+            }
+            node = card;
+          } else if (type === 'table') {
+            const tableRes = await showTableModal({ title: '', cols: 1, rows: 1, data: '' });
+            if (!tableRes) {
+              hideContextMenu();
+              return;
+            }
+            node = createTableBlock(tableRes);
+          } else {
+            node = createBlockElement(type === 'h3' ? 'h3' : type === 'h4' ? 'h4' : type === 'color' ? 'color' : 'p', String(content).trim(), { color });
+          }
+
+          const isColorTarget = target.classList.contains('bgb-block') || target.classList.contains('bgy-block') || target.classList.contains('bgr-block') || target.classList.contains('bgg-block') || target.classList.contains('custom-color-block');
+          const shouldNest = insertMode === 'inside' && (isColorTarget || target.classList.contains('p-line') || target.classList.contains('box-block'));
+
+          if (shouldNest && target) {
+            const childrenContainer = isColorTarget ? target.querySelector('.block-children') : null;
+            if (childrenContainer) {
+              childrenContainer.appendChild(node);
+            } else {
+              target.appendChild(node);
+            }
+          } else if (target.parentNode) {
+            target.parentNode.insertBefore(node, target.nextSibling);
+          } else {
+            domCache.fileContent.appendChild(node);
+          }
+
+          if (type === 'h3') {
+            state.h3Headings.push({ id: node.id, text: String(content).trim(), icon: getIconForSection(String(content).trim()) });
+            updateNavigation();
+          }
+
+          rebuildStateFromDOM();
+          saveToStorage();
+          hideContextMenu();
+        }
+
+        async function applyContextStyle(type) {
+          const target = state.currentContextTarget;
+          if (!target) return;
+          const text = target.textContent.trim() || "内容";
+          const parent = target.parentNode;
+
+          let newEl = document.createElement("div");
+          if (type === "h3") {
+            newEl.className = "h3-heading";
+            const id = "section-" + state.h3Headings.length;
+            newEl.id = id;
+          } else if (type === "h4") {
+            newEl.className = "h4-heading";
+          } else if (type === "p") {
+            newEl.className = "p-line";
+          } else if (type === "color") {
+            const color = await showCustomModal({
+              type: "select",
+              title: "选择色块颜色",
+              message: "请选择新色块的颜色",
+              defaultValue: "blue",
+              options: [
+                { value: "blue", label: "蓝色" },
+                { value: "yellow", label: "黄色" },
+                { value: "red", label: "红色" },
+                { value: "green", label: "绿色" },
+              ],
+            });
+            if (color === null) {
+              hideContextMenu();
+              return;
+            }
+            const colorMap = {
+              blue: "bgb-block",
+              yellow: "bgy-block",
+              red: "bgr-block",
+              green: "bgg-block",
+            };
+            newEl.className = colorMap[(String(color) || "blue").toLowerCase()] || "bgb-block";
+          } else {
+            newEl.className = "block-line";
+          }
+          newEl.textContent = text;
+          if (parent) parent.replaceChild(newEl, target);
+          rebuildStateFromDOM();
+          saveToStorage();
+          hideContextMenu();
+        }
+
+        async function exportCurrentContent() {
+          const format = await showCustomModal({
+            type: "select",
+            title: "导出格式",
+            message: "请选择导出格式",
+            defaultValue: "json",
+            options: [
+              { value: "json", label: "JSON" },
+              { value: "txt", label: "TXT" },
+            ],
+          });
+          if (format === null) return;
+          const normalizedFormat = String(format).toLowerCase();
+          const data = normalizedFormat === "json"
+            ? JSON.stringify(
+                {
+                  version: 1,
+                  exportedAt: new Date().toISOString(),
+                  htmlContent: domCache.fileContent.innerHTML,
+                  sidebarCollapsed: state.sidebarCollapsed,
+                },
+                null,
+                2
+              )
+            : domCache.fileContent.innerText || domCache.fileContent.textContent;
+          const blob = new Blob([data], { type: normalizedFormat === "json" ? "application/json;charset=utf-8" : "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `render-export.${normalizedFormat === "json" ? "json" : "txt"}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        function handleImportFile(e) {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            const text = ev.target.result;
+            try {
+              if (file.name.toLowerCase().endsWith(".json")) {
+                const parsed = JSON.parse(text);
+                if (parsed && parsed.htmlContent) {
+                  domCache.fileContent.innerHTML = parsed.htmlContent;
+                  if (parsed.sidebarCollapsed) {
+                    state.sidebarCollapsed = true;
+                  }
+                  rebuildStateFromDOM();
+                } else if (parsed && parsed.content) {
+                  displayContent(parsed.content);
+                } else {
+                  displayContent(text);
+                }
+              } else {
+                displayContent(text);
+              }
+              hideDemoContent();
+              saveToStorage();
+            } catch (err) {
+              showCustomAlertModal("导入失败", "请确认文件内容正确后再试");
+            }
+          };
+          reader.readAsText(file, "UTF-8");
+          e.target.value = "";
+        }
+
+        // ===== 侧边栏功能 =====
+        function toggleSidebar() {
+          if (domCache.sidebar.classList.contains("hidden")) return;
+
+          state.sidebarCollapsed = !state.sidebarCollapsed;
+          updateSidebarLayout();
+        }
+
+        function handleSidebarHeaderClick() {
+          if (domCache.sidebar.classList.contains("hidden")) return;
+          state.sidebarCollapsed = !state.sidebarCollapsed;
+          updateSidebarLayout();
+        }
+
+        function updateSidebarLayout() {
+          const hasContent = domCache.fileContent.children.length > 0 || domCache.fileContent.textContent.trim().length > 0;
+          const shouldShowSidebar = hasContent && state.h3Headings.length > 0;
+
+          if (!shouldShowSidebar) {
+            domCache.sidebar.classList.add("hidden");
+            if (domCache.sidebarToggle) {
+              domCache.sidebarToggle.classList.add("hidden");
+            }
+            if (domCache.topbar) domCache.topbar.style.left = "0";
+            document.body.style.paddingLeft = "20px";
+            return;
+          }
+
+          domCache.sidebar.classList.remove("hidden");
+          if (domCache.sidebarToggle) {
+            domCache.sidebarToggle.classList.remove("hidden");
+          }
+          if (domCache.topbar) {
+            domCache.topbar.style.left = state.sidebarCollapsed ? "50px" : "150px";
+          }
+
+          if (state.sidebarCollapsed) {
+            domCache.sidebar.classList.add("collapsed");
+            if (domCache.sidebarToggle) {
+              domCache.sidebarToggle.classList.add("collapsed");
+            }
+            document.body.style.paddingLeft = "70px";
+          } else {
+            domCache.sidebar.classList.remove("collapsed");
+            if (domCache.sidebarToggle) {
+              domCache.sidebarToggle.classList.remove("collapsed");
+            }
+            document.body.style.paddingLeft = "170px";
+          }
+
+          if (domCache.sidebarToggle) {
+            const toggleIcon = domCache.sidebarToggle.querySelector("span");
+            if (toggleIcon) {
+              toggleIcon.textContent = state.sidebarCollapsed ? "☰" : "‹";
+            }
+          }
+        }
+
+        function syncViewState() {
+          const hasContent = domCache.fileContent.children.length > 0 || domCache.fileContent.textContent.trim().length > 0;
+          if (domCache.emptyState) {
+            domCache.emptyState.style.display = hasContent ? "none" : "block";
+          }
+          domCache.fileContent.style.display = hasContent ? "block" : "none";
+          updateSidebarLayout();
+        }
+
+        // ===== 滚动监听功能 =====
+        function setupScrollSpy() {
+          window.addEventListener("scroll", function () {
+            if (state.h3Headings.length === 0) return;
+
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const triggerPosition = windowHeight * 0.3; // 30%位置触发
+
+            // 找到当前应该激活的h3标题
+            let activeIndex = -1;
+
+            for (let i = 0; i < state.h3Headings.length; i++) {
+              const heading = document.getElementById(state.h3Headings[i].id);
+              if (heading) {
+                const rect = heading.getBoundingClientRect();
+                if (rect.top <= triggerPosition) {
+                  activeIndex = i;
+                } else {
+                  break;
+                }
+              }
+            }
+
+            // 如果找到了新的激活项且与上次不同，则更新
+            if (activeIndex !== -1 && activeIndex !== state.lastActiveIndex) {
+              state.lastActiveIndex = activeIndex;
+              updateActiveNavItem(activeIndex);
+            }
+          });
+        }
+
+        // 更新激活的导航项
+        function updateActiveNavItem(index) {
+          const navItems = document.querySelectorAll(".nav-item");
+          navItems.forEach((item, i) => {
+            if (i === index) {
+              item.classList.add("active");
+            } else {
+              item.classList.remove("active");
+            }
+          });
+        }
+
+        // ===== 文件处理功能 =====
+        function handleFileSelect(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          domCache.fileInputContainer.style.display = "none";
+          hideDemoContent();
+
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const content = e.target.result;
+            displayContent(content);
+            // 保存到本地
+            saveToStorage();
+          };
+
+          reader.onerror = function () {
+            showCustomAlertModal("文件读取失败", "请重试或检查文件内容");
+            resetUI();
+          };
+
+          reader.readAsText(file, "UTF-8");
+        }
+
+        // 重置UI状态
+        function resetUI() {
+          domCache.fileInputContainer.style.display = "none";
+          showEmptyState();
+          domCache.fileContent.innerHTML = "";
+          state.allImages = [];
+          state.currentImageRow = null;
+          state.h3Headings = [];
+          state.lastActiveIndex = -1;
+          domCache.navList.innerHTML = "";
+          syncViewState();
+        }
+
+        // 显示空状态说明
+        function showEmptyState() {
+          if (domCache.emptyState) domCache.emptyState.style.display = "block";
+          domCache.fileContent.style.display = "none";
+        }
+
+        // 隐藏空状态说明
+        function hideDemoContent() {
+          if (domCache.emptyState) domCache.emptyState.style.display = "none";
+          domCache.fileContent.style.display = "block";
+        }
+
+        // ===== 内容显示功能 =====
+        function displayContent(content) {
+          domCache.fileContent.innerHTML = "";
+          state.allImages = []; // 清空图片数组
+          state.currentImageRow = null; // 重置当前图片行
+          state.h3Headings = []; // 清空h3标题数组
+          state.lastActiveIndex = -1; // 重置最后激活的导航项索引
+
+          const lines = content.split("\n");
+          let i = 0;
+
+          while (i < lines.length) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+
+            // 处理块
+            if (
+              ["bgb", "bgy", "bgr", "bgg", "box", "ul", "table"].includes(
+                trimmedLine
+              )
+            ) {
+              const blockType = trimmedLine;
+              let blockLines = [];
+              i++;
+              while (i < lines.length && lines[i].trim() !== blockType + "d") {
+                blockLines.push(lines[i]);
+                i++;
+              }
+
+              if (blockLines.length > 0) {
+                const block =
+                  blockType === "ul"
+                    ? processListContent(blockLines)
+                    : blockType === "table"
+                    ? createTable(blockLines)
+                    : processBlock(blockLines, blockType);
+                domCache.fileContent.appendChild(block);
+              }
+              i++;
+              continue;
+            }
+
+            // 处理普通内容
+            if (trimmedLine.startsWith("h3")) {
+              domCache.fileContent.appendChild(createHeading(line, true));
+            } else if (
+              trimmedLine.startsWith("h4") ||
+              trimmedLine.startsWith("h5")
+            ) {
+              domCache.fileContent.appendChild(createHeading(line, false));
+            } else {
+              const lineElement = createLine(line);
+              if (lineElement) {
+                domCache.fileContent.appendChild(lineElement);
+              }
+            }
+
+            i++;
+          }
+          syncViewState();
+        }
+
+        // ===== 标题创建功能 =====
+        function createHeading(line, isH3) {
+          const heading = document.createElement("div");
+          if (isH3) {
+            heading.className = "h3-heading";
+            const id = "section-" + state.h3Headings.length;
+            heading.id = id;
+
+            const headingText = line.substring(2).trim();
+            const icon = getIconForSection(headingText);
+
+            // 存储h3标题信息
+            state.h3Headings.push({
+              id: id,
+              text: headingText,
+              icon: icon,
+            });
+
+            // 更新导航栏
+            updateNavigation();
+          } else if (line.startsWith("h4")) {
+            heading.className = "h4-heading";
+          } else if (line.startsWith("h5")) {
+            heading.className = "h5-heading";
+          }
+          heading.textContent = line.substring(2).trim();
+          return heading;
+        }
+
+        // ===== 导航栏功能 =====
+        function updateNavigation() {
+          domCache.navList.innerHTML = "";
+          const iconStyles = [
+            "primary",
+            "success circle",
+            "warning pulse",
+            "error square",
+            "purple spin",
+            "cyan bounce",
+            "magenta",
+            "orange tada",
+          ];
+
+          const icons = [
+            "❓",
+            "⭐️",
+            "👀",
+            "🤔",
+            "🔒",
+            "🪥",
+            "🤑",
+            "⏰",
+            "📅",
+            "✏️",
+            "🧠",
+            "📝",
+            "🎮",
+            "📦",
+          ];
+
+          state.h3Headings.forEach((heading, index) => {
+            const li = document.createElement("li");
+            li.className = "nav-item";
+            li.dataset.id = heading.id;
+
+            // 图标 - 循环使用不同的样式
+            const icon = document.createElement("span");
+            const iconStyle = iconStyles[index % iconStyles.length];
+            icon.className = `nav-item-icon ${iconStyle}`;
+            icon.textContent = icons[index % icons.length];
+
+            // 给图标添加title属性，显示当前标题
+            icon.setAttribute("data-tooltip", heading.text);
+
+            // 文本
+            const text = document.createElement("span");
+            text.className = "nav-item-text";
+            text.textContent = heading.text;
+
+            li.appendChild(icon);
+            li.appendChild(text);
+
+            li.addEventListener("click", function (e) {
+              e.preventDefault();
+              scrollToSection(heading.id);
+              state.lastActiveIndex = index;
+              updateActiveNavItem(index);
+            });
+            domCache.navList.appendChild(li);
+          });
+
+          if (state.h3Headings.length > 0) {
+            state.lastActiveIndex = 0;
+            updateActiveNavItem(0);
+          }
+        }
+
+        // 添加一个函数来获取适合的图标
+        function getIconForSection(sectionName) {
+          const iconMap = {
+            规则: "📋",
+            审核: "✅",
+            警告: "⚠️",
+            拒绝: "❌",
+            审查: "🔍",
+            统计: "📊",
+            时间: "⏰",
+            特殊: "⭐",
+            风险: "🛡️",
+            用户: "👤",
+            支付: "💳",
+            交易: "💰",
+            系统: "⚙️",
+            日志: "📝",
+            设置: "🔧",
+            帮助: "❓",
+          };
+
+          for (const [key, icon] of Object.entries(iconMap)) {
+            if (sectionName.includes(key)) {
+              return icon;
+            }
+          }
+
+          // 默认图标
+          return "📄";
+        }
+
+        // 滚动到指定章节
+        function scrollToSection(id) {
+          const element = document.getElementById(id);
+          if (element) {
+            // 计算正确的偏移量（导航栏高度 + 额外间距）
+            const navHeight =
+              document.querySelector(".sidebar").offsetHeight || 0;
+            const offset = 25; // 你想要的30px间距
+            const targetPosition = element.offsetTop - offset;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            const duration = 500;
+            let startTime = null;
+
+            function animation(currentTime) {
+              if (startTime === null) startTime = currentTime;
+              const timeElapsed = currentTime - startTime;
+              const run = easeInOutQuad(
+                timeElapsed,
+                startPosition,
+                distance,
+                duration
+              );
+              window.scrollTo(0, run);
+              if (timeElapsed < duration) requestAnimationFrame(animation);
+            }
+
+            function easeInOutQuad(t, b, c, d) {
+              t /= d / 2;
+              if (t < 1) return (c / 2) * t * t + b;
+              t--;
+              return (-c / 2) * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimationFrame(animation);
+          }
+        }
+
+        function resolveImageSource(imagePath) {
+          const rawPath = String(imagePath || "").trim();
+          if (!rawPath) return "";
+
+          if (/^(data:|https?:|blob:|file:)/i.test(rawPath)) {
+            return rawPath;
+          }
+
+          const normalizedPath = rawPath.replace(/\\/g, "/");
+
+          if (/^[a-zA-Z]:\//.test(normalizedPath)) {
+            return `file:///${normalizedPath}`;
+          }
+
+          try {
+            return new URL(normalizedPath, window.location.href).href;
+          } catch (error) {
+            return normalizedPath;
+          }
+        }
+
+        // ===== 内容行创建功能 =====
+        function createLine(line, parentElement = null) {
+          const normalizedLine = line.trim();
+
+          // 检查是否是图片路径
+          if (
+            normalizedLine.startsWith("./") ||
+            normalizedLine.startsWith("../") ||
+            normalizedLine.startsWith("/") ||
+            /\.(png|jpe?g|gif|bmp|webp|svg)(\?.*)?$/i.test(normalizedLine)
+          ) {
+            return createImageElement(normalizedLine, parentElement);
+          }
+
+          // 如果没有指定父元素，重置currentImageRow
+          if (!parentElement) {
+            state.currentImageRow = null;
+          }
+
+          if (normalizedLine === "") {
+            return null;
+          }
+
+          const div = document.createElement("div");
+          if (normalizedLine.startsWith("P ")) {
+            div.className = "p-line";
+            div.textContent = normalizedLine.substring(2).trim();
+          } else {
+            div.className = "block-line";
+            div.textContent = normalizedLine;
+          }
+          return div;
+        }
+
+        // ===== 图片处理功能 =====
+        function createImageRow(images) {
+          const row = document.createElement("div");
+          row.className = "image-row";
+
+          (images || []).forEach((imagePath, index) => {
+            const resolvedImagePath = resolveImageSource(imagePath);
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "image-container";
+            const img = document.createElement("img");
+            img.src = resolvedImagePath || imagePath;
+            img.className = "thumbnail loading";
+            img.alt = `内容图片${index + 1}`;
+            img.dataset.index = state.allImages.length;
+            state.allImages.push(resolvedImagePath || imagePath);
+
+            img.onload = function () {
+              img.classList.remove("loading");
+            };
+            img.onerror = function () {
+              img.alt = "图片加载失败";
+              img.classList.remove("loading");
+            };
+
+            imageContainer.appendChild(img);
+            row.appendChild(imageContainer);
+          });
+
+          return row;
+        }
+
+        function createImageElement(imagePath, parentElement = null) {
+          const targetParent = parentElement || domCache.fileContent;
+          const row = createImageRow([imagePath]);
+          targetParent.appendChild(row);
+          return row;
+        }
+
+        // ===== 表格处理功能 =====
+        function createTable(tableLines) {
+          const tableDiv = document.createElement("div");
+          tableDiv.className = "table-block";
+
+          const table = document.createElement("table");
+          table.className = "data-table";
+
+          // 首先确定表格的最大列数
+          let maxColumns = 0;
+          tableLines.forEach((line) => {
+            const normalizedLine = line.replace(/[、·]/g, "|");
+            const cells = normalizedLine.split("|").map((cell) => cell.trim());
+            if (cells.length > maxColumns) {
+              maxColumns = cells.length;
+            }
+          });
+
+          // 处理每一行
+          tableLines.forEach((line, rowIndex) => {
+            const row = document.createElement("tr");
+
+            // 统一替换所有分隔符为|，然后分割
+            const normalizedLine = line.replace(/[、·]/g, "|");
+            let cells = normalizedLine.split("|").map((cell) => cell.trim());
+
+            // 填充缺失的单元格
+            while (cells.length < maxColumns) {
+              cells.push(""); // 添加空单元格
+            }
+
+            // 如果是表头行(以#开头)
+            if (line.trim().startsWith("#")) {
+              cells[0] = cells[0].substring(1); // 去掉#号
+
+              cells.forEach((cellText) => {
+                const th = document.createElement("th");
+                th.textContent = cellText || " "; // 空单元格显示空格
+                th.setAttribute("scope", "col");
+                row.appendChild(th);
+              });
+            } else {
+              cells.forEach((cellText, cellIndex) => {
+                const td = document.createElement("td");
+                td.textContent = cellText || " "; // 空单元格显示空格
+                if (cellIndex === 0) {
+                  td.classList.add("first-column");
+                }
+                row.appendChild(td);
+              });
+            }
+
+            table.appendChild(row);
+          });
+
+          tableDiv.appendChild(table);
+          return tableDiv;
+        }
+
+        // ===== 块内容处理功能 =====
+        function processBlock(lines, blockType) {
+          const block = document.createElement("div");
+          block.className = blockType + "-block";
+
+          let i = 0;
+          while (i < lines.length) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+
+            // 处理嵌套块
+            if (
+              ["bgb", "bgy", "bgr", "bgg", "box", "ul", "table"].includes(
+                trimmedLine
+              )
+            ) {
+              const nestedBlockType = trimmedLine;
+              let blockLines = [];
+              i++;
+              while (
+                i < lines.length &&
+                lines[i].trim() !== nestedBlockType + "d"
+              ) {
+                blockLines.push(lines[i]);
+                i++;
+              }
+
+              if (blockLines.length > 0) {
+                const nestedBlock =
+                  nestedBlockType === "ul"
+                    ? processListContent(blockLines)
+                    : nestedBlockType === "table"
+                    ? createTable(blockLines)
+                    : processBlock(blockLines, nestedBlockType);
+                block.appendChild(nestedBlock);
+              }
+              i++;
+              continue;
+            }
+
+            // 处理标题
+            if (trimmedLine.startsWith("h3")) {
+              block.appendChild(createHeading(line, true));
+              i++;
+            } else if (
+              trimmedLine.startsWith("h4") ||
+              trimmedLine.startsWith("h5")
+            ) {
+              block.appendChild(createHeading(line, false));
+              i++;
+            }
+            // 处理普通内容（包括图片）
+            else {
+              const lineDiv = createLine(line, block);
+              if (lineDiv) {
+                block.appendChild(lineDiv);
+              }
+              i++;
+            }
+          }
+
+          return block;
+        }
+
+        // ===== 列表内容处理功能 =====
+        function processListContent(lines) {
+          const listContainer = document.createElement("div");
+          listContainer.className = "ul-block";
+          const ul = document.createElement("ul");
+
+          let i = 0;
+          while (i < lines.length) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+
+            // 处理嵌套块
+            if (
+              ["bgb", "bgy", "bgr", "bgg", "box", "ul", "table"].includes(
+                trimmedLine
+              )
+            ) {
+              const blockType = trimmedLine;
+              let blockLines = [];
+              i++;
+              while (i < lines.length && lines[i].trim() !== blockType + "d") {
+                blockLines.push(lines[i]);
+                i++;
+              }
+
+              if (blockLines.length > 0) {
+                const block =
+                  blockType === "table"
+                    ? createTable(blockLines)
+                    : blockType === "ul"
+                    ? processListContent(blockLines)
+                    : processBlock(blockLines, blockType);
+                const li = document.createElement("li");
+                li.appendChild(block);
+                ul.appendChild(li);
+              }
+              i++;
+              continue;
+            }
+
+            // 处理标题
+            if (trimmedLine.startsWith("h3")) {
+              const li = document.createElement("li");
+              li.appendChild(createHeading(line, true));
+              ul.appendChild(li);
+              i++;
+            } else if (
+              trimmedLine.startsWith("h4") ||
+              trimmedLine.startsWith("h5")
+            ) {
+              const li = document.createElement("li");
+              li.appendChild(createHeading(line, false));
+              ul.appendChild(li);
+              i++;
+            }
+            // 处理普通内容（包括图片）
+            else {
+              const lineDiv = createLine(line, listContainer);
+              if (!lineDiv) {
+                i++;
+                continue;
+              }
+              const li = document.createElement("li");
+              li.appendChild(lineDiv);
+              ul.appendChild(li);
+              i++;
+            }
+          }
+
+          listContainer.appendChild(ul);
+          return listContainer;
+        }
+
+        // ===== 图片查看器功能 =====
+        function openModal(imgSrc) {
+          domCache.loadingIndicator.style.display = "block";
+          domCache.imageModal.style.display = "block";
+
+          state.currentImageIndex = state.allImages.indexOf(imgSrc);
+          state.currentScale = 1;
+          state.translateX = 0;
+          state.translateY = 0;
+
+          domCache.modalImage.onload = function () {
+            domCache.loadingIndicator.style.display = "none";
+            updateImageInfo();
+            updateImageTransform();
+          };
+
+          domCache.modalImage.onerror = function () {
+            domCache.loadingIndicator.style.display = "none";
+            domCache.modalImage.alt = "图片加载失败";
+            updateImageInfo();
+          };
+
+          domCache.modalImage.src = imgSrc;
+
+          // 预加载下一张图片
+          preloadNextImage();
+        }
+
+        // 预加载下一张图片
+        function preloadNextImage() {
+          const nextIndex =
+            (state.currentImageIndex + 1) % state.allImages.length;
+          if (nextIndex !== state.preloadIndex) {
+            state.preloadIndex = nextIndex;
+            const img = new Image();
+            img.src = state.allImages[nextIndex];
+          }
+        }
+
+        // 关闭模态框
+        function closeModal() {
+          domCache.imageModal.style.display = "none";
+          domCache.modalImage.className = "modal-content";
+        }
+
+        // 更新图片信息
+        function updateImageInfo() {
+          domCache.imageInfo.textContent = `图片 ${
+            state.currentImageIndex + 1
+          } / ${state.allImages.length}`;
+        }
+
+        // 显示上一张图片
+        function showPrevImage() {
+          if (state.allImages.length === 0) return;
+
+          domCache.loadingIndicator.style.display = "block";
+          state.currentImageIndex =
+            (state.currentImageIndex - 1 + state.allImages.length) %
+            state.allImages.length;
+          domCache.modalImage.src = state.allImages[state.currentImageIndex];
+          resetImageZoom();
+          updateImageInfo();
+
+          // 预加载上一张图片
+          const prevIndex =
+            (state.currentImageIndex - 1 + state.allImages.length) %
+            state.allImages.length;
+          const img = new Image();
+          img.src = state.allImages[prevIndex];
+        }
+
+        // 显示下一张图片
+        function showNextImage() {
+          if (state.allImages.length === 0) return;
+
+          domCache.loadingIndicator.style.display = "block";
+          state.currentImageIndex =
+            (state.currentImageIndex + 1) % state.allImages.length;
+          domCache.modalImage.src = state.allImages[state.currentImageIndex];
+          resetImageZoom();
+          updateImageInfo();
+          preloadNextImage();
+        }
+
+        // 重置图片缩放
+        function resetImageZoom() {
+          state.currentScale = 1;
+          state.translateX = 0;
+          state.translateY = 0;
+          updateImageTransform();
+          domCache.modalImage.className = "modal-content";
+        }
+
+        // 缩放图片
+        function zoomImage(scale) {
+          state.currentScale = Math.max(0.5, Math.min(scale, 3)); // 限制缩放范围
+          updateImageTransform();
+
+          // 根据当前缩放状态切换光标样式
+          if (state.currentScale === 1) {
+            domCache.modalImage.className = "modal-content";
+          } else {
+            domCache.modalImage.className = "modal-content draggable";
+          }
+        }
+
+        // 更新图片变换
+        function updateImageTransform() {
+          domCache.modalImage.style.transform = `translate(calc(-50% + ${state.translateX}px), calc(-50% + ${state.translateY}px)) scale(${state.currentScale})`;
+        }
+
+        // 开始拖动
+        function startDrag(e) {
+          if (state.currentScale > 1) {
+            state.isDragging = true;
+            state.startX = e.clientX - state.translateX;
+            state.startY = e.clientY - state.translateY;
+            domCache.modalImage.classList.add("dragging");
+            e.preventDefault();
+          }
+        }
+
+        // 处理拖动
+        function handleDrag(e) {
+          if (state.isDragging) {
+            state.translateX = e.clientX - state.startX;
+            state.translateY = e.clientY - state.startY;
+            updateImageTransform();
+            e.preventDefault();
+          }
+        }
+
+        // 结束拖动
+        function endDrag(e) {
+          if (state.isDragging) {
+            state.isDragging = false;
+            domCache.modalImage.classList.remove("dragging");
+            e.stopPropagation();
+            e.preventDefault();
+          }
+        }
+
+        // 处理滚轮缩放
+        function handleWheelZoom(e) {
+          // 只有图片查看器打开时才处理
+          if (domCache.imageModal.style.display !== "block") return;
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          // 计算缩放中心点（相对于图片）
+          const rect = domCache.modalImage.getBoundingClientRect();
+          const centerX = e.clientX - rect.left;
+          const centerY = e.clientY - rect.top;
+
+          // 计算当前鼠标位置在图片坐标系中的位置（考虑当前缩放和平移）
+          const imgX =
+            (centerX - rect.width / 2 - state.translateX) / state.currentScale;
+          const imgY =
+            (centerY - rect.height / 2 - state.translateY) / state.currentScale;
+
+          // 根据滚轮方向调整缩放比例
+          const delta = -e.deltaY;
+          const zoomFactor = 0.1; // 缩放速度
+          const newScale =
+            state.currentScale * (1 + (delta > 0 ? zoomFactor : -zoomFactor));
+
+          // 限制缩放范围
+          const clampedScale = Math.max(0.5, Math.min(newScale, 3));
+          if (clampedScale === state.currentScale) return;
+
+          // 计算缩放后鼠标位置应保持不变
+          const scaleChange = clampedScale / state.currentScale;
+          state.translateX = centerX - rect.width / 2 - imgX * clampedScale;
+          state.translateY = centerY - rect.height / 2 - imgY * clampedScale;
+          state.currentScale = clampedScale;
+
+          // 更新图片变换
+          updateImageTransform();
+
+          // 根据当前缩放状态切换光标样式
+          if (state.currentScale === 1) {
+            domCache.modalImage.className = "modal-content";
+          } else {
+            domCache.modalImage.className = "modal-content draggable";
+          }
+        }
+
+        // 处理放大
+        function handleZoomIn(e) {
+          e.stopPropagation();
+          zoomImage(state.currentScale + 0.5);
+        }
+
+        // 处理缩小
+        function handleZoomOut(e) {
+          e.stopPropagation();
+          zoomImage(state.currentScale - 0.5);
+        }
+
+        // 处理重置缩放
+        function handleZoomReset(e) {
+          e.stopPropagation();
+          resetImageZoom();
+        }
+
+        // ===== 键盘事件处理 =====
+        function handleKeyDown(event) {
+          if (domCache.imageModal.style.display === "block") {
+            switch (event.key) {
+              case "ArrowLeft":
+                showPrevImage();
+                break;
+              case "ArrowRight":
+                showNextImage();
+                break;
+              case "Escape":
+                closeModal();
+                break;
+              case "+":
+              case "=":
+                handleZoomIn(event);
+                break;
+              case "-":
+                handleZoomOut(event);
+                break;
+              case "0":
+                handleZoomReset(event);
+                break;
+            }
+          }
+        }
+
+        // ===== 初始化应用 =====
+        init();
+      })();
+
+      // ===== 自定义 Tooltip 功能导航鼠标悬停显示 =====
+      /* 旧版本
+      (function () {
+        let tooltipEl = null;
+
+        function showTooltip(target) {
+          const text = target.getAttribute("data-tooltip");
+          if (!text) return;
+
+          if (!tooltipEl) {
+            tooltipEl = document.createElement("div");
+            tooltipEl.className = "tooltip";
+            document.body.appendChild(tooltipEl);
+          }
+
+          tooltipEl.textContent = text;
+
+          // 🔑 每次都重新计算位置，避免点击跳转后错位
+          const rect = target.getBoundingClientRect();
+          tooltipEl.style.top =
+            rect.top + rect.height / 2 + window.scrollY + "px";
+          tooltipEl.style.left = rect.right + 10 + window.scrollX + "px";
+
+          tooltipEl.classList.add("show");
+        }
+
+        function hideTooltip() {
+          if (tooltipEl) {
+            tooltipEl.classList.remove("show");
+          }
+        }
+
+        const sidebar = document.getElementById("sidebar");
+
+        sidebar.addEventListener("mouseover", (e) => {
+          if (e.target.classList.contains("nav-item-icon")) {
+            showTooltip(e.target);
+          }
+        });
+
+        sidebar.addEventListener("mouseout", (e) => {
+          if (e.target.classList.contains("nav-item-icon")) {
+            hideTooltip();
+          }
+        });
+
+        // 🔑 点击后强制隐藏，保证悬停能再次触发
+        sidebar.addEventListener("click", (e) => {
+          if (tooltipEl) {
+            tooltipEl.classList.remove("show");
+          }
+        });
+      })();
+      */
+      (function () {
+        let tooltipEl = null;
+        let tooltipTimer;
+
+        function showTooltip(target) {
+          const text = target.getAttribute("data-tooltip");
+          if (!text) return;
+
+          if (!tooltipEl) {
+            tooltipEl = document.createElement("div");
+            tooltipEl.className = "tooltip";
+            document.body.appendChild(tooltipEl);
+          }
+
+          tooltipEl.textContent = text;
+
+          // 根据图标类型加不同主题
+          tooltipEl.className = "tooltip"; // reset
+          if (target.classList.contains("warning")) {
+            tooltipEl.classList.add("warning");
+          } else if (target.classList.contains("success")) {
+            tooltipEl.classList.add("success");
+          } else if (target.classList.contains("error")) {
+            tooltipEl.classList.add("error");
+          } else {
+            tooltipEl.classList.add("info");
+          }
+
+          // 动态计算位置
+          const rect = target.getBoundingClientRect();
+          tooltipEl.style.top =
+            rect.top + rect.height / 2 + window.scrollY + "px";
+          tooltipEl.style.left = rect.right + 10 + window.scrollX + "px";
+
+          tooltipEl.classList.add("show");
+        }
+
+        function hideTooltip() {
+          if (tooltipEl) tooltipEl.classList.remove("show");
+        }
+
+        const sidebar = document.getElementById("sidebar");
+
+        sidebar.addEventListener("mouseover", (e) => {
+          if (e.target.classList.contains("nav-item-icon")) {
+            tooltipTimer = setTimeout(() => showTooltip(e.target), 100);
+          }
+        });
+
+        sidebar.addEventListener("mouseout", (e) => {
+          if (e.target.classList.contains("nav-item-icon")) {
+            clearTimeout(tooltipTimer);
+            hideTooltip();
+          }
+        });
+
+        sidebar.addEventListener("click", () => {
+          if (tooltipEl) tooltipEl.classList.remove("show");
+        });
+      })();
+    </script>
+  </body>
+</html>
