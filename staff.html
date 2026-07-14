@@ -1367,8 +1367,9 @@
                 </div>
                 <div id="site-form" class="inline-form-card" style="display: none;">
                     <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="site-name">站点名称</label>
-                        <input type="text" id="site-name" class="form-control" placeholder="输入站点名称">
+                        <label for="site-name">站点名称（可批量）</label>
+                        <input type="text" id="site-name" class="form-control" placeholder="可用 , 、 - \ 分隔，例如 25S-05X、D16\A02">
+                        <div class="empty-placeholder" style="margin-top: 6px; font-size: 0.85rem; color: #6b7280;">支持一次输入多个站点，系统会自动拆分为独立站点</div>
                     </div>
                     <div class="inline-form-actions">
                         <button class="btn" id="save-site">保存站点</button>
@@ -1630,6 +1631,15 @@
                 sites: (group.sites || []).filter(site => sites.includes(site))
             })).filter(group => group.sites && group.sites.length > 0);
             saveSiteSettings();
+        }
+
+        function parseBatchSiteInput(inputValue) {
+            if (!inputValue) return [];
+            return inputValue
+                .split(/[、,\\-]+/)
+                .map(item => item.trim())
+                .filter(Boolean)
+                .filter((item, index, array) => array.indexOf(item) === index);
         }
 
         function ensureSiteExists(role) {
@@ -2673,16 +2683,23 @@
         }
 
         function saveSite() {
-            const siteName = document.getElementById("site-name").value.trim();
-            if (!siteName) {
+            const siteInput = document.getElementById("site-name").value.trim();
+            if (!siteInput) {
                 showAlert("请填写站点名称");
                 return;
             }
-            ensureSiteExists(siteName);
+
+            const parsedSites = parseBatchSiteInput(siteInput);
+            if (!parsedSites.length) {
+                showAlert("请输入有效的站点名称");
+                return;
+            }
+
+            parsedSites.forEach(site => ensureSiteExists(site));
             document.getElementById("site-name").value = "";
             toggleSiteForm(false);
             refreshSiteRelatedViews();
-            showAlert(`站点 "${siteName}" 已添加`);
+            showAlert(parsedSites.length > 1 ? `已批量添加 ${parsedSites.length} 个站点` : `站点 "${parsedSites[0]}" 已添加`);
         }
 
         // 头像上传和一键清除
