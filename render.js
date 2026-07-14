@@ -214,15 +214,16 @@ function parseTxtContent(txtContent) {
   }
 
   // 处理图片
-  function handleImage(line) {
+  function handleImage(line, filenameOverride) {
     endCurrentCard();
-    // 清除之前的h6跟踪
     lastH6Item = null;
     currentH6Item = null;
 
     const imagePath = cleanText(line);
     const filename =
-      imagePath.split("/").pop().split("?")[0] || `image_${Date.now()}`;
+      filenameOverride ||
+      imagePath.split("/").pop().split("?")[0] ||
+      `image_${Date.now()}`;
 
     parsedItems.push({
       id: nextTextId++,
@@ -242,6 +243,8 @@ function parseTxtContent(txtContent) {
   }
 
   // 主要解析逻辑
+  let pendingImageFilename = null;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
@@ -249,7 +252,53 @@ function parseTxtContent(txtContent) {
     // 空行处理
     if (trimmedLine.length === 0) {
       endCurrentCard();
-      currentH6Item = null; // 空行也清除当前h6
+      currentH6Item = null;
+      pendingImageFilename = null;
+      continue;
+    }
+
+    // 兼容旧版导出标记
+    if (trimmedLine === "【内容卡片】") {
+      startNewCard();
+      continue;
+    }
+    if (trimmedLine === "【图片卡片】") {
+      endCurrentCard();
+      continue;
+    }
+
+    // 兼容旧版列表项 • 开头
+    if (/^[•·\-*]\s/.test(trimmedLine)) {
+      if (!currentCard) startNewCard();
+      startNewContentItem(trimmedLine.replace(/^[•·\-*]\s*/, ""));
+      continue;
+    }
+
+    // 兼容旧版图片行 📷 文件名 (url) 或 📷 文件名
+    const photoMatch = trimmedLine.match(/^📷\s*(.+?)(?:\s*\((.+)\))?\s*$/);
+    if (photoMatch) {
+      endCurrentCard();
+      if (photoMatch[2]) {
+        handleImage(photoMatch[2], photoMatch[1].trim());
+      } else {
+        pendingImageFilename = photoMatch[1].trim();
+      }
+      continue;
+    }
+
+    if (
+      pendingImageFilename &&
+      trimmedLine.match(/^(\.\/|https?:\/\/|data:image)/i)
+    ) {
+      handleImage(line, pendingImageFilename);
+      pendingImageFilename = null;
+      continue;
+    }
+
+    // 多行内容续行（行首两个空格）
+    if (/^  \S/.test(line) && currentContentItem) {
+      addToCurrentContentItem(line.trim());
+      inSpanSequence = false;
       continue;
     }
 
@@ -283,9 +332,10 @@ function parseTxtContent(txtContent) {
       continue;
     }
 
-    // 检查图片
-    if (trimmedLine.match(/^\.\/|^http|\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i)) {
-      handleImage(line);
+    // 检查图片（支持 http / https / data URL / 相对路径）
+    if (trimmedLine.match(/^(\.\/|https?:\/\/|data:image)/i)) {
+      handleImage(line, pendingImageFilename);
+      pendingImageFilename = null;
       continue;
     }
 
@@ -342,11 +392,12 @@ function parseTxtContent(txtContent) {
     const nextLine = i + 1 < lines.length ? lines[i + 1] : "";
     const nextTrimmed = nextLine.trim();
     const nextIsSpan = isSpanLine(nextLine);
+    const nextIsContinuation = /^  \S/.test(nextLine);
 
     if (nextTrimmed.length === 0) {
       // 下一行是空行：内容项在endCurrentCard中处理
-    } else if (!isSpan && !nextIsSpan) {
-      // 当前和下一行都是非span普通行：结束当前内容项
+    } else if (!isSpan && !nextIsSpan && !nextIsContinuation) {
+      // 当前和下一行都是非span普通行，且下一行不是续行：结束当前内容项
       endCurrentContentItem();
     }
   }
