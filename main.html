@@ -19,8 +19,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="./image.css" />
     <link rel="stylesheet" href="./main.css" />
+    <link rel="stylesheet" href="./image.css" />
     <!-- <link rel="stylesheet" href="./bgtr.css" /> -->
   </head>
   <body>
@@ -40,22 +40,37 @@
       <div class="top-navigation">
         <!-- 左侧按钮组：添加内容 -->
         <div class="nav-left-buttons">
-          <button class="position-btn add-main-title" id="addMainTitleBtn">
+          <button
+            class="position-btn add-main-title"
+            id="addMainTitleBtn"
+            title="大标题"
+          >
             <i class="fas fa-heading"></i>
-            <span>大标题</span>
+            <span class="btn-label">大标题</span>
           </button>
-          <button class="position-btn add-subtitle" id="addSubtitleBtn">
+          <button
+            class="position-btn add-subtitle"
+            id="addSubtitleBtn"
+            title="小标题"
+          >
             <i class="fas fa-subscript"></i>
-            <span>小标题</span>
+            <span class="btn-label">小标题</span>
           </button>
-          <button class="position-btn add-content" id="addContentBtn">
+          <button
+            class="position-btn add-content"
+            id="addContentBtn"
+            title="新增内容"
+          >
             <i class="fas fa-paragraph"></i>
-            <span>新增内容</span>
+            <span class="btn-label">新增内容</span>
           </button>
-          <!-- 在现有导航栏中，找到添加内容按钮的部分，添加图片按钮 -->
-          <button class="position-btn add-images" id="addImagesBtn">
+          <button
+            class="position-btn add-images"
+            id="addImagesBtn"
+            title="新增图片"
+          >
             <i class="fas fa-images"></i>
-            <span>➕图片</span>
+            <span class="btn-label">新增图片</span>
           </button>
         </div>
 
@@ -64,26 +79,35 @@
           <button
             class="control-btn background-selector"
             id="backgroundSelectorBtn"
+            title="背景"
           >
             <i class="fas fa-image"></i>
-            <span>背景</span>
+            <span class="btn-label">背景</span>
           </button>
-          <button class="control-btn opacity-control" id="opacityControlBtn">
+          <button
+            class="control-btn opacity-control"
+            id="opacityControlBtn"
+            title="透明度"
+          >
             <i class="fas fa-adjust"></i>
-            <span>透明度</span>
+            <span class="btn-label">透明度</span>
           </button>
-          <button class="control-btn export-btn" id="exportBtn">
-            <i class="fas fa-download"></i>
-            <span>导出</span>
+          <button
+            class="control-btn import-export-btn"
+            id="importExportBtn"
+            title="导入/导出"
+          >
+            <i class="fas fa-exchange-alt"></i>
+            <span class="btn-label">导入/导出</span>
           </button>
-          <button class="control-btn import-btn" id="importBtn">
-            <i class="fas fa-upload"></i>
-            <span>导入</span>
-          </button>
-          <button class="control-btn theme-toggle" id="themeToggleBtn">
+          <button
+            class="control-btn theme-toggle"
+            id="themeToggleBtn"
+            title="主题"
+          >
             <i class="fas fa-moon"></i>
             <i class="fas fa-sun"></i>
-            <span>主题</span>
+            <span class="btn-label">主题</span>
           </button>
         </div>
       </div>
@@ -106,11 +130,55 @@
         <!-- 右侧内容区域 -->
         <div class="content-area" id="contentArea">
           <div class="content-container" id="contentContainer">
-            <!-- 内容会通过JS动态生成 -->
-            <div class="empty-state" id="emptyState">
-              <i class="fas fa-file-alt"></i>
-              <h3>暂无内容</h3>
-              <p>使用顶部的定位按钮开始添加内容</p>
+            <!-- 内容通过 JS 动态生成 -->
+          </div>
+
+          <!-- 首次无内容时显示的使用说明（有内容后自动隐藏） -->
+          <div class="empty-state" id="emptyState">
+            <div class="empty-state-inner">
+              <div class="empty-state-icon">
+                <i class="fas fa-book-open"></i>
+              </div>
+              <h3>欢迎使用内容阅读器</h3>
+              <p class="empty-state-lead">
+                当前还没有任何内容，请通过顶部按钮添加，或导入已有文件。
+              </p>
+
+              <div class="empty-state-guide">
+                <div class="guide-section">
+                  <h4><i class="fas fa-plus-circle"></i> 快速开始</h4>
+                  <ul>
+                    <li><strong>大标题</strong>：对应 TXT 中的 <code>###</code> / h3，会生成左侧导航</li>
+                    <li><strong>小标题</strong>：对应 <code>####</code> / h4</li>
+                    <li><strong>新增内容</strong>：添加可复制的正文卡片</li>
+                    <li><strong>新增图片</strong>：上传或粘贴图片链接</li>
+                  </ul>
+                </div>
+
+                <div class="guide-section">
+                  <h4><i class="fas fa-mouse-pointer"></i> 交互说明</h4>
+                  <ul>
+                    <li><strong>单击</strong>内容项 → 复制到剪贴板</li>
+                    <li><strong>双击</strong>标题或内容 → 直接编辑</li>
+                    <li><strong>右键</strong> → 编辑、插入、删除、复制图片等</li>
+                    <li>图片底部标题可点击 ✎ 或双击修改</li>
+                  </ul>
+                </div>
+
+                <div class="guide-section">
+                  <h4><i class="fas fa-file-import"></i> 导入 / 导出</h4>
+                  <ul>
+                    <li>支持 JSON、TXT、CSV 格式导入</li>
+                    <li>TXT 支持 <code>###</code> 大标题、<code>####</code> 小标题、图片路径等</li>
+                    <li>可随时导出备份当前全部内容</li>
+                  </ul>
+                </div>
+              </div>
+
+              <p class="empty-state-hint">
+                <i class="fas fa-arrow-up"></i>
+                点击顶部「大标题」或「新增内容」开始创作
+              </p>
             </div>
           </div>
         </div>
@@ -210,9 +278,40 @@
       <div class="image-viewer-content">
         <div class="image-viewer-header">
           <button class="close-modal" id="closeImageViewer">&times;</button>
-          <div class="image-counter" id="imageCounter">
-            <span id="currentImageIndex">1</span> /
-            <span id="totalImages">1</span>
+          <div class="viewer-header-right">
+            <div class="viewer-header-actions">
+              <button
+                type="button"
+                class="viewer-header-btn copy"
+                id="headerCopyImageBtn"
+                title="复制图片 (Ctrl+C)"
+              >
+                <i class="fas fa-copy"></i>
+                <span class="viewer-header-btn-label">复制</span>
+              </button>
+              <button
+                type="button"
+                class="viewer-header-btn"
+                id="headerDownloadImageBtn"
+                title="下载图片"
+              >
+                <i class="fas fa-download"></i>
+                <span class="viewer-header-btn-label">下载</span>
+              </button>
+              <button
+                type="button"
+                class="viewer-header-btn delete"
+                id="headerDeleteImageBtn"
+                title="删除图片"
+              >
+                <i class="fas fa-trash-alt"></i>
+                <span class="viewer-header-btn-label">删除</span>
+              </button>
+            </div>
+            <div class="image-counter" id="imageCounter">
+              <span id="currentImageIndex">1</span> /
+              <span id="totalImages">1</span>
+            </div>
           </div>
         </div>
 
@@ -230,20 +329,37 @@
           </button>
         </div>
 
-        <div class="image-viewer-footer">
-          <button class="viewer-action-btn" id="downloadImageBtn">
-            <i class="fas fa-download"></i> 下载
-          </button>
-          <button
-            class="viewer-action-btn"
-            id="copyImageUrlBtn"
-            title="复制图片 (Ctrl+C)"
-          >
-            <i class="fas fa-copy"></i> 复制图片
-          </button>
-          <button class="viewer-action-btn delete" id="deleteImageBtn">
-            <i class="fas fa-trash-alt"></i> 删除
-          </button>
+        <div class="image-viewer-bottom-bar">
+          <div class="viewer-image-title-bar" id="viewerImageTitleBar">
+            <span class="viewer-image-title-text" id="viewerImageTitleText" title="双击修改标题"></span>
+            <button
+              type="button"
+              class="viewer-title-edit-btn"
+              id="editImageTitleBtn"
+              title="修改标题"
+            >
+              <i class="fas fa-pen"></i>
+            </button>
+          </div>
+
+          <div class="image-viewer-footer">
+            <button
+              class="viewer-action-btn copy"
+              id="copyImageUrlBtn"
+              title="复制图片 (Ctrl+C)"
+            >
+              <i class="fas fa-copy"></i>
+              <span class="viewer-btn-label">复制图片</span>
+            </button>
+            <button class="viewer-action-btn" id="downloadImageBtn" title="下载图片">
+              <i class="fas fa-download"></i>
+              <span class="viewer-btn-label">下载</span>
+            </button>
+            <button class="viewer-action-btn delete" id="deleteImageBtn" title="删除图片">
+              <i class="fas fa-trash-alt"></i>
+              <span class="viewer-btn-label">删除</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -275,10 +391,10 @@
             <div
               class="background-option"
               data-type="image"
-              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+              data-src="https://raw.githubusercontent.com/dh1888/dh18/main/imge/1.jpg"
             >
-              <div class="background-option-title">雪山风景</div>
-              <div class="background-option-description">壮丽的雪山景观</div>
+              <div class="background-option-title">默认背景</div>
+              <div class="background-option-description">项目默认背景图</div>
             </div>
           </div>
         </div>
@@ -432,6 +548,7 @@
         <!-- 导出标签页 -->
         <div class="import-export-tab-content active" id="export-tab">
           <div class="export-options">
+            <!-- 在现有的导出选项部分添加 -->
             <div class="export-option">
               <label>
                 <input type="radio" name="exportFormat" value="json" checked />
@@ -441,7 +558,13 @@
             <div class="export-option">
               <label>
                 <input type="radio" name="exportFormat" value="txt" />
-                纯文本格式
+                纯文本格式 (TXT)
+              </label>
+            </div>
+            <div class="export-option">
+              <label>
+                <input type="radio" name="exportFormat" value="csv" />
+                CSV 表格格式
               </label>
             </div>
           </div>
@@ -455,12 +578,12 @@
           <div class="import-file-area" id="importFileArea">
             <i class="fas fa-file-import"></i>
             <p>点击或拖放 JSON 文件到此处导入</p>
-            <p class="file-types">仅支持 JSON 格式文件</p>
+            <p class="file-types">支持 JSON、TXT 或 CSV 格式文件</p>
             <input
               type="file"
               id="importFileInput"
               class="import-file-input"
-              accept=".json"
+              accept=".json,.txt,.csv,.text"
             />
           </div>
           <div class="preview-area" id="importPreview">
@@ -517,6 +640,10 @@
         <i class="fas fa-edit"></i>
         编辑图片
       </div>
+      <div class="context-menu-item" id="copyImageContextItem">
+        <i class="fas fa-copy"></i>
+        复制图片
+      </div>
       <!-- 在现有的右键菜单中，添加图片选项 -->
       <div class="context-menu-item" id="insertImagesAfterItem">
         <i class="fas fa-images"></i>
@@ -528,18 +655,17 @@
       </div>
     </div>
 
-    <!-- 导航动画 -->
-    <div class="nav-item">
-      <span class="nav-item-title">导航项</span>
-      <span class="nav-item-indicator">▶</span>
-      <!-- 只需要一个额外的div -->
-      <div class="light-border"></div>
-    </div>
+    <!-- 导航动画模板（隐藏，仅供 CSS 参考，不参与页面渲染） -->
+    <template id="navItemTemplate">
+      <div class="nav-item">
+        <span class="nav-item-title">导航项</span>
+        <span class="nav-item-indicator">▶</span>
+        <div class="light-border"></div>
+      </div>
+    </template>
 
     <script src="./image.js"></script>
     <script src="./main.js"></script>
-    <script src="./render.js"></script>
+    <script src="./renderTxT.js"></script>
   </body>
 </html>
-
-
