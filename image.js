@@ -38,13 +38,22 @@ let currentViewingCardId = null;
 
 // ============ 图片功能初始化 ============
 function initImageFunctions() {
-  console.log("初始化图片功能...");
-
-  // 检查必要的DOM元素
   if (!addImagesBtn || !imageModal) {
     console.error("图片功能所需的DOM元素未找到，请确保HTML已正确更新");
     return;
   }
+
+  if (imageViewerModal?.dataset.viewerBound === "true") {
+    return;
+  }
+  if (imageViewerModal) {
+    imageViewerModal.dataset.viewerBound = "true";
+  }
+
+  const stopViewerClose = (handler) => (event) => {
+    event.stopPropagation();
+    handler(event);
+  };
 
   // 添加图片按钮事件
   addImagesBtn.addEventListener("click", () => openAddImageModal());
@@ -121,12 +130,27 @@ function initImageFunctions() {
   imageForm.addEventListener("submit", saveImages);
 
   // 图片查看器事件
-  closeImageViewer.addEventListener("click", closeImageViewerModal);
-  prevImageBtn.addEventListener("click", showPrevImage);
-  nextImageBtn.addEventListener("click", showNextImage);
-  downloadImageBtn.addEventListener("click", downloadCurrentImage);
-  copyImageUrlBtn.addEventListener("click", copyImage);
-  deleteImageBtn.addEventListener("click", deleteCurrentImage);
+  closeImageViewer.addEventListener("click", stopViewerClose(closeImageViewerModal));
+  prevImageBtn.addEventListener("click", stopViewerClose(showPrevImage));
+  nextImageBtn.addEventListener("click", stopViewerClose(showNextImage));
+  downloadImageBtn.addEventListener("click", stopViewerClose(downloadCurrentImage));
+  copyImageUrlBtn.addEventListener("click", stopViewerClose(copyImage));
+  deleteImageBtn.addEventListener("click", stopViewerClose(deleteCurrentImage));
+
+  const headerCopyImageBtn = document.getElementById("headerCopyImageBtn");
+  if (headerCopyImageBtn) {
+    headerCopyImageBtn.addEventListener("click", stopViewerClose(copyImage));
+  }
+
+  const headerDownloadImageBtn = document.getElementById("headerDownloadImageBtn");
+  if (headerDownloadImageBtn) {
+    headerDownloadImageBtn.addEventListener("click", stopViewerClose(downloadCurrentImage));
+  }
+
+  const headerDeleteImageBtn = document.getElementById("headerDeleteImageBtn");
+  if (headerDeleteImageBtn) {
+    headerDeleteImageBtn.addEventListener("click", stopViewerClose(deleteCurrentImage));
+  }
 
   // 键盘导航
   document.addEventListener("keydown", (e) => {
@@ -147,44 +171,262 @@ function initImageFunctions() {
   });
 
   imageViewerModal.addEventListener("click", (e) => {
-    // 检查点击的目标元素
-    const target = e.target;
-
-    // 这些元素点击时不关闭查看器
-    const noCloseElements = [
-      viewerImage,
-      prevImageBtn,
-      nextImageBtn,
-      downloadImageBtn,
-      copyImageUrlBtn,
-      deleteImageBtn,
-      closeImageViewer,
-      currentImageIndex,
-      totalImages,
-    ];
-
-    // 检查是否是图片容器或图片本身
-    const isImageContainer = target.closest(".image-container");
-    const isViewerImage =
-      target === viewerImage || target.closest("#viewerImage");
-
-    // 如果点击了这些元素，不关闭查看器
-    if (
-      noCloseElements.includes(target) ||
-      target.closest(".nav-btn") ||
-      target.closest(".viewer-action-btn") ||
-      target.closest("#closeImageViewer") ||
-      isImageContainer ||
-      isViewerImage
-    ) {
+    // 仅点击遮罩空白区域时关闭（避免误触顶部/底部按钮）
+    if (e.target !== imageViewerModal) {
       return;
     }
 
-    // 其他情况都关闭查看器
     closeImageViewerModal();
   });
 
-  console.log("图片功能初始化完成");
+  // 编辑图片菜单项已在上方绑定，无需重复注册
+
+  initImageTitleEditing();
+}
+
+// ============ 图片标题编辑 ============
+
+function formatImageDisplayName(filename, maxLength = 20) {
+  const name = filename?.trim() || "未命名";
+  if (name.length <= maxLength) return name;
+  return `${name.substring(0, maxLength - 3)}...`;
+}
+
+function findImageEntry(cardId, imageId, imageIndex = -1) {
+  const card = contentItems.find((item) => item.id === cardId);
+  if (!card?.images?.length) return null;
+
+  let image = card.images.find((img) => img.id === imageId);
+  if (!image && imageIndex >= 0) {
+    image = card.images[imageIndex];
+  }
+  if (!image) return null;
+
+  if (!image.id) {
+    image.id = nextImageId++;
+  }
+
+  return { card, image };
+}
+
+function updateImageFilename(cardId, imageId, newFilename, imageIndex = -1) {
+  const trimmed = newFilename.trim();
+  if (!trimmed) return false;
+
+  const entry = findImageEntry(cardId, imageId, imageIndex);
+  if (!entry) return false;
+
+  entry.image.filename = trimmed;
+  saveToLocalStorage();
+  return true;
+}
+
+function beginInlineImageTitleEdit(
+  imageItem,
+  cardId,
+  imageId,
+  currentFilename,
+  imageIndex = -1,
+) {
+  if (!imageItem || imageItem.querySelector(".image-title-input")) return;
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "image-title-input";
+  input.value = currentFilename || "";
+  input.maxLength = 120;
+  input.placeholder = "输入图片标题";
+
+  const overlay = imageItem.querySelector(".image-item-overlay");
+  if (overlay) overlay.style.opacity = "1";
+
+  imageItem.appendChild(input);
+  input.focus();
+  input.select();
+
+  input.addEventListener("click", (e) => e.stopPropagation());
+  input.addEventListener("mousedown", (e) => e.stopPropagation());
+
+  const cancelEdit = () => {
+    input.remove();
+    refreshContent();
+  };
+
+  const commitEdit = () => {
+    const nextName = input.value.trim();
+    if (!nextName) {
+      if (typeof Modal !== "undefined") {
+        Modal.alert("标题不能为空", "提示");
+      } else {
+        alert("标题不能为空");
+      }
+      input.focus();
+      return;
+    }
+
+    if (updateImageFilename(cardId, imageId, nextName, imageIndex)) {
+      refreshContent();
+      if (typeof showCopyNotification === "function") {
+        showCopyNotification("标题已更新", "content-copied");
+      }
+    }
+  };
+
+  input.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      cancelEdit();
+    }
+  });
+
+  input.addEventListener("blur", commitEdit);
+}
+
+function beginViewerImageTitleEdit() {
+  if (!currentViewingCardId || currentViewingImages.length === 0) return;
+
+  const image = currentViewingImages[currentViewingImageIndex];
+  const titleBar = document.getElementById("viewerImageTitleBar");
+  const titleText = document.getElementById("viewerImageTitleText");
+  const editBtn = document.getElementById("editImageTitleBtn");
+  if (!titleBar || !titleText || !image) return;
+
+  if (titleBar.querySelector(".viewer-image-title-input")) return;
+
+  titleText.style.display = "none";
+  if (editBtn) editBtn.style.display = "none";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "viewer-image-title-input";
+  input.value = image.filename || "";
+  input.maxLength = 120;
+  input.placeholder = "输入图片标题";
+  titleBar.insertBefore(input, editBtn);
+
+  input.focus();
+  input.select();
+
+  const restoreViewerTitle = () => {
+    input.remove();
+    titleText.style.display = "";
+    if (editBtn) editBtn.style.display = "";
+    updateViewerImage();
+  };
+
+  const commitEdit = () => {
+    const nextName = input.value.trim();
+    if (!nextName) {
+      if (typeof Modal !== "undefined") {
+        Modal.alert("标题不能为空", "提示");
+      } else {
+        alert("标题不能为空");
+      }
+      input.focus();
+      return;
+    }
+
+    if (updateImageFilename(currentViewingCardId, image.id, nextName)) {
+      restoreViewerTitle();
+      refreshContent();
+      if (typeof showCopyNotification === "function") {
+        showCopyNotification("标题已更新", "content-copied");
+      }
+    }
+  };
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      restoreViewerTitle();
+    }
+  });
+
+  input.addEventListener("blur", commitEdit);
+}
+
+function initImageTitleEditing() {
+  if (!contentContainer || contentContainer.dataset.imageTitleBound) return;
+  contentContainer.dataset.imageTitleBound = "true";
+
+  contentContainer.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".image-title-edit-btn");
+    if (!editBtn) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    const imageItem = editBtn.closest(".image-item");
+    if (!imageItem) return;
+
+    const cardId = parseInt(imageItem.dataset.cardId, 10);
+    const imageId = parseInt(imageItem.dataset.imageId, 10);
+    const imageIndex = parseInt(imageItem.dataset.index, 10);
+    const card = contentItems.find((item) => item.id === cardId);
+    const image =
+      card?.images?.find((img) => img.id === imageId) ||
+      card?.images?.[imageIndex];
+
+    beginInlineImageTitleEdit(
+      imageItem,
+      cardId,
+      imageId,
+      image?.filename || "",
+      imageIndex,
+    );
+  });
+
+  contentContainer.addEventListener("dblclick", (e) => {
+    const overlayText = e.target.closest(".image-item-overlay-text");
+    const overlay = e.target.closest(".image-item-overlay");
+    if (!overlayText && !overlay) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    const imageItem = (overlayText || overlay).closest(".image-item");
+    if (!imageItem) return;
+
+    const cardId = parseInt(imageItem.dataset.cardId, 10);
+    const imageId = parseInt(imageItem.dataset.imageId, 10);
+    const imageIndex = parseInt(imageItem.dataset.index, 10);
+    const card = contentItems.find((item) => item.id === cardId);
+    const image =
+      card?.images?.find((img) => img.id === imageId) ||
+      card?.images?.[imageIndex];
+
+    beginInlineImageTitleEdit(
+      imageItem,
+      cardId,
+      imageId,
+      image?.filename || "",
+      imageIndex,
+    );
+  });
+
+  const editImageTitleBtn = document.getElementById("editImageTitleBtn");
+  const viewerImageTitleText = document.getElementById("viewerImageTitleText");
+
+  if (editImageTitleBtn) {
+    editImageTitleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      beginViewerImageTitleEdit();
+    });
+  }
+
+  if (viewerImageTitleText) {
+    viewerImageTitleText.addEventListener("dblclick", (e) => {
+      e.stopPropagation();
+      beginViewerImageTitleEdit();
+    });
+  }
 }
 
 // ============ 图片处理函数 ============
@@ -452,7 +694,7 @@ function saveImages(e) {
   imageModal.classList.remove("active");
   clearImagePreview();
   resetImageForm();
-  initPage();
+  refreshContent();
   saveToLocalStorage();
 
   // 滚动到更新/新增的图片卡片
@@ -478,27 +720,13 @@ function saveImages(e) {
 }
 
 // 渲染图片卡片
-function renderImageCard(item) {
+function renderImageCard(item, target = contentContainer) {
   const imageCard = document.createElement("div");
   imageCard.className = "image-card";
   imageCard.id = `card-${item.id}`;
   imageCard.dataset.id = item.id;
   imageCard.dataset.type = "image-card";
 
-  // 添加图片数量标签
-  const imageCount = document.createElement("div");
-  //   imageCount.className = "image-count-badge";
-  //   imageCount.textContent = `${item.images ? item.images.length : 0} 张图片`;
-  imageCard.appendChild(imageCount);
-
-  // 右键菜单
-  imageCard.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-    contextMenuTarget = { type: "image-card", id: item.id };
-    showContextMenu(e);
-  });
-
-  // 创建图片网格
   const imageGrid = document.createElement("div");
   imageGrid.className = "image-grid";
 
@@ -508,7 +736,8 @@ function renderImageCard(item) {
       imageItem.className = "image-item";
       imageItem.dataset.index = index;
       imageItem.dataset.cardId = item.id;
-      imageItem.title = image.filename || `图片 ${index + 1}`;
+      imageItem.dataset.imageId = image.id ?? index;
+      imageItem.title = "点击查看 · 双击标题可修改";
 
       const img = document.createElement("img");
       img.src = image.src;
@@ -521,31 +750,45 @@ function renderImageCard(item) {
 
       const overlay = document.createElement("div");
       overlay.className = "image-item-overlay";
-      const shortName =
-        image.filename && image.filename.length > 20
-          ? image.filename.substring(0, 17) + "..."
-          : image.filename || `图片 ${index + 1}`;
-      overlay.textContent = shortName;
 
-      // 点击查看图片
-      imageItem.addEventListener("click", () => {
-        openImageViewer(item.images, index, item.id);
-      });
+      const textSpan = document.createElement("span");
+      textSpan.className = "image-item-overlay-text";
+      textSpan.textContent = formatImageDisplayName(
+        image.filename || `图片 ${index + 1}`,
+      );
+      textSpan.title = image.filename || `图片 ${index + 1}`;
+
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "image-title-edit-btn";
+      editBtn.title = "修改标题";
+      editBtn.setAttribute("aria-label", "修改标题");
+      editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+
+      overlay.appendChild(textSpan);
+      overlay.appendChild(editBtn);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "image-item-delete-btn";
+      deleteBtn.title = "删除图片";
+      deleteBtn.setAttribute("aria-label", "删除图片");
+      deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
 
       imageItem.appendChild(img);
       imageItem.appendChild(overlay);
+      imageItem.appendChild(deleteBtn);
       imageGrid.appendChild(imageItem);
     });
   } else {
-    // 如果没有图片，显示空状态
-    const emptyState = document.createElement("div");
-    emptyState.className = "image-empty-state";
-    emptyState.innerHTML = '<i class="fas fa-image"></i><p>暂无图片</p>';
-    imageGrid.appendChild(emptyState);
+    const emptyImageState = document.createElement("div");
+    emptyImageState.className = "image-empty-state";
+    emptyImageState.innerHTML = '<i class="fas fa-image"></i><p>暂无图片</p>';
+    imageGrid.appendChild(emptyImageState);
   }
 
   imageCard.appendChild(imageGrid);
-  contentContainer.appendChild(imageCard);
+  target.appendChild(imageCard);
 }
 
 // ============ 图片查看器功能 ============
@@ -576,6 +819,13 @@ function updateViewerImage() {
 
   currentImageIndex.textContent = currentViewingImageIndex + 1;
   totalImages.textContent = currentViewingImages.length;
+
+  const titleText = document.getElementById("viewerImageTitleText");
+  if (titleText) {
+    const fullName = image.filename || `图片 ${currentViewingImageIndex + 1}`;
+    titleText.textContent = fullName;
+    titleText.title = `${fullName}（双击修改）`;
+  }
 
   // 更新按钮状态
   prevImageBtn.disabled = currentViewingImageIndex === 0;
@@ -645,76 +895,168 @@ function downloadCurrentImage() {
 }
 
 // ============ 复制图片功能 ============
-// ============ 终极复制图片功能（Canvas 渲染版） ============
-async function copyImage() {
-  const image = currentViewingImages[currentViewingImageIndex];
-  const copyBtn = copyImageUrlBtn;
+async function copyImageDataToClipboard(image) {
+  if (!image?.src) {
+    throw new Error("无效图片");
+  }
 
-  // 保存原始状态
-  const originalText = copyBtn.innerHTML;
-  const originalClass = copyBtn.className;
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
 
-  // UI 反馈
-  copyBtn.classList.add("copying");
-  copyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在处理图片...';
-  copyBtn.disabled = true;
+  await new Promise((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error("图片加载失败"));
+    img.src = image.src;
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+
+  const blob = await new Promise((resolve) =>
+    canvas.toBlob(resolve, "image/png"),
+  );
+
+  if (!blob) {
+    throw new Error("图片转换失败");
+  }
+
+  await navigator.clipboard.write([
+    new ClipboardItem({ "image/png": blob }),
+  ]);
+}
+
+function getContextMenuImage() {
+  if (!contextMenuTarget) return null;
+
+  const { type, id, cardId, imageId, imageIndex } = contextMenuTarget;
+
+  if (type === "image-item") {
+    const card = contentItems.find((item) => item.id === cardId || item.id === id);
+    if (!card?.images?.length) return null;
+    return (
+      card.images.find((img) => img.id === imageId) ||
+      card.images[imageIndex] ||
+      null
+    );
+  }
+
+  if (type === "image-card") {
+    const card = contentItems.find((item) => item.id === id);
+    return card?.images?.[0] || null;
+  }
+
+  return null;
+}
+
+async function copyImageFromContextMenu() {
+  const image = getContextMenuImage();
+  if (!image) {
+    if (typeof Modal !== "undefined") {
+      await Modal.alert("未找到可复制的图片", "提示");
+    }
+    return;
+  }
 
   try {
-    // 1. 创建 Image 对象并加载图片
-    const img = new Image();
-    // 允许跨域请求图片数据（如果服务器支持）
-    img.crossOrigin = "Anonymous";
+    await copyImageDataToClipboard(image);
+    if (typeof showCopyNotification === "function") {
+      showCopyNotification("图片已复制", "image-copied");
+    }
+  } catch (err) {
+    console.error("复制图片失败:", err);
+    try {
+      await navigator.clipboard.writeText(image.src);
+      if (typeof showCopyNotification === "function") {
+        showCopyNotification("已复制图片链接", "image-copied");
+      }
+    } catch (e) {
+      if (typeof Modal !== "undefined") {
+        await Modal.alert("复制失败，请检查浏览器权限或图片跨域设置", "复制失败");
+      } else {
+        alert("复制失败");
+      }
+    }
+  }
+}
 
-    // 使用 Promise 包装图片加载过程
-    const loadImage = new Promise((resolve, reject) => {
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error("图片加载失败"));
-      img.src = image.src;
+async function copyImage(event) {
+  const image = currentViewingImages[currentViewingImageIndex];
+  const headerCopyBtn = document.getElementById("headerCopyImageBtn");
+  const copyButtons = [copyImageUrlBtn, headerCopyBtn].filter(Boolean);
+
+  const originals = copyButtons.map((btn) => ({
+    btn,
+    html: btn.innerHTML,
+    className: btn.className,
+  }));
+
+  const copyButtonHtml = {
+    loading: {
+      footer:
+        '<i class="fas fa-spinner fa-spin"></i><span class="viewer-btn-label">正在处理图片...</span>',
+      header:
+        '<i class="fas fa-spinner fa-spin"></i><span class="viewer-header-btn-label">复制</span>',
+    },
+    success: {
+      footer:
+        '<i class="fas fa-check"></i><span class="viewer-btn-label">图片已复制</span>',
+      header:
+        '<i class="fas fa-check"></i><span class="viewer-header-btn-label">已复制</span>',
+    },
+    link: {
+      footer:
+        '<i class="fas fa-link"></i><span class="viewer-btn-label">已复制链接</span>',
+      header:
+        '<i class="fas fa-link"></i><span class="viewer-header-btn-label">链接</span>',
+    },
+    fail: {
+      footer:
+        '<i class="fas fa-times"></i><span class="viewer-btn-label">复制失败</span>',
+      header:
+        '<i class="fas fa-times"></i><span class="viewer-header-btn-label">失败</span>',
+    },
+  };
+
+  const setAllCopyButtons = (state, extraClass) => {
+    copyButtons.forEach((btn) => {
+      btn.disabled = true;
+      btn.classList.remove("copying", "success");
+      if (extraClass) btn.classList.add(extraClass);
+      const kind = btn.id === "headerCopyImageBtn" ? "header" : "footer";
+      btn.innerHTML = copyButtonHtml[state][kind];
     });
+  };
 
-    await loadImage;
+  const restoreAllCopyButtons = () => {
+    originals.forEach(({ btn, html, className }) => {
+      resetCopyButton(btn, html, className);
+    });
+  };
 
-    // 2. 使用 Canvas 转换为 PNG 格式以获得最高兼容性
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
+  setAllCopyButtons("loading", "copying");
 
-    // 3. 将 Canvas 内容转为 Blob
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, "image/png"),
-    );
-
-    // 4. 写入剪贴板
-    const data = [new ClipboardItem({ "image/png": blob })];
-    await navigator.clipboard.write(data);
-
-    // --- 成功反馈 ---
-    copyBtn.classList.remove("copying");
-    copyBtn.classList.add("success");
-    copyBtn.innerHTML = '<i class="fas fa-check"></i> 图片已复制';
-
-    showCopyNotification();
-    setTimeout(
-      () => resetCopyButton(copyBtn, originalText, originalClass),
-      2000,
-    );
+  try {
+    await copyImageDataToClipboard(image);
+    setAllCopyButtons("success", "success");
+    showCopyNotification("图片已复制", "image-copied");
+    restoreAllCopyButtons();
+    closeImageViewerModal();
   } catch (err) {
     console.error("Canvas 复制失败，尝试降级:", err);
 
-    // --- 降级方案：如果 Canvas 失败（通常是严重的跨域限制），则尝试复制地址 ---
     try {
       await navigator.clipboard.writeText(image.src);
-      copyBtn.innerHTML = '<i class="fas fa-link"></i> 已复制链接';
+      setAllCopyButtons("link");
+      showCopyNotification("已复制图片链接", "image-copied");
+      restoreAllCopyButtons();
+      closeImageViewerModal();
     } catch (e) {
-      copyBtn.innerHTML = '<i class="fas fa-times"></i> 复制失败';
+      setAllCopyButtons("fail");
+      setTimeout(restoreAllCopyButtons, 2000);
     }
-
-    setTimeout(
-      () => resetCopyButton(copyBtn, originalText, originalClass),
-      2000,
-    );
   }
 }
 
@@ -725,65 +1067,93 @@ function resetCopyButton(btn, originalText, originalClass) {
   btn.disabled = false;
 }
 
-// 辅助函数：重置复制按钮状态
-function resetCopyButton(btn, originalText, originalClass) {
-  btn.className = originalClass;
-  btn.innerHTML = originalText;
-  btn.disabled = false;
-}
-
-// 删除当前图片
-// 修改后的删除函数，支持自定义弹窗
-async function deleteCurrentImage() {
-  // 使用我们之前定义的 Modal.confirm 替代系统 confirm
-  // 注意：必须加 await，否则代码会直接跳过确认向下执行
+// 删除指定卡片中的图片
+async function removeImageAt(cardId, imageIndex) {
   const isConfirmed = await Modal.confirm(
     "确定要删除这张图片吗？此操作不可撤销。",
     "确认删除",
   );
+  if (!isConfirmed) return false;
 
-  if (!isConfirmed) return;
+  const cardIndex = contentItems.findIndex((item) => item.id === cardId);
+  if (cardIndex === -1 || !contentItems[cardIndex].images) return false;
 
-  const cardIndex = contentItems.findIndex(
-    (item) => item.id === currentViewingCardId,
-  );
+  contentItems[cardIndex].images.splice(imageIndex, 1);
 
-  if (cardIndex !== -1 && contentItems[cardIndex].images) {
-    // 从数组中删除图片
-    contentItems[cardIndex].images.splice(currentViewingImageIndex, 1);
-
-    // 如果图片卡没有图片了，删除整个卡片
-    if (contentItems[cardIndex].images.length === 0) {
-      contentItems.splice(cardIndex, 1);
-      // 重新排序
-      contentItems.forEach((item, index) => {
-        item.order = index + 1;
-      });
-    }
-
-    // 重新渲染页面
-    initPage();
-    saveToLocalStorage();
-
-    // 关闭查看器或更新查看器
-    if (contentItems[cardIndex]?.images?.length > 0) {
-      currentViewingImages = contentItems[cardIndex].images;
-      if (currentViewingImageIndex >= currentViewingImages.length) {
-        currentViewingImageIndex = currentViewingImages.length - 1;
-      }
-      updateViewerImage();
-    } else {
-      closeImageViewerModal();
-    }
-
-    // 显示删除成功通知
-    setTimeout(() => {
-      showCopyNotification();
-      // 确保 copyNotification 元素存在
-      const notifySpan = document.querySelector("#copyNotification span");
-      if (notifySpan) notifySpan.textContent = "图片已删除！";
-    }, 300);
+  if (contentItems[cardIndex].images.length === 0) {
+    contentItems.splice(cardIndex, 1);
+    contentItems.forEach((item, index) => {
+      item.order = index + 1;
+    });
   }
+
+  refreshContent();
+  saveToLocalStorage();
+  return true;
+}
+
+function notifyImageDeleted() {
+  setTimeout(() => {
+    showCopyNotification();
+    const notifySpan = document.querySelector("#copyNotification span");
+    if (notifySpan) notifySpan.textContent = "图片已删除！";
+  }, 300);
+}
+
+async function deleteImageFromThumbnail(cardId, imageIndex) {
+  const viewerWasOpen = imageViewerModal.classList.contains("active");
+  const viewingSameCard = viewerWasOpen && currentViewingCardId === cardId;
+  let nextViewIndex = currentViewingImageIndex;
+
+  if (viewingSameCard && imageIndex < currentViewingImageIndex) {
+    nextViewIndex = currentViewingImageIndex - 1;
+  }
+
+  const removed = await removeImageAt(cardId, imageIndex);
+  if (!removed) return;
+
+  if (!viewerWasOpen) {
+    notifyImageDeleted();
+    return;
+  }
+
+  const card = contentItems.find((item) => item.id === cardId);
+  if (card?.images?.length) {
+    currentViewingImages = card.images;
+    if (viewingSameCard) {
+      currentViewingImageIndex = Math.min(
+        nextViewIndex,
+        currentViewingImages.length - 1,
+      );
+      updateViewerImage();
+    }
+  } else {
+    closeImageViewerModal();
+  }
+
+  notifyImageDeleted();
+}
+
+// 删除当前图片
+async function deleteCurrentImage() {
+  const removed = await removeImageAt(
+    currentViewingCardId,
+    currentViewingImageIndex,
+  );
+  if (!removed) return;
+
+  const card = contentItems.find((item) => item.id === currentViewingCardId);
+  if (card?.images?.length) {
+    currentViewingImages = card.images;
+    if (currentViewingImageIndex >= currentViewingImages.length) {
+      currentViewingImageIndex = currentViewingImages.length - 1;
+    }
+    updateViewerImage();
+  } else {
+    closeImageViewerModal();
+  }
+
+  notifyImageDeleted();
 }
 // ============ 需要在现有 index.js 中修改/添加的函数 ============
 
