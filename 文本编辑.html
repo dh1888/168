@@ -982,13 +982,82 @@
 
       .empty-state {
         display: block;
-        padding: 32px 24px;
+        padding: 24px;
         border: 1px dashed #d9d9d9;
-        border-radius: 10px;
-        background: #fafafa;
-        color: #666;
-        text-align: center;
-        margin: 20px 0;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f8fbff 0%, #f7f9fc 100%);
+        color: #4b5563;
+        margin: 0px 0;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+      }
+
+      .empty-guide {
+        display: grid;
+        gap: 14px;
+        text-align: left;
+      }
+
+      .empty-guide-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+      }
+
+      .empty-guide-subtitle {
+        color: #64748b;
+        line-height: 1.7;
+      }
+
+      .empty-guide-card {
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+      }
+
+      .empty-guide-card h4 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        color: #111827;
+      }
+
+      .empty-guide-card p,
+      .empty-guide-card li {
+        margin: 0;
+        color: #4b5563;
+        line-height: 1.7;
+        font-size: 13px;
+      }
+
+      .empty-guide-card ul {
+        margin: 6px 0 0 18px;
+        padding: 0;
+      }
+
+      .empty-guide-card code {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        color: #111827;
+        font-family: Consolas, monospace;
+      }
+
+      .empty-guide-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      .empty-guide-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 8px 14px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #4096ff, #2563eb);
+        color: #fff;
+        font-weight: 600;
       }
 
       /* 收起时调整 toggle 按钮位置 */
@@ -1792,9 +1861,7 @@
           />
         </div>
 
-        <div id="emptyState" class="empty-state">
-          还没有内容，点击顶部“新增内容”按钮添加标题、段落、白色卡片或色块，也可以直接打开 TXT 文件。
-        </div>
+        <div id="emptyState" class="empty-state"></div>
 
         <div id="fileContent"></div>
       </div>
@@ -1898,7 +1965,7 @@
         function init() {
           setupEventListeners();
           const loaded = loadFromStorage();
-          if (!loaded) showEmptyState();
+          if (!loaded) showEmptyState(true);
           syncViewState();
           setupScrollSpy();
         }
@@ -3745,7 +3812,7 @@
         // 重置UI状态
         function resetUI() {
           domCache.fileInputContainer.style.display = "none";
-          showEmptyState();
+          showEmptyState(false);
           domCache.fileContent.innerHTML = "";
           state.allImages = [];
           state.currentImageRow = null;
@@ -3755,10 +3822,66 @@
           syncViewState();
         }
 
+        function buildEmptyStateContent() {
+          return `
+            <div class="empty-guide">
+              <div class="empty-guide-title">欢迎使用 TXT 内容阅读器</div>
+              <div class="empty-guide-subtitle">你可以把本地 TXT 文本直接导入页面，也可以手动添加内容。下面是最常用的操作方式，先看一眼会更容易上手。</div>
+
+              <div class="empty-guide-card">
+                <h4>1. 先把 TXT 导入进来</h4>
+                <p>点击顶部的 <strong>打开文件</strong> 按钮，选择你的 .txt 文件。文件内容会自动解析并按标题、段落、图片、表格的方式显示。</p>
+              </div>
+
+              <div class="empty-guide-card">
+                <h4>2. TXT 文本编辑说明</h4>
+                <ul>
+                  <li><code>h3</code>、<code>h4</code>、<code>h5</code>：作为标题</li>
+                  <li><code>bgb</code>、<code>bgy</code>、<code>bgr</code>、<code>bgg</code>：创建彩色区块</li>
+                  <li><code>ul</code> 和 <code>uld</code>：包裹列表内容</li>
+                  <li><code>box</code> 和 <code>boxd</code>：创建白色卡片</li>
+                  <li><code>P </code>开头的行：会显示淡绿色背景</li>
+                  <li><code>table</code> 和 <code>tabled</code>：创建表格；<code>#</code> 开头的行是表头，<code>|</code> 分隔每个单元格</li>
+                  <li><code>./图片路径</code>：插入图片</li>
+                </ul>
+              </div>
+
+              <div class="empty-guide-card">
+                <h4>3. 也可以手动新增内容</h4>
+                <p>如果你不想先准备 TXT，可以直接点顶部的 <strong>新增内容</strong>、<strong>图片</strong>、<strong>表格</strong> 按钮，逐段插入内容。</p>
+              </div>
+
+              <div class="empty-guide-card">
+                <h4>4. 适合的使用场景</h4>
+                <p>适合把文档、说明、流程、报表、图片清单等内容快速整理成可阅读页面，尤其方便批量查看 TXT 里的内容。</p>
+              </div>
+
+              <div class="empty-guide-actions">
+                <button class="empty-guide-btn" type="button" id="emptyGuideStartBtn">开始使用</button>
+              </div>
+            </div>
+          `;
+        }
+
         // 显示空状态说明
-        function showEmptyState() {
-          if (domCache.emptyState) domCache.emptyState.style.display = "block";
+        function showEmptyState(showGuide = false) {
+          if (domCache.emptyState) {
+            domCache.emptyState.style.display = "block";
+            domCache.emptyState.innerHTML = buildEmptyStateContent();
+          }
           domCache.fileContent.style.display = "none";
+
+          const startBtn = document.getElementById("emptyGuideStartBtn");
+          if (startBtn) {
+            startBtn.addEventListener("click", () => {
+              domCache.emptyState.innerHTML = `
+                <div class="empty-guide">
+                  <div class="empty-guide-title">准备就绪</div>
+                  <div class="empty-guide-subtitle">你现在可以点击顶部“打开文件”按钮读取 TXT，或直接使用“新增内容”开始编辑。</div>
+                </div>
+              `;
+            });
+          }
         }
 
         // 隐藏空状态说明
