@@ -220,7 +220,6 @@ function refreshContent() {
   renderNavItems();
   renderContent();
   updateEmptyStateVisibility();
-  setupScrollSpyObserver();
   requestAnimationFrame(() => updateActiveNavFromScroll());
 }
 
@@ -228,7 +227,7 @@ function refreshContent() {
  * 根据当前滚动位置高亮左侧导航（刷新后默认选中首项）
  */
 function updateActiveNavFromScroll() {
-  if (!navItemsContainer) return;
+  if (!navItemsContainer || !contentArea) return;
 
   const sections = document.querySelectorAll(".main-title");
   const navItems = navItemsContainer.querySelectorAll(".nav-item");
@@ -240,12 +239,13 @@ function updateActiveNavFromScroll() {
     return;
   }
 
-  const probeLine = getScrollProbeLine();
-
+  const scrollTop = contentArea.scrollTop;
+  const activationOffset = 20;
   let currentId = sections[0].dataset.id || "";
 
   sections.forEach((section) => {
-    if (section.getBoundingClientRect().top <= probeLine) {
+    const sectionTop = getSectionOffsetInContentArea(section);
+    if (sectionTop <= scrollTop + activationOffset) {
       currentId = section.dataset.id || section.id.replace("item-", "");
     }
   });
@@ -260,85 +260,15 @@ function updateActiveNavFromScroll() {
 }
 
 function getContentScrollRoot() {
-  if (!contentArea) {
-    return document.scrollingElement || document.documentElement;
-  }
-
-  return contentArea;
+  return contentArea || document.scrollingElement || document.documentElement;
 }
 
-function getScrollSpyRoot() {
-  const scrollRoot = getContentScrollRoot();
-  if (
-    scrollRoot === document.documentElement ||
-    scrollRoot === document.body ||
-    scrollRoot === document.scrollingElement
-  ) {
-    return null;
-  }
-  return scrollRoot;
-}
+function getSectionOffsetInContentArea(section) {
+  if (!contentArea || !section) return 0;
 
-let scrollSpyObserver = null;
-
-function teardownScrollSpyObserver() {
-  if (!scrollSpyObserver) return;
-  scrollSpyObserver.disconnect();
-  scrollSpyObserver = null;
-}
-
-function setupScrollSpyObserver() {
-  teardownScrollSpyObserver();
-  if (!navItemsContainer) return;
-
-  const sections = document.querySelectorAll(".main-title");
-  if (!sections.length) return;
-
-  const root = getScrollSpyRoot();
-  const topInset = contentArea ? 12 : getNavScrollOffset();
-
-  scrollSpyObserver = new IntersectionObserver(
-    () => {
-      updateActiveNavFromScroll();
-    },
-    {
-      root,
-      rootMargin: `-${topInset}px 0px -55% 0px`,
-      threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
-    },
-  );
-
-  sections.forEach((section) => scrollSpyObserver.observe(section));
-}
-
-function getNavScrollOffset() {
-  const navHeight =
-    parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
-      10,
-    ) || 50;
-  return navHeight + 24;
-}
-
-function getScrollProbeLine() {
-  if (contentArea) {
-    return contentArea.getBoundingClientRect().top + 12;
-  }
-  return getNavScrollOffset();
-}
-
-function getElementDocumentTop(element, scrollRoot) {
-  if (scrollRoot === contentArea) {
-    let top = 0;
-    let node = element;
-    while (node && node !== contentArea) {
-      top += node.offsetTop;
-      node = node.offsetParent;
-    }
-    return top;
-  }
-
-  return element.getBoundingClientRect().top + window.scrollY;
+  const areaRect = contentArea.getBoundingClientRect();
+  const sectionRect = section.getBoundingClientRect();
+  return sectionRect.top - areaRect.top + contentArea.scrollTop;
 }
 
 function updateEmptyStateVisibility() {
@@ -965,25 +895,29 @@ function showContextMenu(e) {
 // 滚动到指定内容项
 function scrollToItem(itemId) {
   const itemElement = document.getElementById(`item-${itemId}`);
-  if (itemElement && contentArea) {
-    const targetTop = getElementDocumentTop(itemElement, contentArea);
-    contentArea.scrollTo({
-      top: Math.max(0, targetTop - 12),
-      behavior: "auto",
-    });
+  if (!itemElement || !contentArea) return;
 
-    const originalBackground = itemElement.style.background;
-    if (isLightMode) {
-      itemElement.style.background = "rgba(255, 64, 129, 0.3)";
-    } else {
-      itemElement.style.background = "rgba(255, 0, 204, 0.3)";
-    }
+  const beforeScrollTop = contentArea.scrollTop;
+  const targetTop = getSectionOffsetInContentArea(itemElement);
+  contentArea.scrollTop = Math.max(0, targetTop - 12);
 
-    setTimeout(() => {
-      itemElement.style.background = originalBackground;
-      updateActiveNavFromScroll();
-    }, 150);
+  if (Math.abs(contentArea.scrollTop - beforeScrollTop) < 1) {
+    itemElement.scrollIntoView({ block: "start", behavior: "auto" });
   }
+
+  updateActiveNavFromScroll();
+
+  const originalBackground = itemElement.style.background;
+  if (isLightMode) {
+    itemElement.style.background = "rgba(255, 64, 129, 0.3)";
+  } else {
+    itemElement.style.background = "rgba(255, 0, 204, 0.3)";
+  }
+
+  setTimeout(() => {
+    itemElement.style.background = originalBackground;
+    updateActiveNavFromScroll();
+  }, 150);
 }
 
 // 显示复制成功通知
@@ -3117,7 +3051,7 @@ function initNavItemAnimations() {
     const item = e.target.closest(".nav-item");
     if (!item) return;
 
-    const itemId = parseInt(item.dataset.id, 10);
+    const itemId = item.dataset.id;
     if (!itemId) return;
 
     navItemsContainer.querySelectorAll(".nav-item").forEach((nav) => {
@@ -3203,17 +3137,11 @@ function initScrollSpy() {
     });
   };
 
-  document.addEventListener("scroll", onScroll, { passive: true, capture: true });
   if (contentArea) {
     contentArea.addEventListener("scroll", onScroll, { passive: true });
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", () => {
-    setupScrollSpyObserver();
-    onScroll();
-  }, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
 
-  setupScrollSpyObserver();
   requestAnimationFrame(() => updateActiveNavFromScroll());
 }
 
