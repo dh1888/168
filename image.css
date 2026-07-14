@@ -5,11 +5,19 @@
   -webkit-backdrop-filter: blur(15px);
   z-index: 9999;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   padding: 0;
-  cursor: pointer; /* 整个遮罩层都可以点击关闭 */
+  cursor: pointer;
   transition: background-color 0.3s ease;
+  overflow: hidden;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  max-height: 100vh;
+  max-height: 100svh;
+  box-sizing: border-box;
 }
 
 body.light-mode #imageViewerModal.modal-overlay {
@@ -18,36 +26,202 @@ body.light-mode #imageViewerModal.modal-overlay {
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* 内容容器 - 阻止点击事件冒泡 */
+/* 内容容器 */
 .image-viewer-content {
   background: transparent !important;
-  width: 100%; /* 改为100%让图片可以更靠边 */
-  max-width: 1400px; /* 增加最大宽度 */
-  height: 100vh; /* 改为100vh */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  height: 100%;
+  height: 100vh;
+  height: 100svh;
+  max-height: 100vh;
+  max-height: 100svh;
   border-radius: 0;
-  overflow: visible; /* 改为visible让按钮可以超出 */
-  display: flex;
-  flex-direction: column;
+  overflow: hidden;
   position: relative;
   box-shadow: none;
   border: none;
-  cursor: default; /* 容器内部恢复默认光标 */
-  pointer-events: none; /* 关键：整个容器不响应点击，但内部元素会 */
+  cursor: default;
+  pointer-events: none;
+  box-sizing: border-box;
 }
 
-/* 顶部工具栏 - 固定在顶部 */
+#imageViewerModal.modal-overlay.active .image-viewer-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10005;
+  pointer-events: auto;
+}
+
+#imageViewerModal.modal-overlay.active .image-viewer-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10005;
+  pointer-events: auto;
+}
+
+#imageViewerModal.modal-overlay.active .image-viewer-body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: 56px;
+  padding-bottom: 52px;
+  box-sizing: border-box;
+  z-index: 10004;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.image-viewer-content > * {
+  pointer-events: auto;
+}
+
+/* 顶部工具栏 */
 .image-viewer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 25px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  padding: 10px 14px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.2));
+  position: relative;
   z-index: 100;
-  pointer-events: auto; /* 确保工具栏可点击 */
+}
+
+.viewer-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.viewer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  pointer-events: auto;
+}
+
+.viewer-header-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.viewer-header-btn-label {
+  line-height: 1;
+}
+
+.viewer-header-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.viewer-header-btn.delete {
+  background: rgba(255, 77, 77, 0.18);
+  color: #ff8a8a;
+}
+
+.viewer-header-btn.delete:hover {
+  background: rgba(255, 77, 77, 0.28);
+  color: #ff6b6b;
+}
+
+/* 复制按钮 - 高对比强调色 */
+.viewer-header-btn.copy,
+.viewer-action-btn.copy {
+  background: linear-gradient(135deg, #ff7a45 0%, #ff5722 100%);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 2px 10px rgba(255, 87, 34, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+.viewer-header-btn.copy i,
+.viewer-action-btn.copy i {
+  color: #fff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+.viewer-header-btn.copy:hover,
+.viewer-action-btn.copy:hover {
+  background: linear-gradient(135deg, #ff8f5c 0%, #ff6b35 100%);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 14px rgba(255, 87, 34, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.viewer-action-btn.copy:hover {
+  transform: translateY(-2px);
+}
+
+.viewer-header-btn.copy.copying,
+.viewer-action-btn.copy.copying {
+  background: linear-gradient(135deg, #ffb088 0%, #ff8a50 100%);
+  opacity: 0.95;
+}
+
+.viewer-header-btn.copy.success,
+.viewer-action-btn.copy.success {
+  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 10px rgba(46, 125, 50, 0.45);
+}
+
+body.light-mode .viewer-header-btn.copy,
+body.light-mode .viewer-action-btn.copy {
+  background: linear-gradient(135deg, #ff7043 0%, #f4511e 100%);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+body.light-mode .viewer-header-btn.copy:hover,
+body.light-mode .viewer-action-btn.copy:hover {
+  background: linear-gradient(135deg, #ff8a65 0%, #ff5722 100%);
+  color: #fff;
+}
+
+/* 大窗口：顶部仅保留复制，下载/删除在底部栏 */
+#headerDownloadImageBtn,
+#headerDeleteImageBtn {
+  display: none;
+}
+
+body.light-mode .viewer-header-btn {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+body.light-mode .viewer-header-btn.delete {
+  color: #ff5252;
 }
 
 /* 关闭按钮 - 更显眼 */
@@ -124,34 +298,38 @@ body.light-mode .image-counter {
   color: #333;
 }
 
-/* 图片显示区域 - 关键：图片容器不能阻止点击事件 */
+/* 图片显示区域 */
 .image-viewer-body {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 60px 40px 80px; /* 增加内边距，特别是上下边距 */
-  cursor: default; /* 图片区域本身不触发关闭 */
-  pointer-events: none; /* 关键：禁用整个图片区域的点击事件 */
+  padding: 8px 48px;
+  overflow: hidden;
+  cursor: default;
+  pointer-events: none;
 }
 
-/* 图片容器 - 恢复点击事件但不要占满 */
+/* 图片容器 */
 .image-container {
-  display: inline-flex; /* 改为inline-flex根据内容自适应 */
+  display: flex;
   align-items: center;
   justify-content: center;
-  max-width: calc(100% - 80px); /* 限制最大宽度，留出点击空间 */
-  max-height: calc(100% - 80px); /* 限制最大高度，留出点击空间 */
-  pointer-events: auto; /* 图片容器可以点击 */
-  cursor: zoom-in; /* 提示可以放大 */
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: auto;
+  cursor: zoom-in;
 }
 
-/* 图片本身 - 确保可交互 */
+/* 图片本身 */
 #viewerImage {
   display: block;
   max-width: 100%;
   max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
@@ -222,19 +400,100 @@ body.light-mode .nav-btn:hover {
   right: 40px;
 }
 
-/* 底部操作栏 - 固定在底部 */
-.image-viewer-footer {
+/* 底部栏：图片名称 + 操作按钮同一行 */
+.image-viewer-bottom-bar {
   display: flex;
-  justify-content: center;
+  align-items: center;
   gap: 12px;
-  padding: 20px 25px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  padding: 8px 12px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.35));
+  position: relative;
   z-index: 100;
-  pointer-events: auto; /* 确保操作栏可点击 */
+  min-height: 44px;
+  box-sizing: border-box;
+  container-type: inline-size;
+  container-name: viewer-bottom-bar;
+}
+
+/* 查看器图片标题（左侧，可收缩） */
+.viewer-image-title-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+}
+
+.viewer-image-title-text {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.85rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.viewer-image-title-text:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.viewer-title-edit-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.viewer-title-edit-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.viewer-image-title-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  width: auto;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 107, 53, 0.8);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  outline: none;
+}
+
+body.light-mode .viewer-image-title-text {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 操作按钮组（右侧） */
+.image-viewer-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
 }
 
 /* 操作按钮 */
@@ -243,21 +502,27 @@ body.light-mode .nav-btn:hover {
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 12px 22px;
-  font-size: 0.95rem;
+  padding: 8px 12px;
+  font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 6px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  min-width: 120px;
-  justify-content: center;
+  min-width: 0;
+  flex: 0 0 auto;
   pointer-events: auto;
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
+}
+
+.viewer-btn-label {
+  line-height: 1;
 }
 
 .viewer-action-btn::before {
@@ -373,7 +638,7 @@ body.light-mode .loading-indicator {
 }
 
 .image-viewer-header,
-.image-viewer-footer,
+.image-viewer-bottom-bar,
 .nav-btn {
   animation: fadeInUp 0.4s ease-out;
 }
@@ -386,7 +651,7 @@ body.light-mode .loading-indicator {
   animation-delay: 0.2s;
 }
 
-.image-viewer-footer {
+.image-viewer-bottom-bar {
   animation-delay: 0.3s;
 }
 
@@ -423,116 +688,46 @@ body.light-mode .loading-indicator {
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
-  .image-viewer-content {
-    width: 100%;
-    height: 100vh;
-  }
-
   .image-viewer-body {
-    padding: 50px 30px 70px;
-  }
-
-  .image-container {
-    max-width: calc(100% - 60px);
-    max-height: calc(100% - 60px);
+    padding: 6px 36px;
   }
 }
 
 @media (max-width: 768px) {
-  .image-viewer-content {
-    width: 100%;
-    height: 100vh;
-    border-radius: 0;
+  .image-viewer-header {
+    padding: 10px 12px;
   }
 
-  .image-viewer-header {
-    padding: 15px 20px;
+  .image-viewer-bottom-bar {
+    gap: 8px;
+    padding: 8px 10px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
   }
 
   .image-viewer-footer {
-    padding: 15px 20px;
+    gap: 6px;
   }
 
   .image-viewer-body {
-    padding: 40px 20px 60px;
-  }
-
-  .image-container {
-    max-width: calc(100% - 40px);
-    max-height: calc(100% - 50px);
+    padding: 4px 32px;
   }
 
   .nav-btn {
-    width: 48px;
-    height: 48px;
-    font-size: 1.1rem;
-  }
-
-  .prev-btn {
-    left: 20px;
-  }
-
-  .next-btn {
-    right: 20px;
-  }
-
-  .viewer-action-btn {
-    min-width: 100px;
-    padding: 10px 18px;
-    font-size: 0.9rem;
-  }
-
-  #closeImageViewer {
     width: 40px;
     height: 40px;
-    font-size: 1.2rem;
-  }
-
-  .image-counter {
-    font-size: 0.9rem;
-    padding: 7px 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .image-viewer-footer {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 15px;
-  }
-
-  .image-viewer-body {
-    padding: 30px 15px 50px;
-  }
-
-  .image-container {
-    max-width: calc(100% - 30px);
-    max-height: calc(100% - 40px);
-  }
-
-  .viewer-action-btn {
-    flex: 1;
-    min-width: 85px;
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
-
-  .nav-btn {
-    width: 42px;
-    height: 42px;
     font-size: 1rem;
   }
 
   .prev-btn {
-    left: 15px;
+    left: 8px;
   }
 
   .next-btn {
-    right: 15px;
+    right: 8px;
   }
 
-  .image-viewer-header {
-    padding: 12px 15px;
+  .viewer-image-title-text {
+    font-size: 0.8rem;
   }
 
   .image-counter {
@@ -541,8 +736,238 @@ body.light-mode .loading-indicator {
   }
 }
 
-/* 触摸设备优化 */
-@media (hover: none) and (pointer: coarse) {
+@media (max-width: 480px), (max-height: 520px) {
+  .image-viewer-body {
+    padding: 2px 28px;
+  }
+
+  .image-viewer-bottom-bar {
+    gap: 6px;
+    padding: 6px 8px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .prev-btn {
+    left: 4px;
+  }
+
+  .next-btn {
+    right: 4px;
+  }
+
+  .image-viewer-header {
+    padding: 8px 10px;
+  }
+
+  .image-counter {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .viewer-image-title-text {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .viewer-title-edit-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .image-viewer-footer {
+    gap: 5px;
+  }
+}
+
+/* 窗口高度较小时：压缩上下栏，优先保证操作按钮可见 */
+@media (max-height: 640px) {
+  .image-viewer-header {
+    padding: 6px 12px;
+  }
+
+  #closeImageViewer {
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
+  }
+
+  .image-counter {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+  }
+
+  .viewer-image-title-text {
+    font-size: 0.75rem;
+  }
+
+  .viewer-title-edit-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .image-viewer-bottom-bar {
+    padding: 6px 8px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+  }
+
+  .image-viewer-body {
+    padding: 2px 32px;
+  }
+
+  .nav-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-height: 480px) {
+  #imageViewerModal.modal-overlay.active .image-viewer-body {
+    padding-top: 46px;
+    padding-bottom: 44px;
+  }
+
+  .image-viewer-bottom-bar {
+    padding: 5px 6px;
+    padding-bottom: max(5px, env(safe-area-inset-bottom, 0px));
+    gap: 6px;
+    min-height: 40px;
+  }
+
+  .image-viewer-header {
+    padding: 4px 10px;
+  }
+
+  .image-viewer-body {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .viewer-image-title-text {
+    font-size: 0.7rem;
+  }
+}
+
+/* 窄窗口 / 矮窗口：顶部与底部按钮仅显示图标 */
+@media (max-width: 720px), (max-height: 600px) {
+  #headerDownloadImageBtn,
+  #headerDeleteImageBtn {
+    display: inline-flex;
+  }
+
+  .image-viewer-footer {
+    display: none;
+  }
+
+  .viewer-header-btn,
+  .viewer-action-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  .viewer-header-btn i,
+  .viewer-action-btn i {
+    font-size: 0.95rem;
+  }
+
+  .viewer-header-btn.copy i,
+  .viewer-action-btn.copy i {
+    font-size: 1rem;
+  }
+
+  .viewer-header-btn-label,
+  .viewer-btn-label {
+    display: none;
+  }
+
+  .viewer-header-actions {
+    gap: 6px;
+  }
+
+  .viewer-header-right {
+    gap: 8px;
+  }
+
+  .image-viewer-footer {
+    gap: 6px;
+  }
+
+  #closeImageViewer {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    font-size: 1.1rem;
+  }
+
+  .image-counter {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+  }
+
+  #imageViewerModal.modal-overlay.active .image-viewer-body {
+    padding-top: 50px;
+    padding-bottom: 48px;
+  }
+}
+
+@media (min-width: 721px) and (min-height: 601px) {
+  #headerCopyImageBtn {
+    width: auto;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+  }
+
+  #headerCopyImageBtn .viewer-header-btn-label {
+    display: inline;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+@container viewer-bottom-bar (max-width: 560px) {
+  .viewer-btn-label {
+    display: none;
+  }
+
+  .viewer-action-btn {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  .viewer-action-btn i {
+    font-size: 0.9rem;
+  }
+
+  .image-viewer-footer {
+    gap: 5px;
+  }
+}
+
+/* 触摸设备优化（仅在视口足够大时使用较大触控目标） */
+@media (hover: none) and (pointer: coarse) and (min-height: 601px) {
   .nav-btn {
     opacity: 0.7;
     background: rgba(255, 255, 255, 0.15);
@@ -561,19 +986,18 @@ body.light-mode .loading-indicator {
     transform: rotate(90deg) scale(1.1);
   }
 
-  /* 手机上的按钮更大一些 */
   .nav-btn {
-    width: 52px;
-    height: 52px;
-  }
-
-  .viewer-action-btn {
-    padding: 14px 20px;
-    min-width: 110px;
+    width: 48px;
+    height: 48px;
   }
 }
 
-/* 键盘快捷键提示 */
+/* 小图片时的优化 */
+@media (max-height: 600px) {
+  .image-viewer-body {
+    padding: 2px 28px;
+  }
+}
 @media (min-width: 1024px) {
   .nav-btn::after {
     content: attr(data-key);
@@ -647,13 +1071,5 @@ body.light-mode #imageViewerModal.modal-overlay::after {
   }
 }
 
-/* 小图片时的优化 */
-@media (max-height: 600px) {
-  .image-viewer-body {
-    padding: 40px 30px 60px;
-  }
-
-  .image-container {
-    max-height: calc(100% - 60px);
-  }
-}
+/* 键盘快捷键提示 */
+@media (min-width: 1024px) {
