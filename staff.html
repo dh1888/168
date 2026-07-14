@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="zh-CN" data-immersive-translate-page-theme="light"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>客服人数统计 · 完整版（右键菜单+独立头像）</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 引入拖拽库 SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
@@ -152,12 +150,38 @@
             text-align: center;
         }
 
+        .title-count {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff5c8a, #ff3b6d);
+            padding: 6px 12px;
+            border-radius: 999px;
+            box-shadow: 0 3px 10px rgba(255, 59, 109, 0.28);
+            letter-spacing: 0.3px;
+        }
+
+        .section-count {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            background: #f3f5f9;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
         .modules-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
             width: 100%;
-            justify-content: center;
+            align-items: stretch;
         }
 
         .module {
@@ -167,7 +191,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-top: 4px solid var(--primary);
-            width: 100%;
+            flex: 1 1 340px;
+            max-width: 100%;
         }
 
         .module:nth-child(4n+1) { border-top-color: var(--primary); }
@@ -246,15 +271,21 @@
 
         .positions-container {
             margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: stretch;
         }
 
         .position {
-            margin-bottom: 16px;
+            margin-bottom: 0;
             background: #f8f9fb;
             padding: 12px;
             border-radius: 10px;
             border-left: 3px solid var(--position-color-1);
             transition: all 0.3s ease;
+            flex: 1 1 240px;
+            max-width: 100%;
         }
 
         .position:nth-child(8n+1) { border-left-color: var(--position-color-1); }
@@ -393,14 +424,37 @@
             min-width: 0;
         }
 
+        .staff-name-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 2px;
+        }
+
         .staff-name {
             font-weight: 600;
             font-size: 0.8rem;
-            margin-bottom: 2px;
             color: #2c3e50;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .staff-name-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 1px 6px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4c1d95;
+            font-size: 0.6rem;
+            white-space: nowrap;
+        }
+
+        .staff-name-badge-site {
+            background: #f1f5f9;
+            color: #475569;
         }
 
         .staff-roles {
@@ -420,6 +474,27 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+        }
+
+        .staff-role-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            margin-bottom: 2px;
+        }
+
+        .staff-role-children {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .staff-role-sub {
+            font-size: 0.55rem;
+            padding: 1px 4px;
+            border-radius: 4px;
+            opacity: 0.95;
         }
 
         .staff-actions {
@@ -537,10 +612,12 @@
 
         .modal-content {
             background: white;
-            padding: 20px;
+            padding: 18px;
             border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
+            width: min(92vw, 420px);
+            max-width: 420px;
+            max-height: 84vh;
+            overflow-y: auto;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             animation: modalFadeIn 0.3s ease;
         }
@@ -709,7 +786,36 @@
             padding: 4px 8px;
             border-radius: 16px;
             font-size: 0.8rem;
+            gap: 6px;
+        }
+
+        .role-tag-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .role-tag-title {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .role-tag-sub-list {
+            display: flex;
+            flex-wrap: wrap;
             gap: 4px;
+        }
+
+        .role-tag-sub-chip {
+            font-size: 0.7rem;
+            color: #4c1d95;
+            background: #eef2ff;
+            border-radius: 999px;
+            padding: 1px 6px;
+            white-space: nowrap;
         }
 
         .role-tag span {
@@ -742,6 +848,239 @@
             display: flex;
             gap: 8px;
             margin-top: 8px;
+        }
+
+        .role-picker-toggle {
+            width: 100%;
+            border: 1px solid #d8dce6;
+            border-radius: 8px;
+            background: #f8f9fd;
+            color: #2d3558;
+            padding: 10px 12px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+
+        .role-picker-toggle:hover {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .role-picker-panel {
+            display: none;
+            border: 1px solid #e3e7ef;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 8px;
+            background: #fcfdff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .role-picker-section {
+            margin-bottom: 10px;
+        }
+
+        .role-picker-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4a5673;
+            margin-bottom: 6px;
+        }
+
+        .role-picker-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .site-tab-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .site-tab {
+            border: 1px solid #d8dce6;
+            background: #f8f9fd;
+            color: #4c546b;
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .site-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .site-tab-panel {
+            display: none;
+        }
+
+        .site-tab-panel.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #334155;
+            margin: 0;
+        }
+
+        .section-action-btn {
+            border: 1px solid var(--primary);
+            background: #eef2ff;
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .section-action-btn:hover {
+            background: #dfe6ff;
+        }
+
+        .inline-form-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fcfdff;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+
+        .inline-form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .site-list-box,
+        .site-group-list-box {
+            border: 1px solid #e8ebf2;
+            border-radius: 10px;
+            padding: 8px;
+            background: #fbfdff;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .site-group-item {
+            border: 1px solid #eceff5;
+            border-radius: 8px;
+            background: white;
+            overflow: hidden;
+        }
+
+        .site-group-toggle {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .site-group-sites {
+            display: none;
+            padding: 6px 10px 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .site-group-item.active .site-group-sites {
+            display: flex;
+        }
+
+        .site-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4c1d95;
+            font-size: 0.8rem;
+        }
+
+        .site-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .site-action-btn {
+            border: none;
+            background: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 4px;
+        }
+
+        .site-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+        }
+
+        .site-group-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .site-group-action-btn {
+            border: none;
+            background: none;
+            color: #4f46e5;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 4px;
+        }
+
+        .site-group-action-btn.delete {
+            color: #ef4444;
         }
 
         .role-input {
@@ -885,11 +1224,20 @@
 
         @media (max-width: 1200px) {
             .modules-container {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 16px;
             }
         }
 
         @media (max-width: 768px) {
+            .positions-container {
+                flex-direction: column;
+            }
+
+            .position {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
             header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -927,7 +1275,12 @@
 
         @media (max-width: 480px) {
             .modules-container {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .module {
+                flex: 1 1 100%;
+                width: 100%;
             }
 
             .staff-list {
@@ -943,28 +1296,16 @@
 <body>
 <div class="container">
     <header>
-        <h1><i class="fas fa-users-cog"></i> 客服人数统计 · 完整版</h1>
-        <div style="display: flex; gap: 10px">
+        <h1 id="page-title"><i class="fas fa-users-cog"></i> 客服人数  <span class="title-count" id="page-title-count">共 0 人</span></h1>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn" id="export-btn"><i class="fas fa-file-export"></i> 导出数据</button>
             <button class="btn" id="import-btn"><i class="fas fa-file-import"></i> 导入数据</button>
             <button class="btn" id="add-module-btn"><i class="fas fa-plus"></i> 添加小组</button>
+            <button class="btn" id="add-site-btn"><i class="fas fa-sitemap"></i> 站点</button>
         </div>
     </header>
 
-    <div class="stats-bar">
-        <div class="stat-card">
-            <div class="stat-value">4</div>
-            <div class="stat-label">小组数量</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">16</div>
-            <div class="stat-label">成员数量</div>
-        </div>
-    </div>
-
-    <div class="modules-container" id="modules-container">
-        <!-- 模块将通过JS动态添加 -->
-    </div>
+    <div class="modules-container" id="modules-container"><div class="empty-placeholder">暂无数据</div></div>
 </div>
 
 <!-- 添加模块模态框 -->
@@ -972,14 +1313,70 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-cube"></i> 添加小组</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
             <label for="module-name">小组名称</label>
-            <input type="text" id="module-name" class="form-control" placeholder="输入小组名称" />
+            <input type="text" id="module-name" class="form-control" placeholder="输入小组名称">
         </div>
         <div class="form-actions">
             <button class="btn" id="save-module">保存小组模块</button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加站点模态框 -->
+<div class="modal" id="site-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-sitemap"></i> 站点</h2>
+            <button class="close-btn">×</button>
+        </div>
+        <div class="site-tab-group">
+            <button type="button" class="site-tab active" data-tab="group">分组</button>
+            <button type="button" class="site-tab" data-tab="site">站点</button>
+        </div>
+        <div class="site-tab-panel active" id="site-tab-group">
+            <div class="form-group">
+                <div class="section-header">
+                    <label class="section-title">现有分组</label>
+                    <button type="button" class="section-action-btn" id="toggle-site-group-form">添加分组</button>
+                </div>
+                <div id="site-group-form" class="inline-form-card" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="site-group-name">分组名称</label>
+                        <input type="text" id="site-group-name" class="form-control" placeholder="输入分组名称">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>选择站点</label>
+                        <div id="site-group-options" class="site-list-box"><div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无站点，请先添加站点</div></div>
+                    </div>
+                    <div class="inline-form-actions">
+                        <button class="btn" id="save-site-group">保存分组</button>
+                        <button class="btn btn-secondary" id="cancel-site-group-form" type="button">取消</button>
+                    </div>
+                </div>
+                <div id="site-group-overview" class="site-group-list-box"><div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无分组</div></div>
+            </div>
+        </div>
+        <div class="site-tab-panel" id="site-tab-site">
+            <div class="form-group">
+                <div class="section-header">
+                    <label class="section-title">现有站点</label>
+                    <button type="button" class="section-action-btn" id="toggle-site-form">添加站点</button>
+                </div>
+                <div id="site-form" class="inline-form-card" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="site-name">站点名称</label>
+                        <input type="text" id="site-name" class="form-control" placeholder="输入站点名称">
+                    </div>
+                    <div class="inline-form-actions">
+                        <button class="btn" id="save-site">保存站点</button>
+                        <button class="btn btn-secondary" id="cancel-site-form" type="button">取消</button>
+                    </div>
+                </div>
+                <div id="site-overview" class="site-list-box"><div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无站点</div></div>
+            </div>
         </div>
     </div>
 </div>
@@ -989,11 +1386,11 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-briefcase"></i> 添加新岗位</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
             <label for="position-name">岗位名称</label>
-            <input type="text" id="position-name" class="form-control" placeholder="输入岗位名称" />
+            <input type="text" id="position-name" class="form-control" placeholder="输入岗位名称">
         </div>
         <div class="form-actions">
             <button class="btn" id="save-position">保存岗位</button>
@@ -1006,7 +1403,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-user-plus"></i> <span id="staff-modal-title">添加新成员</span></h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         
         <!-- 头像上传区域 -->
@@ -1022,20 +1419,27 @@
                     <i class="fas fa-times"></i> 清除头像
                 </button>
             </div>
-            <input type="file" id="staff-avatar-input" accept="image/*" />
+            <input type="file" id="staff-avatar-input" accept="image/*">
         </div>
 
         <div class="form-group">
             <label for="staff-name">成员姓名</label>
-            <input type="text" id="staff-name" class="form-control" placeholder="输入成员姓名" />
+            <input type="text" id="staff-name" class="form-control" placeholder="输入成员姓名">
         </div>
         <div class="form-group">
             <label>成员角色</label>
-            <div class="roles-container" id="roles-container"></div>
-            <div class="role-input-group">
-                <input type="text" id="role-input" class="form-control role-input" placeholder="输入角色名称" />
-                <button class="add-role-btn" id="add-role-btn"><i class="fas fa-plus"></i></button>
+            <button type="button" class="role-picker-toggle" id="role-picker-toggle"><i class="fas fa-chevron-down"></i> 选择角色</button>
+            <div class="role-picker-panel" id="role-picker-panel">
+                <div class="role-picker-section">
+                    <div class="role-picker-section-title">分组</div>
+                    <div id="role-group-picker"></div>
+                </div>
+                <div class="role-picker-section">
+                    <div class="role-picker-section-title">站点</div>
+                    <div id="role-site-picker"></div>
+                </div>
             </div>
+            <div class="roles-container" id="roles-container"></div>
         </div>
         <div class="form-group">
             <label for="staff-notes">备注</label>
@@ -1052,7 +1456,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-user"></i> <span id="staff-details-title">成员详情</span></h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         
         <!-- 头像上传区域 -->
@@ -1068,20 +1472,27 @@
                     <i class="fas fa-times"></i> 清除头像
                 </button>
             </div>
-            <input type="file" id="detail-avatar-input" accept="image/*" />
+            <input type="file" id="detail-avatar-input" accept="image/*">
         </div>
 
         <div class="form-group">
             <label for="detail-name">姓名</label>
-            <input type="text" id="detail-name" class="form-control" placeholder="输入成员姓名" />
+            <input type="text" id="detail-name" class="form-control" placeholder="输入成员姓名">
         </div>
         <div class="form-group">
             <label>角色</label>
-            <div class="roles-container" id="detail-roles-container"></div>
-            <div class="role-input-group">
-                <input type="text" id="detail-role-input" class="form-control role-input" placeholder="输入角色名称" />
-                <button class="add-role-btn" id="detail-add-role-btn"><i class="fas fa-plus"></i></button>
+            <button type="button" class="role-picker-toggle" id="detail-role-picker-toggle"><i class="fas fa-chevron-down"></i> 选择角色</button>
+            <div class="role-picker-panel" id="detail-role-picker-panel">
+                <div class="role-picker-section">
+                    <div class="role-picker-section-title">分组</div>
+                    <div id="detail-role-group-picker"></div>
+                </div>
+                <div class="role-picker-section">
+                    <div class="role-picker-section-title">站点</div>
+                    <div id="detail-role-site-picker"></div>
+                </div>
             </div>
+            <div class="roles-container" id="detail-roles-container"></div>
         </div>
         <div class="form-group">
             <label for="detail-notes">备注</label>
@@ -1099,11 +1510,11 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-file-import"></i> 导入数据</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
             <label for="import-file">选择JSON文件</label>
-            <input type="file" id="import-file" class="form-control" accept=".json,application/json" />
+            <input type="file" id="import-file" class="form-control" accept=".json,application/json">
             <div style="margin-top: 10px; font-size: 0.8rem; color: #666">
                 <p><i class="fas fa-info-circle"></i> 支持从本系统导出的JSON文件</p>
                 <p><i class="fas fa-exclamation-triangle"></i> 注意：导入会覆盖当前所有数据</p>
@@ -1120,7 +1531,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-exclamation-circle"></i> 确认操作</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
             <p id="confirm-text">确定要执行此操作吗？</p>
@@ -1137,7 +1548,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title"><i class="fas fa-check-circle"></i> 提示</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
             <p id="alert-text">操作成功完成！</p>
@@ -1153,10 +1564,10 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title" id="input-title"><i class="fas fa-edit"></i> 请输入</h2>
-            <button class="close-btn">&times;</button>
+            <button class="close-btn">×</button>
         </div>
         <div class="form-group">
-            <input type="text" id="input-value" class="form-control" placeholder="请输入" />
+            <input type="text" id="input-value" class="form-control" placeholder="请输入">
         </div>
         <div class="form-actions">
             <button class="btn" id="input-save">保存</button>
@@ -1165,7 +1576,7 @@
 </div>
 
 <!-- 右键自定义菜单 -->
-<div class="context-menu" id="contextMenu">
+<div class="context-menu" id="contextMenu" style="display: none;">
     <ul id="contextMenuList">
         <!-- 动态填充 -->
     </ul>
@@ -1173,103 +1584,12 @@
 
 <script>
     (function() {
-        // 示例数据
-        const sampleData = [
-            {
-                id: 1,
-                name: "技术研发部",
-                positions: [
-                    {
-                        id: 101,
-                        name: "前端开发",
-                        staff: [
-                            { id: 1001, name: "张三", roles: ["高级工程师", "团队负责人"], notes: "负责前端架构设计和核心模块开发", avatar: null },
-                            { id: 1002, name: "李四", roles: ["中级工程师"], notes: "负责业务模块开发和维护", avatar: null },
-                            { id: 1003, name: "王五", roles: ["初级工程师", "实习生导师"], notes: "协助开发和学习成长", avatar: null },
-                            { id: 1004, name: "赵六", roles: ["UI设计师", "用户体验专家"], notes: "负责界面设计和用户体验优化", avatar: null }
-                        ]
-                    },
-                    {
-                        id: 102,
-                        name: "后端开发",
-                        staff: [
-                            { id: 1005, name: "陈七", roles: ["架构师", "技术总监"], notes: "系统架构设计和性能优化", avatar: null },
-                            { id: 1006, name: "林八", roles: ["高级工程师"], notes: "核心业务逻辑开发", avatar: null },
-                            { id: 1007, name: "黄九", roles: ["DevOps", "系统管理员"], notes: "负责CI/CD和运维工作", avatar: null }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 2,
-                name: "产品设计部",
-                positions: [
-                    {
-                        id: 201,
-                        name: "UI设计",
-                        staff: [
-                            { id: 2001, name: "陈七", roles: ["设计主管", "创意总监"], notes: "设计团队管理和设计规范制定", avatar: null },
-                            { id: 2002, name: "林八", roles: ["视觉设计师"], notes: "负责产品视觉设计和品牌形象", avatar: null }
-                        ]
-                    },
-                    {
-                        id: 202,
-                        name: "产品经理",
-                        staff: [
-                            { id: 2003, name: "黄九", roles: ["产品总监", "战略规划"], notes: "产品战略规划和团队管理", avatar: null },
-                            { id: 2004, name: "周十", roles: ["产品经理"], notes: "需求分析和产品设计", avatar: null },
-                            { id: 2005, name: "吴十一", roles: ["产品助理", "用户研究员"], notes: "协助产品经理完成日常工作", avatar: null }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 3,
-                name: "市场营销部",
-                positions: [
-                    {
-                        id: 301,
-                        name: "数字营销",
-                        staff: [
-                            { id: 3001, name: "郑十二", roles: ["营销主管", "数据分析师"], notes: "数字营销策略制定和执行", avatar: null },
-                            { id: 3002, name: "王十三", roles: ["SEO专家", "内容策略师"], notes: "搜索引擎优化和流量增长", avatar: null }
-                        ]
-                    },
-                    {
-                        id: 302,
-                        name: "内容创作",
-                        staff: [
-                            { id: 3003, name: "张十四", roles: ["内容总监", "编辑"], notes: "内容策略和团队管理", avatar: null },
-                            { id: 3004, name: "李十五", roles: ["文案策划", "社交媒体经理"], notes: "内容创作和文案撰写", avatar: null }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 4,
-                name: "客户服务部",
-                positions: [
-                    {
-                        id: 401,
-                        name: "客户支持",
-                        staff: [
-                            { id: 4001, name: "钱十六", roles: ["支持主管", "培训师"], notes: "客户支持团队管理和培训", avatar: null },
-                            { id: 4002, name: "孙十七", roles: ["技术支持", "问题解决专家"], notes: "解决客户技术问题和提供支持", avatar: null }
-                        ]
-                    },
-                    {
-                        id: 402,
-                        name: "客户成功",
-                        staff: [
-                            { id: 4003, name: "周十八", roles: ["成功经理", "客户关系管理"], notes: "客户关系维护和满意度提升", avatar: null },
-                            { id: 4004, name: "吴十九", roles: ["客户代表", "需求分析师"], notes: "日常客户沟通和需求收集", avatar: null }
-                        ]
-                    }
-                ]
-            }
-        ];
+        // 默认无模板数据，空白展示
+        const sampleData = [];
 
-        let modules = JSON.parse(localStorage.getItem("teamModules")) || sampleData;
+        let modules = [];
+        let sites = [];
+        let siteGroups = [];
         let currentModuleId = null;
         let currentPositionId = null;
         let currentStaffId = null;
@@ -1278,10 +1598,79 @@
         let isEditingStaff = false;
         let currentRoles = [];
         let detailRoles = [];
+        let editingGroupName = null;
+        let editingSiteName = null;
 
         // 当前正在编辑的头像数据
         let currentAvatar = null;
         let currentDetailAvatar = null;
+
+        function extractRolesFromModules(data) {
+            const roleSet = new Set();
+            data.forEach(module => {
+                module.positions.forEach(position => {
+                    position.staff.forEach(staff => {
+                        (staff.roles || []).forEach(role => roleSet.add(role));
+                    });
+                });
+            });
+            return Array.from(roleSet).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+        }
+
+        function saveSiteSettings() {
+            localStorage.setItem("teamSiteSettings", JSON.stringify({ sites, siteGroups }));
+        }
+
+        function syncSiteSettingsWithModules() {
+            const rolesFromModules = extractRolesFromModules(modules);
+            const mergedSites = Array.from(new Set([...sites, ...rolesFromModules]));
+            sites = mergedSites.sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+            siteGroups = (siteGroups || []).map(group => ({
+                ...group,
+                sites: (group.sites || []).filter(site => sites.includes(site))
+            })).filter(group => group.sites && group.sites.length > 0);
+            saveSiteSettings();
+        }
+
+        function ensureSiteExists(role) {
+            if (!role) return;
+            if (!sites.includes(role)) {
+                sites.push(role);
+                sites.sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+                saveSiteSettings();
+            }
+        }
+
+        function getInitialSiteSettings() {
+            const storedModules = localStorage.getItem("teamModules");
+            const storedSiteSettings = localStorage.getItem("teamSiteSettings");
+
+            if (storedModules) {
+                try {
+                    modules = JSON.parse(storedModules);
+                } catch (error) {
+                    modules = [];
+                }
+            } else {
+                modules = [];
+            }
+
+            if (storedSiteSettings) {
+                try {
+                    const parsed = JSON.parse(storedSiteSettings);
+                    sites = Array.isArray(parsed.sites) ? parsed.sites : [];
+                    siteGroups = Array.isArray(parsed.siteGroups) ? parsed.siteGroups : [];
+                } catch (error) {
+                    sites = [];
+                    siteGroups = [];
+                }
+            } else {
+                sites = [];
+                siteGroups = [];
+            }
+
+            syncSiteSettingsWithModules();
+        }
 
         // 右键菜单相关
         const contextMenu = document.getElementById('contextMenu');
@@ -1290,6 +1679,7 @@
 
         // 初始化
         function initApp() {
+            getInitialSiteSettings();
             renderModules();
             setupEventListeners();
             updateStats();
@@ -1319,6 +1709,10 @@
                     version: "1.0",
                     exportDate: new Date().toISOString(),
                     modules: modules,
+                    siteSettings: {
+                        sites,
+                        siteGroups
+                    },
                     stats: {
                         moduleCount: modules.length,
                         positionCount: modules.reduce((t, m) => t + m.positions.length, 0),
@@ -1356,7 +1750,15 @@
                     showConfirm("导入将覆盖当前所有数据，是否继续？", (confirmed) => {
                         if (confirmed) {
                             modules = importedData.modules;
+                            if (importedData.siteSettings) {
+                                sites = importedData.siteSettings.sites || [];
+                                siteGroups = importedData.siteSettings.siteGroups || [];
+                            } else {
+                                sites = extractRolesFromModules(modules);
+                                siteGroups = [];
+                            }
                             saveToLocalStorage();
+                            saveSiteSettings();
                             renderModules();
                             updateStats();
                             closeAllModals();
@@ -1380,9 +1782,15 @@
             document.getElementById("module-name").value = "";
             document.getElementById("position-name").value = "";
             document.getElementById("staff-name").value = "";
-            document.getElementById("role-input").value = "";
             document.getElementById("staff-notes").value = "";
-            document.getElementById("detail-role-input").value = "";
+            document.getElementById("detail-name").value = "";
+            document.getElementById("detail-notes").value = "";
+            document.getElementById("site-group-name").value = "";
+            document.getElementById("site-name").value = "";
+            document.getElementById("site-group-form").style.display = "none";
+            document.getElementById("site-form").style.display = "none";
+            editingGroupName = null;
+            editingSiteName = null;
             document.getElementById("import-file").value = "";
             currentModuleId = null;
             currentPositionId = null;
@@ -1396,6 +1804,7 @@
             document.getElementById("staff-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
             document.getElementById("detail-avatar-preview").style.backgroundImage = "";
             document.getElementById("detail-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+            document.querySelectorAll(".role-picker-panel").forEach(panel => panel.style.display = "none");
         }
 
         function showConfirm(message, callback) {
@@ -1421,10 +1830,16 @@
         }
 
         function updateStats() {
-            let moduleCount = modules.length;
-            let staffCount = modules.reduce((t, m) => t + m.positions.reduce((pt, p) => pt + p.staff.length, 0), 0);
-            document.querySelectorAll(".stat-value")[0].textContent = moduleCount;
-            document.querySelectorAll(".stat-value")[1].textContent = staffCount;
+            const moduleCount = modules.length;
+            const staffCount = modules.reduce((t, m) => t + m.positions.reduce((pt, p) => pt + p.staff.length, 0), 0);
+            const titleCount = document.getElementById("page-title-count");
+            if (titleCount) {
+                titleCount.textContent = `总共 ${staffCount} 人`;
+            }
+            if (document.querySelectorAll(".stat-value").length) {
+                document.querySelectorAll(".stat-value")[0].textContent = moduleCount;
+                document.querySelectorAll(".stat-value")[1].textContent = staffCount;
+            }
         }
 
         // 生成角色颜色
@@ -1441,6 +1856,11 @@
             const container = document.getElementById("modules-container");
             container.innerHTML = "";
 
+            if (!modules.length) {
+                container.innerHTML = '<div class="empty-placeholder">暂无数据</div>';
+                return;
+            }
+
             modules.forEach(module => {
                 const moduleEl = document.createElement("div");
                 moduleEl.className = "module";
@@ -1456,8 +1876,14 @@
                         position.staff.forEach(person => {
                             let rolesHTML = "";
                             if (person.roles && person.roles.length > 0) {
-                                person.roles.forEach(role => {
-                                    rolesHTML += `<span class="staff-role" style="background-color: ${generateRoleColor(role)}">${role}</span>`;
+                                const displayItems = getRoleDisplayItems(person.roles);
+                                displayItems.forEach(item => {
+                                    if (item.type === 'group') {
+                                        const siteChildren = item.sites.map(site => `<span class="staff-role staff-role-sub" style="background-color: ${generateRoleColor(site)}">${site}</span>`).join('');
+                                        rolesHTML += `<div class="staff-role-children">${siteChildren}</div>`;
+                                    } else {
+                                        rolesHTML += `<span class="staff-role" style="background-color: ${generateRoleColor(item.name)}">${item.name}</span>`;
+                                    }
                                 });
                             }
                             
@@ -1473,7 +1899,15 @@
                                 <div class="staff-member" data-staff-id="${person.id}" data-staff-name="${person.name}" data-module-id="${module.id}" data-position-id="${position.id}">
                                     <div class="staff-avatar" ${avatarStyle}>${avatarContent}</div>
                                     <div class="staff-info">
-                                        <div class="staff-name">${person.name}</div>
+                                        <div class="staff-name-row">
+                                            <div class="staff-name">${person.name}</div>
+                                            ${(() => {
+                                                const displayItems = getRoleDisplayItems(person.roles || []);
+                                                const groupBadges = displayItems.filter(item => item.type === 'group').map(item => `<span class="staff-name-badge">${item.name}</span>`).join('');
+                                                const siteBadges = displayItems.filter(item => item.type === 'site').map(item => `<span class="staff-name-badge staff-name-badge-site">${item.name}</span>`).join('');
+                                                return groupBadges || siteBadges;
+                                            })()}
+                                        </div>
                                         <div class="staff-roles">${rolesHTML}</div>
                                     </div>
                                   
@@ -1485,7 +1919,7 @@
                     positionsHTML += `
                         <div class="position" data-position-id="${position.id}" data-position-name="${position.name}" data-module-id="${module.id}">
                             <div class="position-header">
-                                <span class="position-title"><i class="fas fa-briefcase"></i> ${position.name}</span>
+                                <span class="position-title"><i class="fas fa-briefcase"></i> ${position.name}<span class="section-count">${position.staff.length} 人</span></span>
                                 <div class="position-actions">
                                     <button class="action-btn add-staff" title="添加成员"><i class="fas fa-user-plus"></i></button>
                                     <button class="action-btn delete-position" title="删除岗位"><i class="fas fa-trash"></i></button>
@@ -1498,7 +1932,7 @@
 
                 moduleEl.innerHTML = `
                     <div class="module-header">
-                        <span class="module-title"><i class="fas fa-cube"></i> ${module.name}</span>
+                        <span class="module-title"><i class="fas fa-cube"></i> ${module.name}<span class="section-count">${module.positions.reduce((sum, position) => sum + position.staff.length, 0)} 人</span></span>
                         <div class="module-actions">
                             <button class="action-btn add-position" title="添加岗位"><i class="fas fa-briefcase"></i></button>
                             <button class="action-btn delete-module" title="删除模块"><i class="fas fa-trash"></i></button>
@@ -1743,14 +2177,16 @@
             // 折叠
             document.querySelectorAll(".module-title").forEach(el => {
                 el.addEventListener("click", (e) => {
-                    e.target.closest(".module").querySelector(".positions-container").classList.toggle("collapsed");
-                    e.target.classList.toggle("collapsed");
+                    const moduleEl = e.currentTarget.closest(".module");
+                    moduleEl.querySelector(".positions-container").classList.toggle("collapsed");
+                    e.currentTarget.classList.toggle("collapsed");
                 });
             });
             document.querySelectorAll(".position-title").forEach(el => {
                 el.addEventListener("click", (e) => {
-                    e.target.closest(".position").querySelector(".staff-list").classList.toggle("collapsed");
-                    e.target.classList.toggle("collapsed");
+                    const positionEl = e.currentTarget.closest(".position");
+                    positionEl.querySelector(".staff-list").classList.toggle("collapsed");
+                    e.currentTarget.classList.toggle("collapsed");
                 });
             });
 
@@ -1818,6 +2254,9 @@
                     document.getElementById("staff-avatar-preview").style.backgroundImage = "";
                     document.getElementById("staff-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
                     renderRoles();
+                    renderSiteManagementOptions();
+                    renderSiteGroupsOverview();
+                    renderSiteOverview();
                     openModal("staff-modal");
                 });
             });
@@ -1873,68 +2312,377 @@
             
             detailRoles = [...(staff.roles || [])];
             renderDetailRoles();
+            renderSiteManagementOptions();
+            renderSiteGroupsOverview();
+            renderSiteOverview();
             openModal("staff-details-modal");
         }
 
         // 角色管理
-        function addRole() {
-            const input = document.getElementById("role-input");
-            const role = input.value.trim();
-            if (role && !currentRoles.includes(role)) {
-                currentRoles.push(role);
-                renderRoles();
-                input.value = "";
+        function toggleRoleSelection(role, selectedRoles) {
+            ensureSiteExists(role);
+            const index = selectedRoles.indexOf(role);
+            if (index !== -1) {
+                selectedRoles.splice(index, 1);
+            } else {
+                selectedRoles.push(role);
             }
+            selectedRoles.sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
         }
 
-        function removeRole(role) {
-            currentRoles = currentRoles.filter(r => r !== role);
+        function updateRolePickerButton(buttonId, selectedRoles) {
+            const button = document.getElementById(buttonId);
+            if (!button) return;
+            button.innerHTML = `<i class="fas fa-chevron-down"></i> ${selectedRoles.length ? `已选 ${selectedRoles.length} 个角色` : '选择角色'}`;
+        }
+
+        function renderRolePicker(mode, selectedRoles) {
+            const groupContainer = document.getElementById(mode === 'detail' ? 'detail-role-group-picker' : 'role-group-picker');
+            const siteContainer = document.getElementById(mode === 'detail' ? 'detail-role-site-picker' : 'role-site-picker');
+            if (!groupContainer || !siteContainer) return;
+
+            const selectedSet = new Set(selectedRoles);
+            groupContainer.innerHTML = siteGroups.map(group => {
+                const checked = group.sites.every(site => selectedSet.has(site));
+                return `
+                    <label class="role-picker-item">
+                        <input type="checkbox" class="role-group-checkbox" data-role-group="${group.name}" ${checked ? 'checked' : ''}>
+                        <span>${group.name}</span>
+                    </label>
+                `;
+            }).join('');
+
+            const standaloneSites = sites.filter(site => !siteGroups.some(group => group.sites.includes(site)));
+            const pickerSites = [...new Set([...standaloneSites, ...selectedRoles.filter(role => !sites.includes(role))])];
+            siteContainer.innerHTML = pickerSites.map(site => `
+                <label class="role-picker-item">
+                    <input type="checkbox" class="role-site-checkbox" data-role="${site}" ${selectedSet.has(site) ? 'checked' : ''}>
+                    <span>${site}</span>
+                </label>
+            `).join('');
+
+            groupContainer.querySelectorAll('.role-group-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const group = siteGroups.find(item => item.name === e.target.dataset.roleGroup);
+                    if (!group) return;
+                    const shouldSelect = e.target.checked;
+                    group.sites.forEach(site => {
+                        if (shouldSelect && !selectedRoles.includes(site)) {
+                            selectedRoles.push(site);
+                        } else if (!shouldSelect) {
+                            const index = selectedRoles.indexOf(site);
+                            if (index !== -1) selectedRoles.splice(index, 1);
+                        }
+                    });
+                    selectedRoles.sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+                    renderRolePicker(mode, selectedRoles);
+                });
+            });
+
+            siteContainer.querySelectorAll('.role-site-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    toggleRoleSelection(e.target.dataset.role, selectedRoles);
+                    renderRolePicker(mode, selectedRoles);
+                });
+            });
+
+            updateRolePickerButton(mode === 'detail' ? 'detail-role-picker-toggle' : 'role-picker-toggle', selectedRoles);
+        }
+
+        function getRoleDisplayItems(roles) {
+            const selectedRoles = Array.isArray(roles) ? roles.filter(Boolean) : [];
+            const roleSet = new Set(selectedRoles);
+            const items = [];
+
+            siteGroups.forEach(group => {
+                const matchedSites = group.sites.filter(site => roleSet.has(site));
+                if (matchedSites.length) {
+                    items.push({ type: 'group', name: group.name, sites: matchedSites });
+                }
+            });
+
+            selectedRoles.forEach(role => {
+                const belongsToGroup = siteGroups.some(group => group.sites.includes(role));
+                if (!belongsToGroup) {
+                    items.push({ type: 'site', name: role });
+                }
+            });
+
+            return items;
+        }
+
+        function removeRole(role, roleType) {
+            if (roleType === 'group') {
+                const group = siteGroups.find(item => item.name === role);
+                if (group) {
+                    currentRoles = currentRoles.filter(item => !group.sites.includes(item));
+                }
+            } else {
+                const index = currentRoles.indexOf(role);
+                if (index !== -1) currentRoles.splice(index, 1);
+            }
             renderRoles();
         }
 
         function renderRoles() {
             const container = document.getElementById("roles-container");
             container.innerHTML = "";
-            currentRoles.forEach(role => {
+            const displayItems = getRoleDisplayItems(currentRoles);
+            displayItems.forEach(item => {
                 const el = document.createElement("div");
                 el.className = "role-tag";
-                el.style.backgroundColor = generateRoleColor(role);
-                el.innerHTML = `<span>${role}</span><button class="role-remove" data-role="${role}"><i class="fas fa-times"></i></button>`;
+                el.style.backgroundColor = item.type === 'group' ? generateRoleColor(item.name) : generateRoleColor(item.name);
+                if (item.type === 'group') {
+                    el.innerHTML = `
+                        <div class="role-tag-content">
+                            <div class="role-tag-title">${item.name}</div>
+                            <div class="role-tag-sub-list">${item.sites.map(site => `<span class="role-tag-sub-chip">${site}</span>`).join('')}</div>
+                        </div>
+                        <button class="role-remove" data-role="${item.name}" data-role-type="group"><i class="fas fa-times"></i></button>
+                    `;
+                } else {
+                    el.innerHTML = `<span>${item.name}</span><button class="role-remove" data-role="${item.name}" data-role-type="site"><i class="fas fa-times"></i></button>`;
+                }
                 container.appendChild(el);
             });
             document.querySelectorAll("#roles-container .role-remove").forEach(btn => {
-                btn.addEventListener("click", () => removeRole(btn.dataset.role));
+                btn.addEventListener("click", () => removeRole(btn.dataset.role, btn.dataset.roleType));
             });
+            renderRolePicker('staff', currentRoles);
         }
 
-        function addDetailRole() {
-            const input = document.getElementById("detail-role-input");
-            const role = input.value.trim();
-            if (role && !detailRoles.includes(role)) {
-                detailRoles.push(role);
-                renderDetailRoles();
-                input.value = "";
+        function removeDetailRole(role, roleType) {
+            if (roleType === 'group') {
+                const group = siteGroups.find(item => item.name === role);
+                if (group) {
+                    detailRoles = detailRoles.filter(item => !group.sites.includes(item));
+                }
+            } else {
+                const index = detailRoles.indexOf(role);
+                if (index !== -1) detailRoles.splice(index, 1);
             }
-        }
-
-        function removeDetailRole(role) {
-            detailRoles = detailRoles.filter(r => r !== role);
             renderDetailRoles();
         }
 
         function renderDetailRoles() {
             const container = document.getElementById("detail-roles-container");
             container.innerHTML = "";
-            detailRoles.forEach(role => {
+            const displayItems = getRoleDisplayItems(detailRoles);
+            displayItems.forEach(item => {
                 const el = document.createElement("div");
                 el.className = "role-tag";
-                el.style.backgroundColor = generateRoleColor(role);
-                el.innerHTML = `<span>${role}</span><button class="role-remove" data-role="${role}"><i class="fas fa-times"></i></button>`;
+                el.style.backgroundColor = item.type === 'group' ? generateRoleColor(item.name) : generateRoleColor(item.name);
+                if (item.type === 'group') {
+                    el.innerHTML = `
+                        <div class="role-tag-content">
+                            <div class="role-tag-title">${item.name}</div>
+                            <div class="role-tag-sub-list">${item.sites.map(site => `<span class="role-tag-sub-chip">${site}</span>`).join('')}</div>
+                        </div>
+                        <button class="role-remove" data-role="${item.name}" data-role-type="group"><i class="fas fa-times"></i></button>
+                    `;
+                } else {
+                    el.innerHTML = `<span>${item.name}</span><button class="role-remove" data-role="${item.name}" data-role-type="site"><i class="fas fa-times"></i></button>`;
+                }
                 container.appendChild(el);
             });
             document.querySelectorAll("#detail-roles-container .role-remove").forEach(btn => {
-                btn.addEventListener("click", () => removeDetailRole(btn.dataset.role));
+                btn.addEventListener("click", () => removeDetailRole(btn.dataset.role, btn.dataset.roleType));
             });
+            renderRolePicker('detail', detailRoles);
+        }
+
+        function renderSiteManagementOptions(selectedSites = []) {
+            const container = document.getElementById("site-group-options");
+            if (!container) return;
+            if (!sites.length) {
+                container.innerHTML = '<div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无站点，请先添加站点</div>';
+                return;
+            }
+            const selectedSet = new Set(selectedSites);
+            container.innerHTML = sites.map(site => `
+                <label class="role-picker-item">
+                    <input type="checkbox" class="site-management-checkbox" data-site="${site}" ${selectedSet.has(site) ? 'checked' : ''}>
+                    <span>${site}</span>
+                </label>
+            `).join('');
+        }
+
+        function toggleSiteGroupForm(show, groupName = null) {
+            const form = document.getElementById("site-group-form");
+            if (!form) return;
+            form.style.display = show ? "block" : "none";
+            if (show) {
+                const group = siteGroups.find(item => item.name === (groupName || editingGroupName));
+                document.getElementById("site-group-name").value = group ? group.name : "";
+                renderSiteManagementOptions(group ? group.sites : []);
+            } else {
+                editingGroupName = null;
+                document.getElementById("site-group-name").value = "";
+                document.querySelectorAll("#site-group-options .site-management-checkbox").forEach(box => box.checked = false);
+            }
+        }
+
+        function toggleSiteForm(show, siteName = null) {
+            const form = document.getElementById("site-form");
+            if (!form) return;
+            form.style.display = show ? "block" : "none";
+            if (show) {
+                editingSiteName = siteName || editingSiteName;
+                document.getElementById("site-name").value = siteName || "";
+            } else {
+                editingSiteName = null;
+                document.getElementById("site-name").value = "";
+            }
+        }
+
+        function renderSiteGroupsOverview() {
+            const container = document.getElementById("site-group-overview");
+            if (!container) return;
+            if (!siteGroups.length) {
+                container.innerHTML = '<div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无分组</div>';
+                return;
+            }
+            container.innerHTML = siteGroups.map(group => `
+                <div class="site-group-item">
+                    <div class="site-group-header">
+                        <button type="button" class="site-group-toggle" data-group-name="${group.name}">
+                            <span>${group.name}</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <div class="site-group-actions">
+                            <button type="button" class="site-group-action-btn edit" data-group-name="${group.name}">编辑</button>
+                            <button type="button" class="site-group-action-btn delete" data-group-name="${group.name}">删除</button>
+                        </div>
+                    </div>
+                    <div class="site-group-sites">
+                        ${group.sites.map(site => `<span class="site-pill">${site}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.site-group-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.site-group-item');
+                    item.classList.toggle('active');
+                });
+            });
+
+            container.querySelectorAll('.site-group-action-btn.edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editingGroupName = btn.dataset.groupName;
+                    toggleSiteGroupForm(true, btn.dataset.groupName);
+                    toggleSiteForm(false);
+                });
+            });
+
+            container.querySelectorAll('.site-group-action-btn.delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const groupName = btn.dataset.groupName;
+                    showConfirm(`确定删除分组 "${groupName}" ？`, (confirmed) => {
+                        if (!confirmed) return;
+                        siteGroups = siteGroups.filter(group => group.name !== groupName);
+                        saveSiteSettings();
+                        refreshSiteRelatedViews();
+                        showAlert(`分组 "${groupName}" 已删除`);
+                    });
+                });
+            });
+        }
+
+        function renderSiteOverview() {
+            const container = document.getElementById("site-overview");
+            if (!container) return;
+            if (!sites.length) {
+                container.innerHTML = '<div class="empty-placeholder" style="padding: 8px 0; font-size: 0.9rem;">暂无站点</div>';
+                return;
+            }
+            container.innerHTML = sites.map(site => `
+                <div class="site-list-item">
+                    <span class="site-pill">${site}</span>
+                    <button type="button" class="site-action-btn" data-site="${site}">删除</button>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.site-action-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const siteName = btn.dataset.site;
+                    showConfirm(`确定删除站点 "${siteName}" ？`, (confirmed) => {
+                        if (!confirmed) return;
+                        sites = sites.filter(site => site !== siteName);
+                        siteGroups = siteGroups.map(group => ({ ...group, sites: (group.sites || []).filter(site => site !== siteName) })).filter(group => group.sites && group.sites.length > 0);
+                        currentRoles = currentRoles.filter(role => role !== siteName);
+                        detailRoles = detailRoles.filter(role => role !== siteName);
+                        saveSiteSettings();
+                        saveToLocalStorage();
+                        refreshSiteRelatedViews();
+                        showAlert(`站点 "${siteName}" 已删除`);
+                    });
+                });
+            });
+        }
+
+        function setActiveSiteTab(tab) {
+            document.querySelectorAll('.site-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            document.querySelectorAll('.site-tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `site-tab-${tab}`);
+            });
+        }
+
+        function refreshSiteRelatedViews() {
+            renderSiteManagementOptions();
+            renderSiteGroupsOverview();
+            renderSiteOverview();
+            renderRoles();
+            renderDetailRoles();
+            renderModules();
+            updateStats();
+        }
+
+        function saveSiteGroup() {
+            const groupName = document.getElementById("site-group-name").value.trim();
+            const selectedSites = Array.from(document.querySelectorAll("#site-group-options .site-management-checkbox:checked")).map(item => item.dataset.site);
+            if (!groupName || selectedSites.length === 0) {
+                showAlert("请填写分组名称并至少选择一个站点");
+                return;
+            }
+            selectedSites.forEach(site => ensureSiteExists(site));
+            if (editingGroupName) {
+                const target = siteGroups.find(group => group.name === editingGroupName);
+                if (target) {
+                    target.name = groupName;
+                    target.sites = selectedSites;
+                }
+            } else {
+                const existingGroup = siteGroups.find(group => group.name === groupName);
+                if (existingGroup) {
+                    existingGroup.sites = selectedSites;
+                } else {
+                    siteGroups.push({ name: groupName, sites: selectedSites });
+                }
+            }
+            siteGroups.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN'));
+            saveSiteSettings();
+            document.getElementById("site-group-name").value = "";
+            toggleSiteGroupForm(false);
+            refreshSiteRelatedViews();
+            showAlert(`分组 "${groupName}" 已保存`);
+        }
+
+        function saveSite() {
+            const siteName = document.getElementById("site-name").value.trim();
+            if (!siteName) {
+                showAlert("请填写站点名称");
+                return;
+            }
+            ensureSiteExists(siteName);
+            document.getElementById("site-name").value = "";
+            toggleSiteForm(false);
+            refreshSiteRelatedViews();
+            showAlert(`站点 "${siteName}" 已添加`);
         }
 
         // 头像上传和一键清除
@@ -2131,14 +2879,43 @@
         // 设置事件监听器
         function setupEventListeners() {
             document.getElementById("add-module-btn").addEventListener("click", () => openModal("module-modal"));
+            document.getElementById("add-site-btn").addEventListener("click", () => {
+                renderSiteManagementOptions();
+                renderSiteGroupsOverview();
+                renderSiteOverview();
+                setActiveSiteTab("group");
+                openModal("site-modal");
+            });
             document.querySelectorAll(".close-btn").forEach(btn => btn.addEventListener("click", closeAllModals));
             document.getElementById("save-module").addEventListener("click", addNewModule);
             document.getElementById("save-position").addEventListener("click", addNewPosition);
             document.getElementById("save-staff").addEventListener("click", saveStaff);
-            document.getElementById("add-role-btn").addEventListener("click", addRole);
-            document.getElementById("detail-add-role-btn").addEventListener("click", addDetailRole);
-            document.getElementById("role-input").addEventListener("keypress", (e) => e.key === "Enter" && addRole());
-            document.getElementById("detail-role-input").addEventListener("keypress", (e) => e.key === "Enter" && addDetailRole());
+            document.getElementById("save-site-group").addEventListener("click", saveSiteGroup);
+            document.getElementById("save-site").addEventListener("click", saveSite);
+            document.getElementById("toggle-site-group-form").addEventListener("click", () => {
+                editingGroupName = null;
+                renderSiteManagementOptions();
+                toggleSiteGroupForm(true);
+                toggleSiteForm(false);
+            });
+            document.getElementById("cancel-site-group-form").addEventListener("click", () => toggleSiteGroupForm(false));
+            document.getElementById("toggle-site-form").addEventListener("click", () => {
+                editingSiteName = null;
+                toggleSiteGroupForm(false);
+                toggleSiteForm(true);
+            });
+            document.getElementById("cancel-site-form").addEventListener("click", () => toggleSiteForm(false));
+            document.querySelectorAll(".site-tab").forEach(btn => {
+                btn.addEventListener("click", () => setActiveSiteTab(btn.dataset.tab));
+            });
+            document.getElementById("role-picker-toggle").addEventListener("click", () => {
+                const panel = document.getElementById("role-picker-panel");
+                panel.style.display = panel.style.display === "block" ? "none" : "block";
+            });
+            document.getElementById("detail-role-picker-toggle").addEventListener("click", () => {
+                const panel = document.getElementById("detail-role-picker-panel");
+                panel.style.display = panel.style.display === "block" ? "none" : "block";
+            });
             document.getElementById("confirm-ok").addEventListener("click", () => {
                 if (confirmCallback) confirmCallback(true);
                 document.getElementById("confirm-modal").style.display = "none";
@@ -2162,6 +2939,12 @@
                 document.getElementById("staff-details-modal").style.display = "none";
             });
 
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest('.role-picker-panel') && !e.target.closest('.role-picker-toggle')) {
+                    document.querySelectorAll('.role-picker-panel').forEach(panel => panel.style.display = 'none');
+                }
+            });
+
             // 头像上传和一键清除
             setupAvatarUpload();
         }
@@ -2170,5 +2953,6 @@
         initApp();
     })();
 </script>
-</body>
-</html>
+
+
+</body><div id="immersive-translate-popup" style="all: initial"></div></html>
