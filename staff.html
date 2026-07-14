@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>客服人数统计 · 完整版（右键菜单+独立头像）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- 引入拖拽库 SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --position-color-1: #4361ee;
+            --position-color-2: #4cc9f0;
+            --position-color-3: #f8961e;
+            --position-color-4: #f72585;
+            --position-color-5: #7209b7;
+            --position-color-6: #3a0ca3;
+            --position-color-7: #2ec4b6;
+            --position-color-8: #e71d36;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #2d3436;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 5px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            color: white;
+            width: 100%;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #4361ee;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.4);
+        }
+
+        .btn i {
+            font-size: 0.75rem;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: var(--info);
+        }
+
+        .stat-card:nth-child(3) {
+            border-left-color: var(--success);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 3px;
+            color: var(--primary);
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            color: var(--info);
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            color: var(--success);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .module {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid var(--primary);
+            width: 100%;
+        }
+
+        .module:nth-child(4n+1) { border-top-color: var(--primary); }
+        .module:nth-child(4n+2) { border-top-color: var(--info); }
+        .module:nth-child(4n+3) { border-top-color: var(--success); }
+        .module:nth-child(4n+4) { border-top-color: var(--warning); }
+
+        .module:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 5px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .module-title:hover {
+            background: #f8f9fa;
+        }
+
+        .module-title i {
+            font-size: 0.75rem;
+            color: #6c757d;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .module-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            padding: 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+
+        .action-btn:hover {
+            color: var(--primary);
+            background: #f8f9fa;
+            transform: scale(1.05);
+        }
+
+        .positions-container {
+            margin-top: 10px;
+        }
+
+        .position {
+            margin-bottom: 16px;
+            background: #f8f9fb;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid var(--position-color-1);
+            transition: all 0.3s ease;
+        }
+
+        .position:nth-child(8n+1) { border-left-color: var(--position-color-1); }
+        .position:nth-child(8n+2) { border-left-color: var(--position-color-2); }
+        .position:nth-child(8n+3) { border-left-color: var(--position-color-3); }
+        .position:nth-child(8n+4) { border-left-color: var(--position-color-4); }
+        .position:nth-child(8n+5) { border-left-color: var(--position-color-5); }
+        .position:nth-child(8n+6) { border-left-color: var(--position-color-6); }
+        .position:nth-child(8n+7) { border-left-color: var(--position-color-7); }
+        .position:nth-child(8n+8) { border-left-color: var(--position-color-8); }
+
+        .position:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .position-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .position-title {
+            font-weight: 600;
+            color: #34495e;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.95rem;
+        }
+
+        .position-title:hover {
+            background: #e8f4ff;
+        }
+
+        .position-title i {
+            font-size: 0.7rem;
+            color: #6c757d;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .position-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .position-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .staff-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            min-height: 60px;
+            transition: all 0.3s ease;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .staff-list.sortable-drag {
+            opacity: 0.8;
+            cursor: grabbing;
+        }
+
+        .staff-member {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
+            position: relative;
+            border-left: 2px solid var(--position-color-1);
+            cursor: grab;
+            user-select: none;
+            min-width: 0;
+        }
+
+        .staff-member:active {
+            cursor: grabbing;
+        }
+
+        .staff-member:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+            border-left: 2px solid var(--secondary);
+        }
+
+        .staff-list .sortable-ghost {
+            opacity: 0.4;
+            background: #c8d9ff;
+            border: 2px dashed var(--primary);
+        }
+
+        .staff-list .sortable-chosen {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .staff-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            flex-shrink: 0;
+            cursor: pointer;
+            object-fit: cover;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+
+        .staff-avatar:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .staff-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .staff-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-bottom: 2px;
+        }
+
+        .staff-role {
+            font-size: 0.6rem;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 4px;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .staff-actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: flex;
+            gap: 2px;
+            z-index: 10;
+        }
+
+        .staff-btn {
+            background: #dfe6e9;
+            color: #636e72;
+            border: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.6rem;
+            transition: all 0.3s;
+        }
+
+        .staff-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e31266;
+        }
+
+        .empty-placeholder {
+            color: #adb5bd;
+            text-align: center;
+            padding: 8px;
+            font-style: italic;
+            font-size: 0.8rem;
+            grid-column: 1 / -1;
+        }
+
+        /* 右键自定义菜单 */
+        .context-menu {
+            position: fixed;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 8px 0;
+            min-width: 160px;
+            z-index: 10000;
+            display: none;
+            border: 1px solid #e9ecef;
+        }
+
+        .context-menu ul {
+            list-style: none;
+        }
+
+        .context-menu li {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2d3436;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .context-menu li:hover {
+            background: #f1f3f5;
+            color: var(--primary);
+        }
+
+        .context-menu li i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .context-menu li.delete-item:hover {
+            background: #fff5f5;
+            color: var(--danger);
+        }
+
+        .context-menu li.delete-item i {
+            color: var(--danger);
+        }
+
+        .context-menu hr {
+            margin: 8px 0;
+            border: none;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #34495e;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            text-decoration: none !important;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background: white;
+        }
+
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        /* 头像上传相关 */
+        .avatar-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 24px;
+            color: white;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            background-size: cover;
+            background-position: center;
+            transition: 0.2s;
+        }
+
+        .avatar-upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .avatar-upload-btn:hover {
+            background: var(--secondary);
+        }
+
+        .avatar-clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .avatar-clear-btn:hover {
+            background: #5a6268;
+        }
+
+        #avatar-input, #staff-avatar-input, #detail-avatar-input {
+            display: none;
+        }
+
+        /* 角色管理样式 */
+        .roles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .role-tag {
+            display: flex;
+            align-items: center;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            gap: 4px;
+        }
+
+        .role-tag span {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .role-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .role-remove:hover {
+            background: #dee2e6;
+            color: #dc3545;
+        }
+
+        .role-input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .role-input {
+            flex: 1;
+        }
+
+        .add-role-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-role-btn:hover {
+            background: var(--secondary);
+        }
+
+        /* 成员详情模态框内头像预览 */
+        .detail-avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .detail-avatar-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 24px;
+            color: white;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .detail-avatar-upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .detail-avatar-upload-btn:hover {
+            background: var(--secondary);
+        }
+
+        .detail-avatar-clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .detail-avatar-clear-btn:hover {
+            background: #5a6268;
+        }
+
+        /* 文件输入样式 */
+        input[type="file"] {
+            padding: 8px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--secondary);
+        }
+
+        /* 禁用状态 */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 高亮样式 */
+        .highlight {
+            animation: highlight 2s ease;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(255, 255, 0, 0.3); }
+            100% { background-color: transparent; }
+        }
+
+        /* 折叠状态 */
+        .positions-container.collapsed {
+            display: none;
+        }
+
+        .staff-list.collapsed {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .modules-container {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .staff-list {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+
+            .module {
+                padding: 12px;
+            }
+
+            .role-input-group {
+                flex-direction: column;
+            }
+
+            .add-role-btn {
+                width: 100%;
+                padding: 8px;
+            }
+
+            .avatar-upload-container,
+            .detail-avatar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modules-container {
+                grid-template-columns: 1fr;
+            }
+
+            .staff-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1><i class="fas fa-users-cog"></i> 客服人数统计 · 完整版</h1>
+        <div style="display: flex; gap: 10px">
+            <button class="btn" id="export-btn"><i class="fas fa-file-export"></i> 导出数据</button>
+            <button class="btn" id="import-btn"><i class="fas fa-file-import"></i> 导入数据</button>
+            <button class="btn" id="add-module-btn"><i class="fas fa-plus"></i> 添加小组</button>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-value">4</div>
+            <div class="stat-label">小组数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">16</div>
+            <div class="stat-label">成员数量</div>
+        </div>
+    </div>
+
+    <div class="modules-container" id="modules-container">
+        <!-- 模块将通过JS动态添加 -->
+    </div>
+</div>
+
+<!-- 添加模块模态框 -->
+<div class="modal" id="module-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-cube"></i> 添加小组</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label for="module-name">小组名称</label>
+            <input type="text" id="module-name" class="form-control" placeholder="输入小组名称" />
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="save-module">保存小组模块</button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加岗位模态框 -->
+<div class="modal" id="position-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-briefcase"></i> 添加新岗位</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label for="position-name">岗位名称</label>
+            <input type="text" id="position-name" class="form-control" placeholder="输入岗位名称" />
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="save-position">保存岗位</button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加人员模态框 -->
+<div class="modal" id="staff-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-user-plus"></i> <span id="staff-modal-title">添加新成员</span></h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        
+        <!-- 头像上传区域 -->
+        <div class="avatar-upload-container">
+            <div class="avatar-preview" id="staff-avatar-preview">
+                <i class="fas fa-user"></i>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="avatar-upload-btn" id="staff-avatar-upload-btn">
+                    <i class="fas fa-camera"></i> 上传头像
+                </button>
+                <button type="button" class="avatar-clear-btn" id="staff-avatar-clear-btn">
+                    <i class="fas fa-times"></i> 清除头像
+                </button>
+            </div>
+            <input type="file" id="staff-avatar-input" accept="image/*" />
+        </div>
+
+        <div class="form-group">
+            <label for="staff-name">成员姓名</label>
+            <input type="text" id="staff-name" class="form-control" placeholder="输入成员姓名" />
+        </div>
+        <div class="form-group">
+            <label>成员角色</label>
+            <div class="roles-container" id="roles-container"></div>
+            <div class="role-input-group">
+                <input type="text" id="role-input" class="form-control role-input" placeholder="输入角色名称" />
+                <button class="add-role-btn" id="add-role-btn"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="staff-notes">备注</label>
+            <textarea id="staff-notes" class="form-control" placeholder="输入备注信息" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="save-staff">保存成员</button>
+        </div>
+    </div>
+</div>
+
+<!-- 成员详情模态框 -->
+<div class="modal staff-details-modal" id="staff-details-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-user"></i> <span id="staff-details-title">成员详情</span></h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        
+        <!-- 头像上传区域 -->
+        <div class="detail-avatar-container">
+            <div class="detail-avatar-preview" id="detail-avatar-preview">
+                <i class="fas fa-user"></i>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="detail-avatar-upload-btn" id="detail-avatar-upload-btn">
+                    <i class="fas fa-camera"></i> 更换头像
+                </button>
+                <button type="button" class="detail-avatar-clear-btn" id="detail-avatar-clear-btn">
+                    <i class="fas fa-times"></i> 清除头像
+                </button>
+            </div>
+            <input type="file" id="detail-avatar-input" accept="image/*" />
+        </div>
+
+        <div class="form-group">
+            <label for="detail-name">姓名</label>
+            <input type="text" id="detail-name" class="form-control" placeholder="输入成员姓名" />
+        </div>
+        <div class="form-group">
+            <label>角色</label>
+            <div class="roles-container" id="detail-roles-container"></div>
+            <div class="role-input-group">
+                <input type="text" id="detail-role-input" class="form-control role-input" placeholder="输入角色名称" />
+                <button class="add-role-btn" id="detail-add-role-btn"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="detail-notes">备注</label>
+            <textarea id="detail-notes" class="form-control" placeholder="输入备注信息" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="save-details"><i class="fas fa-save"></i> 保存</button>
+            <button class="btn" id="close-details">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 导入模态框 -->
+<div class="modal" id="import-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-file-import"></i> 导入数据</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label for="import-file">选择JSON文件</label>
+            <input type="file" id="import-file" class="form-control" accept=".json,application/json" />
+            <div style="margin-top: 10px; font-size: 0.8rem; color: #666">
+                <p><i class="fas fa-info-circle"></i> 支持从本系统导出的JSON文件</p>
+                <p><i class="fas fa-exclamation-triangle"></i> 注意：导入会覆盖当前所有数据</p>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="import-confirm-btn">导入</button>
+        </div>
+    </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div class="modal" id="confirm-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-exclamation-circle"></i> 确认操作</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <p id="confirm-text">确定要执行此操作吗？</p>
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="confirm-cancel">取消</button>
+            <button class="btn" id="confirm-ok" style="background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 提示弹窗 -->
+<div class="modal" id="alert-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-check-circle"></i> 提示</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <p id="alert-text">操作成功完成！</p>
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="alert-ok">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 输入弹窗 -->
+<div class="modal" id="input-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="input-title"><i class="fas fa-edit"></i> 请输入</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <input type="text" id="input-value" class="form-control" placeholder="请输入" />
+        </div>
+        <div class="form-actions">
+            <button class="btn" id="input-save">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 右键自定义菜单 -->
+<div class="context-menu" id="contextMenu">
+    <ul id="contextMenuList">
+        <!-- 动态填充 -->
+    </ul>
+</div>
+
+<script>
+    (function() {
+        // 示例数据
+        const sampleData = [
+            {
+                id: 1,
+                name: "技术研发部",
+                positions: [
+                    {
+                        id: 101,
+                        name: "前端开发",
+                        staff: [
+                            { id: 1001, name: "张三", roles: ["高级工程师", "团队负责人"], notes: "负责前端架构设计和核心模块开发", avatar: null },
+                            { id: 1002, name: "李四", roles: ["中级工程师"], notes: "负责业务模块开发和维护", avatar: null },
+                            { id: 1003, name: "王五", roles: ["初级工程师", "实习生导师"], notes: "协助开发和学习成长", avatar: null },
+                            { id: 1004, name: "赵六", roles: ["UI设计师", "用户体验专家"], notes: "负责界面设计和用户体验优化", avatar: null }
+                        ]
+                    },
+                    {
+                        id: 102,
+                        name: "后端开发",
+                        staff: [
+                            { id: 1005, name: "陈七", roles: ["架构师", "技术总监"], notes: "系统架构设计和性能优化", avatar: null },
+                            { id: 1006, name: "林八", roles: ["高级工程师"], notes: "核心业务逻辑开发", avatar: null },
+                            { id: 1007, name: "黄九", roles: ["DevOps", "系统管理员"], notes: "负责CI/CD和运维工作", avatar: null }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "产品设计部",
+                positions: [
+                    {
+                        id: 201,
+                        name: "UI设计",
+                        staff: [
+                            { id: 2001, name: "陈七", roles: ["设计主管", "创意总监"], notes: "设计团队管理和设计规范制定", avatar: null },
+                            { id: 2002, name: "林八", roles: ["视觉设计师"], notes: "负责产品视觉设计和品牌形象", avatar: null }
+                        ]
+                    },
+                    {
+                        id: 202,
+                        name: "产品经理",
+                        staff: [
+                            { id: 2003, name: "黄九", roles: ["产品总监", "战略规划"], notes: "产品战略规划和团队管理", avatar: null },
+                            { id: 2004, name: "周十", roles: ["产品经理"], notes: "需求分析和产品设计", avatar: null },
+                            { id: 2005, name: "吴十一", roles: ["产品助理", "用户研究员"], notes: "协助产品经理完成日常工作", avatar: null }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: "市场营销部",
+                positions: [
+                    {
+                        id: 301,
+                        name: "数字营销",
+                        staff: [
+                            { id: 3001, name: "郑十二", roles: ["营销主管", "数据分析师"], notes: "数字营销策略制定和执行", avatar: null },
+                            { id: 3002, name: "王十三", roles: ["SEO专家", "内容策略师"], notes: "搜索引擎优化和流量增长", avatar: null }
+                        ]
+                    },
+                    {
+                        id: 302,
+                        name: "内容创作",
+                        staff: [
+                            { id: 3003, name: "张十四", roles: ["内容总监", "编辑"], notes: "内容策略和团队管理", avatar: null },
+                            { id: 3004, name: "李十五", roles: ["文案策划", "社交媒体经理"], notes: "内容创作和文案撰写", avatar: null }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                name: "客户服务部",
+                positions: [
+                    {
+                        id: 401,
+                        name: "客户支持",
+                        staff: [
+                            { id: 4001, name: "钱十六", roles: ["支持主管", "培训师"], notes: "客户支持团队管理和培训", avatar: null },
+                            { id: 4002, name: "孙十七", roles: ["技术支持", "问题解决专家"], notes: "解决客户技术问题和提供支持", avatar: null }
+                        ]
+                    },
+                    {
+                        id: 402,
+                        name: "客户成功",
+                        staff: [
+                            { id: 4003, name: "周十八", roles: ["成功经理", "客户关系管理"], notes: "客户关系维护和满意度提升", avatar: null },
+                            { id: 4004, name: "吴十九", roles: ["客户代表", "需求分析师"], notes: "日常客户沟通和需求收集", avatar: null }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let modules = JSON.parse(localStorage.getItem("teamModules")) || sampleData;
+        let currentModuleId = null;
+        let currentPositionId = null;
+        let currentStaffId = null;
+        let confirmCallback = null;
+        let inputCallback = null;
+        let isEditingStaff = false;
+        let currentRoles = [];
+        let detailRoles = [];
+
+        // 当前正在编辑的头像数据
+        let currentAvatar = null;
+        let currentDetailAvatar = null;
+
+        // 右键菜单相关
+        const contextMenu = document.getElementById('contextMenu');
+        const contextMenuList = document.getElementById('contextMenuList');
+        let contextTarget = null; // 存储右键点击的目标对象
+
+        // 初始化
+        function initApp() {
+            renderModules();
+            setupEventListeners();
+            updateStats();
+            setupImportExportListeners();
+            // 初始化拖拽
+            initDragAndDrop();
+            // 初始化右键菜单
+            setupContextMenu();
+        }
+
+        // 导出导入相关
+        function setupImportExportListeners() {
+            document.getElementById("export-btn").addEventListener("click", exportData);
+            document.getElementById("import-btn").addEventListener("click", () => {
+                openModal("import-modal");
+                document.getElementById("import-file").value = "";
+            });
+            document.getElementById("import-confirm-btn").addEventListener("click", importData);
+            document.getElementById("import-file").addEventListener("change", (e) => {
+                document.getElementById("import-confirm-btn").disabled = !e.target.files[0];
+            });
+        }
+
+        function exportData() {
+            try {
+                const exportData = {
+                    version: "1.0",
+                    exportDate: new Date().toISOString(),
+                    modules: modules,
+                    stats: {
+                        moduleCount: modules.length,
+                        positionCount: modules.reduce((t, m) => t + m.positions.length, 0),
+                        staffCount: modules.reduce((t, m) => t + m.positions.reduce((pt, p) => pt + p.staff.length, 0), 0)
+                    }
+                };
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonString], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `客服团队数据_${new Date().toISOString().split("T")[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showAlert("数据导出成功！");
+            } catch (error) {
+                console.error("导出失败:", error);
+                showAlert("导出失败，请重试");
+            }
+        }
+
+        function importData() {
+            const file = document.getElementById("import-file").files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (!importedData || !Array.isArray(importedData.modules)) {
+                        showAlert("文件格式不正确");
+                        return;
+                    }
+                    showConfirm("导入将覆盖当前所有数据，是否继续？", (confirmed) => {
+                        if (confirmed) {
+                            modules = importedData.modules;
+                            saveToLocalStorage();
+                            renderModules();
+                            updateStats();
+                            closeAllModals();
+                            showAlert("数据导入成功！");
+                        }
+                    });
+                } catch (error) {
+                    showAlert("文件解析失败");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 工具函数
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "flex";
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll(".modal").forEach(modal => modal.style.display = "none");
+            document.getElementById("module-name").value = "";
+            document.getElementById("position-name").value = "";
+            document.getElementById("staff-name").value = "";
+            document.getElementById("role-input").value = "";
+            document.getElementById("staff-notes").value = "";
+            document.getElementById("detail-role-input").value = "";
+            document.getElementById("import-file").value = "";
+            currentModuleId = null;
+            currentPositionId = null;
+            currentStaffId = null;
+            isEditingStaff = false;
+            currentRoles = [];
+            detailRoles = [];
+            currentAvatar = null;
+            currentDetailAvatar = null;
+            document.getElementById("staff-avatar-preview").style.backgroundImage = "";
+            document.getElementById("staff-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+            document.getElementById("detail-avatar-preview").style.backgroundImage = "";
+            document.getElementById("detail-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+        }
+
+        function showConfirm(message, callback) {
+            document.getElementById("confirm-text").textContent = message;
+            confirmCallback = callback;
+            document.getElementById("confirm-modal").style.display = "flex";
+        }
+
+        function showAlert(message) {
+            document.getElementById("alert-text").textContent = message;
+            document.getElementById("alert-modal").style.display = "flex";
+        }
+
+        function showInput(title, defaultValue, callback) {
+            document.getElementById("input-title").innerHTML = `<i class="fas fa-edit"></i> ${title}`;
+            document.getElementById("input-value").value = defaultValue || "";
+            inputCallback = callback;
+            document.getElementById("input-modal").style.display = "flex";
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem("teamModules", JSON.stringify(modules));
+        }
+
+        function updateStats() {
+            let moduleCount = modules.length;
+            let staffCount = modules.reduce((t, m) => t + m.positions.reduce((pt, p) => pt + p.staff.length, 0), 0);
+            document.querySelectorAll(".stat-value")[0].textContent = moduleCount;
+            document.querySelectorAll(".stat-value")[1].textContent = staffCount;
+        }
+
+        // 生成角色颜色
+        function generateRoleColor(role) {
+            let hash = 0;
+            for (let i = 0; i < role.length; i++) {
+                hash = role.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return `hsl(${Math.abs(hash) % 360}, 70%, 45%)`;
+        }
+
+        // 渲染模块
+        function renderModules() {
+            const container = document.getElementById("modules-container");
+            container.innerHTML = "";
+
+            modules.forEach(module => {
+                const moduleEl = document.createElement("div");
+                moduleEl.className = "module";
+                moduleEl.dataset.moduleId = module.id;
+                moduleEl.dataset.moduleName = module.name;
+
+                let positionsHTML = "";
+                module.positions.forEach(position => {
+                    let staffHTML = "";
+                    if (position.staff.length === 0) {
+                        staffHTML = '<div class="empty-placeholder">点击添加成员</div>';
+                    } else {
+                        position.staff.forEach(person => {
+                            let rolesHTML = "";
+                            if (person.roles && person.roles.length > 0) {
+                                person.roles.forEach(role => {
+                                    rolesHTML += `<span class="staff-role" style="background-color: ${generateRoleColor(role)}">${role}</span>`;
+                                });
+                            }
+                            
+                            // 头像样式
+                            let avatarStyle = "";
+                            let avatarContent = person.name.charAt(0);
+                            if (person.avatar) {
+                                avatarStyle = `style="background-image: url('${person.avatar}'); background-size: cover; background-position: center;"`;
+                                avatarContent = '';
+                            }
+
+                            staffHTML += `
+                                <div class="staff-member" data-staff-id="${person.id}" data-staff-name="${person.name}" data-module-id="${module.id}" data-position-id="${position.id}">
+                                    <div class="staff-avatar" ${avatarStyle}>${avatarContent}</div>
+                                    <div class="staff-info">
+                                        <div class="staff-name">${person.name}</div>
+                                        <div class="staff-roles">${rolesHTML}</div>
+                                    </div>
+                                  
+                                </div>
+                            `;
+                        });
+                    }
+
+                    positionsHTML += `
+                        <div class="position" data-position-id="${position.id}" data-position-name="${position.name}" data-module-id="${module.id}">
+                            <div class="position-header">
+                                <span class="position-title"><i class="fas fa-briefcase"></i> ${position.name}</span>
+                                <div class="position-actions">
+                                    <button class="action-btn add-staff" title="添加成员"><i class="fas fa-user-plus"></i></button>
+                                    <button class="action-btn delete-position" title="删除岗位"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="staff-list" data-module-id="${module.id}" data-position-id="${position.id}">${staffHTML}</div>
+                        </div>
+                    `;
+                });
+
+                moduleEl.innerHTML = `
+                    <div class="module-header">
+                        <span class="module-title"><i class="fas fa-cube"></i> ${module.name}</span>
+                        <div class="module-actions">
+                            <button class="action-btn add-position" title="添加岗位"><i class="fas fa-briefcase"></i></button>
+                            <button class="action-btn delete-module" title="删除模块"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="positions-container">${positionsHTML}</div>
+                `;
+
+                container.appendChild(moduleEl);
+            });
+
+            bindModuleEvents();
+            // 重新初始化拖拽
+            initDragAndDrop();
+            // 重新绑定右键菜单
+            bindContextMenuEvents();
+        }
+
+        // 绑定右键菜单事件
+        function bindContextMenuEvents() {
+            // 为小组绑定右键
+            document.querySelectorAll('.module').forEach(module => {
+                module.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const moduleId = module.dataset.moduleId;
+                    const moduleName = module.dataset.moduleName;
+                    const moduleData = modules.find(m => m.id == moduleId);
+                    
+                    showContextMenu(e, [
+                        {
+                            icon: 'fa-pen',
+                            text: '修改小组名称',
+                            action: () => showInput('修改小组名称', moduleName, (newName) => renameModule(moduleId, newName))
+                        },
+                        {
+                            icon: 'fa-trash',
+                            text: '删除小组',
+                            action: () => showConfirm(`确定删除小组 "${moduleName}" ？`, (confirmed) => confirmed && deleteModule(moduleId)),
+                            isDelete: true
+                        }
+                    ]);
+                });
+            });
+
+            // 为岗位绑定右键
+            document.querySelectorAll('.position').forEach(position => {
+                position.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const positionId = position.dataset.positionId;
+                    const positionName = position.dataset.positionName;
+                    const moduleId = position.dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const positionData = module?.positions.find(p => p.id == positionId);
+                    
+                    showContextMenu(e, [
+                        {
+                            icon: 'fa-pen',
+                            text: '修改岗位名称',
+                            action: () => showInput('修改岗位名称', positionName, (newName) => renamePosition(moduleId, positionId, newName))
+                        },
+                        {
+                            icon: 'fa-trash',
+                            text: '删除岗位',
+                            action: () => showConfirm(`确定删除岗位 "${positionName}" ？`, (confirmed) => confirmed && deletePosition(moduleId, positionId)),
+                            isDelete: true
+                        }
+                    ]);
+                });
+            });
+
+            // 为成员绑定右键
+            document.querySelectorAll('.staff-member').forEach(member => {
+                member.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const staffId = member.dataset.staffId;
+                    const staffName = member.dataset.staffName;
+                    const positionId = member.dataset.positionId;
+                    const moduleId = member.dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const position = module?.positions.find(p => p.id == positionId);
+                    const staff = position?.staff.find(s => s.id == staffId);
+                    
+                    showContextMenu(e, [
+                        {
+                            icon: 'fa-pen',
+                            text: '编辑成员',
+                            action: () => {
+                                if (staff) showStaffDetails(staff, moduleId, positionId, staffId);
+                            }
+                        },
+                        {
+                            icon: 'fa-trash',
+                            text: '删除成员',
+                            action: () => showConfirm(`确定删除成员 "${staffName}" ？`, (confirmed) => confirmed && deleteStaff(moduleId, positionId, staffId)),
+                            isDelete: true
+                        }
+                    ]);
+                });
+            });
+        }
+
+        // 显示右键菜单
+        function showContextMenu(e, items) {
+            e.preventDefault();
+            
+            // 构建菜单项
+            contextMenuList.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = item.isDelete ? 'delete-item' : '';
+                li.innerHTML = `<i class="fas ${item.icon}"></i> ${item.text}`;
+                li.addEventListener('click', () => {
+                    item.action();
+                    contextMenu.style.display = 'none';
+                });
+                contextMenuList.appendChild(li);
+            });
+            
+            // 设置菜单位置
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = e.pageX + 'px';
+            contextMenu.style.top = e.pageY + 'px';
+            
+            // 确保菜单不超出视口
+            const menuRect = contextMenu.getBoundingClientRect();
+            if (menuRect.right > window.innerWidth) {
+                contextMenu.style.left = (window.innerWidth - menuRect.width - 10) + 'px';
+            }
+            if (menuRect.bottom > window.innerHeight) {
+                contextMenu.style.top = (window.innerHeight - menuRect.height - 10) + 'px';
+            }
+        }
+
+        // 设置右键菜单全局事件
+        function setupContextMenu() {
+            // 点击其他地方关闭菜单
+            window.addEventListener('click', () => {
+                contextMenu.style.display = 'none';
+            });
+            
+            // 右键时先关闭其他菜单
+            window.addEventListener('contextmenu', () => {
+                contextMenu.style.display = 'none';
+            });
+        }
+
+        // 初始化拖拽功能
+        function initDragAndDrop() {
+            // 获取所有 staff-list 容器
+            document.querySelectorAll('.staff-list').forEach(list => {
+                new Sortable(list, {
+                    group: {
+                        name: 'shared',
+                        pull: true,
+                        revertClone: false
+                    },
+                    animation: 200,
+                    sort: true,
+                    draggable: '.staff-member',
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    dragClass: 'sortable-drag',
+                    onEnd: function(evt) {
+                        const fromList = evt.from;
+                        const toList = evt.to;
+                        const draggedItem = evt.item;
+                        
+                        const staffId = draggedItem.dataset.staffId;
+                        
+                        const fromModuleId = fromList.dataset.moduleId;
+                        const fromPositionId = fromList.dataset.positionId;
+                        
+                        const toModuleId = toList.dataset.moduleId;
+                        const toPositionId = toList.dataset.positionId;
+                        
+                        if (fromModuleId === toModuleId && fromPositionId === toPositionId) {
+                            updateStaffOrder(toModuleId, toPositionId, toList);
+                        } else {
+                            moveStaff(staffId, fromModuleId, fromPositionId, toModuleId, toPositionId, toList);
+                        }
+                    }
+                });
+            });
+        }
+
+        // 更新同一岗位内的顺序
+        function updateStaffOrder(moduleId, positionId, list) {
+            const module = modules.find(m => m.id == moduleId);
+            if (!module) return;
+            const position = module.positions.find(p => p.id == positionId);
+            if (!position) return;
+            
+            const newStaffOrder = [];
+            list.querySelectorAll('.staff-member').forEach(item => {
+                const id = item.dataset.staffId;
+                const staff = position.staff.find(s => s.id == id);
+                if (staff) newStaffOrder.push(staff);
+            });
+            
+            if (newStaffOrder.length === position.staff.length) {
+                position.staff = newStaffOrder;
+                saveToLocalStorage();
+            }
+        }
+
+        // 移动人员到新岗位
+        function moveStaff(staffId, fromModuleId, fromPositionId, toModuleId, toPositionId, toList) {
+            const fromModule = modules.find(m => m.id == fromModuleId);
+            if (!fromModule) return;
+            const fromPosition = fromModule.positions.find(p => p.id == fromPositionId);
+            if (!fromPosition) return;
+            
+            const staffIndex = fromPosition.staff.findIndex(s => s.id == staffId);
+            if (staffIndex === -1) return;
+            const staff = fromPosition.staff[staffIndex];
+            
+            fromPosition.staff.splice(staffIndex, 1);
+            
+            const toModule = modules.find(m => m.id == toModuleId);
+            if (!toModule) return;
+            const toPosition = toModule.positions.find(p => p.id == toPositionId);
+            if (!toPosition) return;
+            
+            const targetIndex = Array.from(toList.children).indexOf(toList.querySelector(`[data-staff-id="${staffId}"]`));
+            if (targetIndex >= 0) {
+                toPosition.staff.splice(targetIndex, 0, staff);
+            } else {
+                toPosition.staff.push(staff);
+            }
+            
+            saveToLocalStorage();
+        }
+
+        // 绑定模块事件
+        function bindModuleEvents() {
+            // 折叠
+            document.querySelectorAll(".module-title").forEach(el => {
+                el.addEventListener("click", (e) => {
+                    e.target.closest(".module").querySelector(".positions-container").classList.toggle("collapsed");
+                    e.target.classList.toggle("collapsed");
+                });
+            });
+            document.querySelectorAll(".position-title").forEach(el => {
+                el.addEventListener("click", (e) => {
+                    e.target.closest(".position").querySelector(".staff-list").classList.toggle("collapsed");
+                    e.target.classList.toggle("collapsed");
+                });
+            });
+
+            // 双击重命名 - 已经通过右键菜单实现，但保留双击作为备选
+            document.querySelectorAll(".module-title").forEach(el => {
+                el.addEventListener("dblclick", (e) => {
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    showInput("修改模块名称", module.name, newName => renameModule(moduleId, newName));
+                });
+            });
+
+            document.querySelectorAll(".position-title").forEach(el => {
+                el.addEventListener("dblclick", (e) => {
+                    const positionId = e.target.closest(".position").dataset.positionId;
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const position = module.positions.find(p => p.id == positionId);
+                    showInput("修改岗位名称", position.name, newName => renamePosition(moduleId, positionId, newName));
+                });
+            });
+
+            // 删除模块
+            document.querySelectorAll(".delete-module").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    showConfirm(`确定删除模块 "${module.name}" ？`, confirmed => confirmed && deleteModule(moduleId));
+                });
+            });
+
+            // 添加岗位
+            document.querySelectorAll(".add-position").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    currentModuleId = e.target.closest(".module").dataset.moduleId;
+                    openModal("position-modal");
+                });
+            });
+
+            // 删除岗位
+            document.querySelectorAll(".delete-position").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const positionId = e.target.closest(".position").dataset.positionId;
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const position = module.positions.find(p => p.id == positionId);
+                    showConfirm(`确定删除岗位 "${position.name}" ？`, confirmed => confirmed && deletePosition(moduleId, positionId));
+                });
+            });
+
+            // 添加成员
+            document.querySelectorAll(".add-staff").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const positionId = e.target.closest(".position").dataset.positionId;
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    currentModuleId = moduleId;
+                    currentPositionId = positionId;
+                    currentStaffId = null;
+                    isEditingStaff = false;
+                    currentRoles = [];
+                    currentAvatar = null;
+                    document.getElementById("staff-modal-title").textContent = "添加新成员";
+                    document.getElementById("staff-name").value = "";
+                    document.getElementById("staff-notes").value = "";
+                    document.getElementById("staff-avatar-preview").style.backgroundImage = "";
+                    document.getElementById("staff-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+                    renderRoles();
+                    openModal("staff-modal");
+                });
+            });
+
+            // 成员点击详情
+            document.querySelectorAll(".staff-member").forEach(member => {
+                member.addEventListener("click", (e) => {
+                    if (e.target.closest(".delete-staff")) return;
+                    const staffId = member.dataset.staffId;
+                    const positionId = member.closest(".position").dataset.positionId;
+                    const moduleId = member.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const position = module.positions.find(p => p.id == positionId);
+                    const staff = position.staff.find(s => s.id == staffId);
+                    showStaffDetails(staff, moduleId, positionId, staffId);
+                });
+            });
+
+            // 删除成员
+            document.querySelectorAll(".delete-staff").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const staffId = e.target.closest(".staff-member").dataset.staffId;
+                    const positionId = e.target.closest(".position").dataset.positionId;
+                    const moduleId = e.target.closest(".module").dataset.moduleId;
+                    const module = modules.find(m => m.id == moduleId);
+                    const position = module.positions.find(p => p.id == positionId);
+                    const staff = position.staff.find(s => s.id == staffId);
+                    showConfirm(`确定删除成员 "${staff.name}" ？`, confirmed => confirmed && deleteStaff(moduleId, positionId, staffId));
+                });
+            });
+        }
+
+        // 显示成员详情
+        function showStaffDetails(staff, moduleId, positionId, staffId) {
+            currentModuleId = moduleId;
+            currentPositionId = positionId;
+            currentStaffId = staffId;
+            document.getElementById("staff-details-title").textContent = staff.name;
+            document.getElementById("detail-name").value = staff.name;
+            document.getElementById("detail-notes").value = staff.notes || "";
+            
+            currentDetailAvatar = staff.avatar || null;
+            if (staff.avatar) {
+                document.getElementById("detail-avatar-preview").style.backgroundImage = `url('${staff.avatar}')`;
+                document.getElementById("detail-avatar-preview").style.backgroundSize = "cover";
+                document.getElementById("detail-avatar-preview").style.backgroundPosition = "center";
+                document.getElementById("detail-avatar-preview").innerHTML = '';
+            } else {
+                document.getElementById("detail-avatar-preview").style.backgroundImage = '';
+                document.getElementById("detail-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+            }
+            
+            detailRoles = [...(staff.roles || [])];
+            renderDetailRoles();
+            openModal("staff-details-modal");
+        }
+
+        // 角色管理
+        function addRole() {
+            const input = document.getElementById("role-input");
+            const role = input.value.trim();
+            if (role && !currentRoles.includes(role)) {
+                currentRoles.push(role);
+                renderRoles();
+                input.value = "";
+            }
+        }
+
+        function removeRole(role) {
+            currentRoles = currentRoles.filter(r => r !== role);
+            renderRoles();
+        }
+
+        function renderRoles() {
+            const container = document.getElementById("roles-container");
+            container.innerHTML = "";
+            currentRoles.forEach(role => {
+                const el = document.createElement("div");
+                el.className = "role-tag";
+                el.style.backgroundColor = generateRoleColor(role);
+                el.innerHTML = `<span>${role}</span><button class="role-remove" data-role="${role}"><i class="fas fa-times"></i></button>`;
+                container.appendChild(el);
+            });
+            document.querySelectorAll("#roles-container .role-remove").forEach(btn => {
+                btn.addEventListener("click", () => removeRole(btn.dataset.role));
+            });
+        }
+
+        function addDetailRole() {
+            const input = document.getElementById("detail-role-input");
+            const role = input.value.trim();
+            if (role && !detailRoles.includes(role)) {
+                detailRoles.push(role);
+                renderDetailRoles();
+                input.value = "";
+            }
+        }
+
+        function removeDetailRole(role) {
+            detailRoles = detailRoles.filter(r => r !== role);
+            renderDetailRoles();
+        }
+
+        function renderDetailRoles() {
+            const container = document.getElementById("detail-roles-container");
+            container.innerHTML = "";
+            detailRoles.forEach(role => {
+                const el = document.createElement("div");
+                el.className = "role-tag";
+                el.style.backgroundColor = generateRoleColor(role);
+                el.innerHTML = `<span>${role}</span><button class="role-remove" data-role="${role}"><i class="fas fa-times"></i></button>`;
+                container.appendChild(el);
+            });
+            document.querySelectorAll("#detail-roles-container .role-remove").forEach(btn => {
+                btn.addEventListener("click", () => removeDetailRole(btn.dataset.role));
+            });
+        }
+
+        // 头像上传和一键清除
+        function setupAvatarUpload() {
+            // 添加成员模态框 - 上传
+            document.getElementById("staff-avatar-upload-btn").addEventListener("click", () => {
+                document.getElementById("staff-avatar-input").click();
+            });
+            document.getElementById("staff-avatar-input").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        currentAvatar = event.target.result;
+                        document.getElementById("staff-avatar-preview").style.backgroundImage = `url('${event.target.result}')`;
+                        document.getElementById("staff-avatar-preview").style.backgroundSize = "cover";
+                        document.getElementById("staff-avatar-preview").style.backgroundPosition = "center";
+                        document.getElementById("staff-avatar-preview").innerHTML = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // 添加成员模态框 - 清除
+            document.getElementById("staff-avatar-clear-btn").addEventListener("click", () => {
+                currentAvatar = null;
+                document.getElementById("staff-avatar-preview").style.backgroundImage = "";
+                document.getElementById("staff-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById("staff-avatar-input").value = "";
+            });
+
+            // 详情模态框 - 上传
+            document.getElementById("detail-avatar-upload-btn").addEventListener("click", () => {
+                document.getElementById("detail-avatar-input").click();
+            });
+            document.getElementById("detail-avatar-input").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        currentDetailAvatar = event.target.result;
+                        document.getElementById("detail-avatar-preview").style.backgroundImage = `url('${event.target.result}')`;
+                        document.getElementById("detail-avatar-preview").style.backgroundSize = "cover";
+                        document.getElementById("detail-avatar-preview").style.backgroundPosition = "center";
+                        document.getElementById("detail-avatar-preview").innerHTML = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // 详情模态框 - 清除
+            document.getElementById("detail-avatar-clear-btn").addEventListener("click", () => {
+                currentDetailAvatar = null;
+                document.getElementById("detail-avatar-preview").style.backgroundImage = "";
+                document.getElementById("detail-avatar-preview").innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById("detail-avatar-input").value = "";
+            });
+        }
+
+        // CRUD 操作
+        function addNewModule() {
+            const name = document.getElementById("module-name").value.trim();
+            if (!name) return;
+            modules.push({ id: Date.now(), name, positions: [] });
+            saveToLocalStorage();
+            renderModules();
+            updateStats();
+            closeAllModals();
+            showAlert(`模块 "${name}" 添加成功！`);
+        }
+
+        function renameModule(moduleId, newName) {
+            if (!newName) return;
+            const module = modules.find(m => m.id == moduleId);
+            if (module) {
+                module.name = newName.trim();
+                saveToLocalStorage();
+                renderModules();
+                showAlert("模块名称已修改");
+            }
+        }
+
+        function deleteModule(moduleId) {
+            modules = modules.filter(m => m.id != moduleId);
+            saveToLocalStorage();
+            renderModules();
+            updateStats();
+            showAlert("模块已删除");
+        }
+
+        function addNewPosition() {
+            const name = document.getElementById("position-name").value.trim();
+            if (!name || !currentModuleId) return;
+            const module = modules.find(m => m.id == currentModuleId);
+            if (module) {
+                module.positions.push({ id: Date.now(), name, staff: [] });
+                saveToLocalStorage();
+                renderModules();
+                updateStats();
+                closeAllModals();
+                showAlert(`岗位 "${name}" 添加成功！`);
+            }
+        }
+
+        function renamePosition(moduleId, positionId, newName) {
+            if (!newName) return;
+            const module = modules.find(m => m.id == moduleId);
+            const position = module?.positions.find(p => p.id == positionId);
+            if (position) {
+                position.name = newName.trim();
+                saveToLocalStorage();
+                renderModules();
+                showAlert("岗位名称已修改");
+            }
+        }
+
+        function deletePosition(moduleId, positionId) {
+            const module = modules.find(m => m.id == moduleId);
+            if (module) {
+                module.positions = module.positions.filter(p => p.id != positionId);
+                saveToLocalStorage();
+                renderModules();
+                updateStats();
+                showAlert("岗位已删除");
+            }
+        }
+
+        function saveStaff() {
+            const name = document.getElementById("staff-name").value.trim();
+            const notes = document.getElementById("staff-notes").value.trim();
+            if (!name || !currentModuleId || !currentPositionId) return;
+
+            const module = modules.find(m => m.id == currentModuleId);
+            const position = module?.positions.find(p => p.id == currentPositionId);
+            if (!position) return;
+
+            if (isEditingStaff && currentStaffId) {
+                const staff = position.staff.find(s => s.id == currentStaffId);
+                if (staff) {
+                    staff.name = name;
+                    staff.roles = [...currentRoles];
+                    staff.notes = notes;
+                    if (currentAvatar !== null) staff.avatar = currentAvatar;
+                }
+            } else {
+                position.staff.push({
+                    id: Date.now(),
+                    name,
+                    roles: [...currentRoles],
+                    notes,
+                    avatar: currentAvatar
+                });
+            }
+
+            saveToLocalStorage();
+            renderModules();
+            updateStats();
+            closeAllModals();
+            showAlert("成员保存成功！");
+        }
+
+        function saveStaffDetails() {
+            const name = document.getElementById("detail-name").value.trim();
+            const notes = document.getElementById("detail-notes").value.trim();
+            if (!name || !currentModuleId || !currentPositionId || !currentStaffId) return;
+
+            const module = modules.find(m => m.id == currentModuleId);
+            const position = module?.positions.find(p => p.id == currentPositionId);
+            const staff = position?.staff.find(s => s.id == currentStaffId);
+            if (staff) {
+                staff.name = name;
+                staff.roles = [...detailRoles];
+                staff.notes = notes;
+                if (currentDetailAvatar !== null) staff.avatar = currentDetailAvatar;
+                saveToLocalStorage();
+                renderModules();
+                closeAllModals();
+                showAlert("成员信息已更新");
+            }
+        }
+
+        function deleteStaff(moduleId, positionId, staffId) {
+            const module = modules.find(m => m.id == moduleId);
+            const position = module?.positions.find(p => p.id == positionId);
+            if (position) {
+                position.staff = position.staff.filter(s => s.id != staffId);
+                saveToLocalStorage();
+                renderModules();
+                updateStats();
+                showAlert("成员已删除");
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            document.getElementById("add-module-btn").addEventListener("click", () => openModal("module-modal"));
+            document.querySelectorAll(".close-btn").forEach(btn => btn.addEventListener("click", closeAllModals));
+            document.getElementById("save-module").addEventListener("click", addNewModule);
+            document.getElementById("save-position").addEventListener("click", addNewPosition);
+            document.getElementById("save-staff").addEventListener("click", saveStaff);
+            document.getElementById("add-role-btn").addEventListener("click", addRole);
+            document.getElementById("detail-add-role-btn").addEventListener("click", addDetailRole);
+            document.getElementById("role-input").addEventListener("keypress", (e) => e.key === "Enter" && addRole());
+            document.getElementById("detail-role-input").addEventListener("keypress", (e) => e.key === "Enter" && addDetailRole());
+            document.getElementById("confirm-ok").addEventListener("click", () => {
+                if (confirmCallback) confirmCallback(true);
+                document.getElementById("confirm-modal").style.display = "none";
+            });
+            document.getElementById("confirm-cancel").addEventListener("click", () => {
+                if (confirmCallback) confirmCallback(false);
+                document.getElementById("confirm-modal").style.display = "none";
+            });
+            document.getElementById("alert-ok").addEventListener("click", () => {
+                document.getElementById("alert-modal").style.display = "none";
+            });
+            document.getElementById("input-save").addEventListener("click", () => {
+                const value = document.getElementById("input-value").value.trim();
+                if (value && inputCallback) {
+                    inputCallback(value);
+                    document.getElementById("input-modal").style.display = "none";
+                }
+            });
+            document.getElementById("save-details").addEventListener("click", saveStaffDetails);
+            document.getElementById("close-details").addEventListener("click", () => {
+                document.getElementById("staff-details-modal").style.display = "none";
+            });
+
+            // 头像上传和一键清除
+            setupAvatarUpload();
+        }
+
+        // 启动
+        initApp();
+    })();
+</script>
+</body>
+</html>

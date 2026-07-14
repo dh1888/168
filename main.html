@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>读取TXT</title>
+    <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/mubai16888/mb/main/mb.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/mubai16888/mb/main/mb.png"
+      type="image/png"
+      sizes="192x192"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./image.css" />
+    <link rel="stylesheet" href="./main.css" />
+    <!-- <link rel="stylesheet" href="./bgtr.css" /> -->
+  </head>
+  <body>
+    <div id="mouse-ripple-container"></div>
+    <!-- 背景媒体容器 -->
+    <div id="background-container">
+      <!-- <div id="background-overlay"></div> -->
+      <img id="background-media" src="" alt="背景" style="display: none" />
+      <video id="background-video" autoplay loop muted style="display: none">
+        <source src="" type="video/mp4" />
+      </video>
+    </div>
+
+    <div class="container">
+      <!-- 顶部固定导航栏 - 横向放置定位按钮 -->
+      <!-- 顶部固定导航栏 - 所有按钮在一行 -->
+      <div class="top-navigation">
+        <!-- 左侧按钮组：添加内容 -->
+        <div class="nav-left-buttons">
+          <button class="position-btn add-main-title" id="addMainTitleBtn">
+            <i class="fas fa-heading"></i>
+            <span>大标题</span>
+          </button>
+          <button class="position-btn add-subtitle" id="addSubtitleBtn">
+            <i class="fas fa-subscript"></i>
+            <span>小标题</span>
+          </button>
+          <button class="position-btn add-content" id="addContentBtn">
+            <i class="fas fa-paragraph"></i>
+            <span>新增内容</span>
+          </button>
+          <!-- 在现有导航栏中，找到添加内容按钮的部分，添加图片按钮 -->
+          <button class="position-btn add-images" id="addImagesBtn">
+            <i class="fas fa-images"></i>
+            <span>➕图片</span>
+          </button>
+        </div>
+
+        <!-- 右侧按钮组：控制功能 -->
+        <div class="nav-right-buttons">
+          <button
+            class="control-btn background-selector"
+            id="backgroundSelectorBtn"
+          >
+            <i class="fas fa-image"></i>
+            <span>背景</span>
+          </button>
+          <button class="control-btn opacity-control" id="opacityControlBtn">
+            <i class="fas fa-adjust"></i>
+            <span>透明度</span>
+          </button>
+          <button class="control-btn export-btn" id="exportBtn">
+            <i class="fas fa-download"></i>
+            <span>导出</span>
+          </button>
+          <button class="control-btn import-btn" id="importBtn">
+            <i class="fas fa-upload"></i>
+            <span>导入</span>
+          </button>
+          <button class="control-btn theme-toggle" id="themeToggleBtn">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+            <span>主题</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 主要内容区域 -->
+      <div class="main-content">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+          <!-- <div class="sidebar-header">
+            <h3>大标题导航</h3>
+          </div> -->
+
+          <div class="nav-container">
+            <div class="nav-items" id="navItems">
+              <!-- 只有大标题会在这里生成导航项 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧内容区域 -->
+        <div class="content-area" id="contentArea">
+          <div class="content-container" id="contentContainer">
+            <!-- 内容会通过JS动态生成 -->
+            <div class="empty-state" id="emptyState">
+              <i class="fas fa-file-alt"></i>
+              <h3>暂无内容</h3>
+              <p>使用顶部的定位按钮开始添加内容</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 复制成功提示 -->
+    <div class="copy-notification" id="copyNotification">
+      <i class="fas fa-check-circle"></i>
+      <span>复制成功！</span>
+    </div>
+
+    <!-- 新增内容模态框 -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">新增内容</h2>
+          <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+
+        <form id="contentForm">
+          <div id="textareaContainer">
+            <div class="form-group textarea-group">
+              <label class="form-label" id="formLabel">内容</label>
+              <textarea
+                class="form-input content-textarea"
+                rows="4"
+                placeholder="请输入内容，换行将保留格式"
+              ></textarea>
+            </div>
+          </div>
+
+          <button type="button" class="add-more-btn" id="addMoreBtn">
+            <i class="fas fa-plus"></i>
+            新增内容区域
+          </button>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <i class="fas fa-save"></i>
+            保存
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 在背景选择模态框之后，透明度控制模态框之前添加 -->
+
+    <!-- 图片模态框 -->
+    <div class="modal-overlay" id="imageModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="imageModalTitle">新增图片</h2>
+          <button class="close-modal" id="closeImageModal">&times;</button>
+        </div>
+
+        <form id="imageForm">
+          <div class="form-group">
+            <label class="form-label">上传图片</label>
+            <div class="file-upload-area" id="imageUploadArea">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>点击或拖放图片到此处上传</p>
+              <p class="file-types">支持 JPG, PNG, GIF 格式</p>
+              <input
+                type="file"
+                id="imageFileInput"
+                class="file-input"
+                accept="image/*"
+                multiple
+              />
+            </div>
+            <div class="image-preview-area" id="imagePreviewArea">
+              <!-- 图片预览会在这里显示 -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">或输入图片链接</label>
+            <input
+              type="text"
+              id="imageUrlInput"
+              placeholder="输入图片链接（一行一个）"
+              class="form-input"
+              style="height: 80px"
+            />
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitImageBtn">
+            <i class="fas fa-save"></i>
+            保存图片
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 图片查看器模态框 -->
+    <div class="modal-overlay" id="imageViewerModal">
+      <div class="image-viewer-content">
+        <div class="image-viewer-header">
+          <button class="close-modal" id="closeImageViewer">&times;</button>
+          <div class="image-counter" id="imageCounter">
+            <span id="currentImageIndex">1</span> /
+            <span id="totalImages">1</span>
+          </div>
+        </div>
+
+        <div class="image-viewer-body">
+          <button class="nav-btn prev-btn" id="prevImageBtn">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <div class="image-container">
+            <img id="viewerImage" src="" alt="查看图片" />
+          </div>
+
+          <button class="nav-btn next-btn" id="nextImageBtn">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="image-viewer-footer">
+          <button class="viewer-action-btn" id="downloadImageBtn">
+            <i class="fas fa-download"></i> 下载
+          </button>
+          <button
+            class="viewer-action-btn"
+            id="copyImageUrlBtn"
+            title="复制图片 (Ctrl+C)"
+          >
+            <i class="fas fa-copy"></i> 复制图片
+          </button>
+          <button class="viewer-action-btn delete" id="deleteImageBtn">
+            <i class="fas fa-trash-alt"></i> 删除
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 背景选择模态框 -->
+    <div class="background-modal" id="backgroundModal">
+      <div class="background-modal-content">
+        <div class="background-modal-header">
+          <h2 class="background-modal-title" data-text="选择背景">选择背景</h2>
+          <button class="close-modal" id="closeBackgroundModal">&times;</button>
+        </div>
+
+        <div class="background-tabs">
+          <button class="background-tab active" data-tab="preset">
+            预设背景
+          </button>
+          <button class="background-tab" data-tab="upload">上传文件</button>
+          <button class="background-tab" data-tab="custom">自定义链接</button>
+        </div>
+
+        <!-- 预设背景标签页 -->
+        <div class="background-tab-content active" id="preset-tab">
+          <div class="background-options" id="backgroundOptions">
+            <div class="background-option" data-type="none">
+              <div class="background-option-title">无背景</div>
+              <div class="background-option-description">使用默认渐变背景</div>
+            </div>
+
+            <div
+              class="background-option"
+              data-type="image"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            >
+              <div class="background-option-title">雪山风景</div>
+              <div class="background-option-description">壮丽的雪山景观</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 上传文件标签页 -->
+        <div class="background-tab-content" id="upload-tab">
+          <div class="file-upload-area" id="fileUploadArea">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>点击或拖放文件到此处上传</p>
+            <p class="file-types">支持 JPG, PNG, GIF, MP4, WEBM 格式</p>
+            <input
+              type="file"
+              id="backgroundFileInput"
+              class="file-input"
+              accept="image/*,video/*"
+            />
+          </div>
+          <div class="preview-area" id="uploadPreview">
+            <p>预览区域</p>
+          </div>
+        </div>
+
+        <!-- 自定义链接标签页 -->
+        <div class="background-tab-content" id="custom-tab">
+          <div class="background-custom-input">
+            <div class="form-label">图片或视频链接</div>
+            <input
+              type="text"
+              id="customBackgroundInput"
+              placeholder="输入图片或视频链接..."
+            />
+          </div>
+          <div class="preview-area" id="customPreview">
+            <p>预览区域</p>
+          </div>
+        </div>
+
+        <div class="background-actions">
+          <button class="background-action-btn apply" id="applyBackgroundBtn">
+            应用背景
+          </button>
+          <button class="background-action-btn cancel" id="cancelBackgroundBtn">
+            取消
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 透明度控制模态框 -->
+    <div class="opacity-modal" id="opacityModal">
+      <div class="opacity-modal-content">
+        <div class="opacity-modal-header">
+          <h2 class="opacity-modal-title">背景透明度控制</h2>
+          <button class="close-modal" id="closeOpacityModal">&times;</button>
+        </div>
+
+        <div class="opacity-control-group">
+          <div class="form-label">背景透明度</div>
+          <div class="opacity-slider-container">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="80"
+              class="opacity-slider"
+              id="opacitySlider"
+            />
+            <div class="opacity-value" id="opacityValue">30%</div>
+          </div>
+
+          <div class="opacity-presets">
+            <button class="opacity-preset-btn" data-value="10">
+              10% - 非常透明
+            </button>
+            <button class="opacity-preset-btn" data-value="30">
+              30% - 适中
+            </button>
+            <button class="opacity-preset-btn" data-value="50">
+              50% - 半透明
+            </button>
+            <button class="opacity-preset-btn" data-value="70">
+              70% - 较清晰
+            </button>
+            <button class="opacity-preset-btn" data-value="90">
+              90% - 清晰
+            </button>
+          </div>
+        </div>
+
+        <!-- 新增：自动隐藏设置 -->
+        <div class="opacity-control-group">
+          <div class="form-label">自动隐藏设置</div>
+          <div class="auto-hide-container">
+            <div class="time-input-group">
+              <input
+                type="number"
+                min="5"
+                max="300"
+                value="20"
+                class="time-input"
+                id="autoHideTimeInput"
+              />
+              <span class="time-unit">秒</span>
+            </div>
+            <div class="auto-hide-options">
+              <label class="auto-hide-option">
+                <input type="checkbox" id="enableAutoHide" />
+                <span>启用自动隐藏</span>
+              </label>
+              <p class="auto-hide-description">
+                鼠标无操作时自动隐藏内容区域和侧边栏
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="opacity-actions">
+          <button class="opacity-action-btn apply" id="applyOpacityBtn">
+            应用设置
+          </button>
+          <button class="opacity-action-btn cancel" id="cancelOpacityBtn">
+            取消
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导入导出模态框 -->
+    <div class="import-export-modal" id="importExportModal">
+      <div class="import-export-modal-content">
+        <div class="import-export-modal-header">
+          <h2
+            class="import-export-modal-title"
+            data-text="导入/导出数据
+"
+          >
+            导入/导出数据
+          </h2>
+          <button class="close-modal" id="closeImportExportModal">
+            &times;
+          </button>
+        </div>
+
+        <div class="import-export-tabs">
+          <button class="import-export-tab active" data-tab="export">
+            导出数据
+          </button>
+          <button class="import-export-tab" data-tab="import">导入数据</button>
+        </div>
+
+        <!-- 导出标签页 -->
+        <div class="import-export-tab-content active" id="export-tab">
+          <div class="export-options">
+            <div class="export-option">
+              <label>
+                <input type="radio" name="exportFormat" value="json" checked />
+                JSON 格式 (推荐)
+              </label>
+            </div>
+            <div class="export-option">
+              <label>
+                <input type="radio" name="exportFormat" value="txt" />
+                纯文本格式
+              </label>
+            </div>
+          </div>
+          <div class="export-data-preview" id="exportDataPreview">
+            <!-- 数据预览会在这里显示 -->
+          </div>
+        </div>
+
+        <!-- 导入标签页 -->
+        <div class="import-export-tab-content" id="import-tab">
+          <div class="import-file-area" id="importFileArea">
+            <i class="fas fa-file-import"></i>
+            <p>点击或拖放 JSON 文件到此处导入</p>
+            <p class="file-types">仅支持 JSON 格式文件</p>
+            <input
+              type="file"
+              id="importFileInput"
+              class="import-file-input"
+              accept=".json"
+            />
+          </div>
+          <div class="preview-area" id="importPreview">
+            <p>导入文件预览区域</p>
+          </div>
+        </div>
+
+        <div class="import-export-actions">
+          <button class="import-export-action-btn primary" id="exportActionBtn">
+            导出数据
+          </button>
+          <button
+            class="import-export-action-btn secondary"
+            id="importActionBtn"
+          >
+            导入数据
+          </button>
+          <button
+            class="import-export-action-btn secondary"
+            id="cancelImportExportBtn"
+          >
+            取消
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右键菜单 -->
+    <div class="context-menu" id="contextMenu">
+      <div class="context-menu-item" id="editContextItem">
+        <i class="fas fa-edit"></i>
+        编辑内容
+      </div>
+      <div class="context-menu-item" id="addContextItem">
+        <i class="fas fa-plus"></i>
+        新增内容
+      </div>
+      <!-- 添加这行：在后面插入卡片 -->
+      <div class="context-menu-item" id="insertAfterContextItem">
+        <i class="fas fa-arrow-down"></i>
+        插入卡片内容
+      </div>
+      <!-- 新增：插入大标题 -->
+      <div class="context-menu-item" id="insertMainTitleAfterItem">
+        <i class="fas fa-heading"></i>
+        插入大标题
+      </div>
+      <!-- 新增：插入小标题 -->
+      <div class="context-menu-item" id="insertSubtitleAfterItem">
+        <i class="fas fa-subscript"></i>
+        插入小标题
+      </div>
+      <div class="context-menu-item" id="editImagesItem">
+        <i class="fas fa-edit"></i>
+        编辑图片
+      </div>
+      <!-- 在现有的右键菜单中，添加图片选项 -->
+      <div class="context-menu-item" id="insertImagesAfterItem">
+        <i class="fas fa-images"></i>
+        插入图片
+      </div>
+      <div class="context-menu-item" id="deleteContextItem">
+        <i class="fas fa-trash-alt"></i>
+        删除内容
+      </div>
+    </div>
+
+    <!-- 导航动画 -->
+    <div class="nav-item">
+      <span class="nav-item-title">导航项</span>
+      <span class="nav-item-indicator">▶</span>
+      <!-- 只需要一个额外的div -->
+      <div class="light-border"></div>
+    </div>
+
+    <script src="./image.js"></script>
+    <script src="./main.js"></script>
+    <script src="./render.js"></script>
+  </body>
+</html>
+
+

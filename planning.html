@@ -1,0 +1,2264 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高级任务清单</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <style>
+      /* 使用代码2的CSS样式 */
+      /* 字体导入 */
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap");
+
+      :root {
+        /* 主色调 */
+        --primary-color: #5d9cec;
+        --primary-light: #8bb8f0;
+        --primary-dark: #3a7bc8;
+
+        /* 辅助色 */
+        --secondary-color: #48cfad;
+        --success-color: #a0d468;
+        --warning-color: #ffce54;
+        --danger-color: #ed5565;
+        --info-color: #4fc1e9;
+
+        /* 中性色 */
+        --light-color: #f5f7fa;
+        --dark-color: #2e353d;
+        --text-color: #434a54;
+        --text-light: #aab2bd;
+        --border-color: #e6e9ed;
+        --bg-color: #ffffff;
+
+        /* 特殊背景 */
+        --daily-task-bg: #fff8e6;
+        --overdue-task-bg: #ffefef;
+
+        /* 阴影 */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+        /* 圆角 */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 999px;
+
+        /* 过渡 */
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      .dark-mode {
+        --light-color: #2e353d;
+        --dark-color: #f5f7fa;
+        --text-color: #e6e9ed;
+        --text-light: #aab2bd;
+        --border-color: #434a54;
+        --bg-color: #1e2227;
+
+        --daily-task-bg: #333022;
+        --overdue-task-bg: #332222;
+
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      body {
+        font-family:
+          "Noto Sans SC", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--light-color);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        transition: var(--transition);
+      }
+
+      h1 {
+        color: var(--dark-color);
+        text-align: center;
+        margin: 0px 0 10px;
+        font-weight: 700;
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+      }
+
+      /* 统计栏美化 */
+      .stats-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: var(--bg-color);
+        padding: 15px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+        transition: var(--transition);
+        justify-content: space-around;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        min-width: 120px;
+        flex: 1;
+      }
+
+      .dark-mode .stat-item {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-item > div:first-child {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        font-weight: 600;
+        font-size: 1.4rem;
+        transition: var(--transition);
+      }
+
+      .total-tasks {
+        color: var(--primary-color);
+      }
+      .completed-tasks {
+        color: var(--success-color);
+      }
+      .pending-tasks {
+        color: var(--warning-color);
+      }
+      .overdue-tasks {
+        color: var(--danger-color);
+      }
+
+      /* 进度条美化 */
+      .progress-container {
+        width: 100%;
+        height: 24px;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: var(--radius-full);
+        margin: 15px 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .dark-mode .progress-container {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary-light),
+          var(--primary-dark)
+        );
+        width: 0%;
+        transition:
+          width 0.5s ease,
+          background-color 0.3s ease;
+        position: relative;
+      }
+
+      .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.75rem;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        text-align: center;
+      }
+
+      /* 控制按钮美化 */
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn i {
+        font-size: 0.9em;
+      }
+
+      .btn-select-all {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .btn-clear-completed {
+        background-color: var(--danger-color);
+        color: white;
+      }
+
+      .btn-dark-mode {
+        background-color: var(--dark-color);
+        color: white;
+      }
+
+      .btn-add-task {
+        background-color: var(--success-color);
+        color: white;
+      }
+
+      .btn-notification {
+        background-color: var(--warning-color);
+        color: white;
+        position: relative;
+      }
+
+      /* 任务列表美化 */
+      .task-list {
+        background: var(--bg-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 5px;
+        transition: var(--transition);
+      }
+
+      .task-list-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .task-list-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+      }
+
+      .task-count {
+        background: var(--primary-light);
+        color: white;
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        padding: 0;
+        margin: 10px;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        overflow: hidden;
+        cursor: move; /* 添加拖动光标 */
+      }
+
+      li:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        background: var(--bg-color);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        padding: 15px;
+        position: relative;
+      }
+
+      .task-item.dragging {
+        opacity: 0.8;
+        box-shadow: 0 0 0 2px var(--primary-color);
+      }
+
+      .task-item.drag-over {
+        border-top: 2px solid var(--primary-color);
+      }
+
+      .task-daily .task-item {
+        background-color: var(--daily-task-bg);
+      }
+
+      .task-overdue .task-item {
+        background-color: var(--overdue-task-bg);
+      }
+
+      .task-checkbox {
+        margin-right: 15px;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        accent-color: var(--success-color);
+      }
+
+      .task-content {
+        flex-grow: 1;
+        min-width: 0;
+      }
+
+      .task-main {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .task-title {
+        font-weight: 500;
+        font-size: 1rem;
+        margin-right: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .completed .task-title {
+        color: var(--text-light);
+      }
+
+      .task-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .task-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        color: white;
+        background-color: var(--primary-color);
+        font-weight: 500;
+      }
+
+      .task-category i {
+        margin-right: 5px;
+        font-size: 0.8em;
+      }
+
+      .priority-indicator {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .priority-high {
+        color: var(--danger-color);
+      }
+      .priority-medium {
+        color: var(--warning-color);
+      }
+      .priority-low {
+        color: var(--text-light);
+      }
+
+      .task-due {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .task-due i {
+        margin-right: 5px;
+      }
+
+      .task-description {
+        white-space: pre-line;
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-top: 8px;
+        line-height: 1.5;
+      }
+
+      .task-subtasks {
+        margin-top: 10px;
+        padding-left: 15px;
+        border-left: 2px dashed var(--border-color);
+      }
+
+      .task-subtask {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 5px;
+      }
+
+      .task-subtask input {
+        margin-right: 8px;
+      }
+
+      .task-subtask-completed {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+
+      .task-actions {
+        display: flex;
+        align-items: center;
+        margin-left: 15px;
+      }
+
+      .btn-action {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: var(--transition);
+      }
+
+      .btn-action:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--text-color);
+      }
+
+      .dark-mode .btn-action:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .btn-delete:hover {
+        color: var(--danger-color);
+      }
+
+      .btn-edit:hover {
+        color: var(--primary-color);
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--danger-color);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: bold;
+      }
+
+      /* 模态窗口美化 */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s;
+      }
+
+      .modal-content {
+        background-color: var(--bg-color);
+        margin: 10vh auto;
+        padding: 30px;
+        border-radius: var(--radius-lg);
+        width: 90%;
+        max-width: 500px;
+        box-shadow: var(--shadow-lg);
+        animation: slideDown 0.3s;
+        position: relative;
+      }
+
+      .modal-title {
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .modal-title i {
+        font-size: 1.2em;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text-color);
+        font-size: 0.95rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        box-sizing: border-box;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: inherit;
+        transition: var(--transition);
+        font-size: 0.95rem;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(93, 156, 236, 0.2);
+      }
+
+      textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      /* 已完成任务样式 - 新增 */
+      .task-item.completed {
+        background-color: rgba(160, 212, 104, 0.15) !important; /* 淡绿色背景 */
+        position: relative;
+      }
+
+      .task-item.completed::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        right: 10px;
+        height: 2px;
+        background-color: var(--success-color);
+        transform: translateY(-50%);
+        opacity: 0.5;
+      }
+
+      .task-item.completed .task-title {
+        text-decoration: line-through;
+        color: var(--success-color) !important;
+      }
+
+      .task-item.completed .task-description,
+      .task-item.completed .task-meta span:not(.task-category) {
+        opacity: 0.7;
+      }
+
+      .task-item.completed .task-category {
+        opacity: 0.8;
+      }
+
+      /* 添加到现有CSS中 */
+      .btn-dropdown {
+        position: relative;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        background: var(--bg-color);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        min-width: 180px;
+        margin-top: 5px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        animation: slideDown 0.2s ease;
+      }
+
+      .dropdown-item {
+        width: 100%;
+        padding: 12px 15px;
+        border: none;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-color);
+        transition: var(--transition);
+        font-size: 0.9rem;
+        font-family: inherit;
+      }
+
+      .dropdown-item:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .dark-mode .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .btn-import-export {
+        background-color: var(--info-color);
+        color: white;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 5px 0;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .stat-item {
+          min-width: 100px;
+          padding: 8px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stats-bar {
+          gap: 8px;
+        }
+        .stat-item {
+          min-width: 80px;
+          padding: 6px;
+        }
+        .stat-value {
+          font-size: 1.2rem;
+        }
+      }
+
+      /* 动画 */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideDown {
+        from {
+          transform: translateY(-30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* 工具类 */
+      .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .flex-grow {
+        flex-grow: 1;
+      }
+
+      .ml-auto {
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><i class="fas fa-tasks"></i> 每日任务清单</h1>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div><i class="fas fa-list"></i> 总任务</div>
+        <div class="stat-value total-tasks" id="total-tasks">0</div>
+      </div>
+      <div class="stat-item">
+        <div><i class="fas fa-check-circle"></i> 已完成</div>
+        <div class="stat-value completed-tasks" id="completed-tasks">0</div>
+      </div>
+      <div class="stat-item">
+        <div><i class="fas fa-clock"></i> 未完成</div>
+        <div class="stat-value pending-tasks" id="pending-tasks">0</div>
+      </div>
+      <div class="stat-item">
+        <div><i class="fas fa-exclamation-triangle"></i> 已过期</div>
+        <div class="stat-value overdue-tasks" id="overdue-tasks">0</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-text" id="progress-text">0% 完成</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-select-all" onclick="toggleSelectAll()">
+        <i class="fas fa-check-double"></i> 全选/取消全选
+      </button>
+      <button class="btn btn-clear-completed" onclick="clearCompletedTasks()">
+        <i class="fas fa-trash-alt"></i> 清除已完成
+      </button>
+      <button class="btn btn-dark-mode" onclick="toggleDarkMode()">
+        <i class="fas fa-moon"></i> 暗黑模式
+      </button>
+      <button class="btn btn-add-task" onclick="openModal()">
+        <i class="fas fa-plus"></i> 添加任务
+      </button>
+      <div style="position: relative">
+        <button class="btn btn-notification" onclick="showNotifications()">
+          <i class="fas fa-bell"></i> 通知
+        </button>
+        <div class="notification-badge" id="notification-badge">0</div>
+      </div>
+
+      <div
+        class="btn-dropdown"
+        style="position: relative; display: inline-block"
+      >
+        <button
+          class="btn btn-import-export"
+          onclick="toggleImportExportMenu()"
+        >
+          <i class="fas fa-file-export"></i> 数据管理
+        </button>
+        <div
+          id="import-export-menu"
+          class="dropdown-menu"
+          style="
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 180px;
+            margin-top: 5px;
+          "
+        >
+          <button class="dropdown-item" onclick="exportTasks()">
+            <i class="fas fa-download"></i> 导出任务
+          </button>
+          <button class="dropdown-item" onclick="importTasks()">
+            <i class="fas fa-upload"></i> 导入任务
+          </button>
+          <div
+            style="height: 1px; background: var(--border-color); margin: 5px 0"
+          ></div>
+          <button class="dropdown-item" onclick="backupAllData()">
+            <i class="fas fa-save"></i> 完整备份
+          </button>
+          <button class="dropdown-item" onclick="restoreFromBackup()">
+            <i class="fas fa-history"></i> 恢复备份
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-list">
+      <div class="task-list-header">
+        <div class="task-list-title">我的任务</div>
+        <div class="task-count" id="task-count">0 项</div>
+      </div>
+      <ul id="task-list"></ul>
+    </div>
+
+    <!-- 添加/编辑任务模态窗口 -->
+    <div id="task-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title" id="modal-task-title">
+          <i class="fas fa-plus-circle"></i> 添加新任务
+        </h2>
+        <form id="task-form">
+          <div class="form-group">
+            <label for="task-title"
+              ><i class="fas fa-heading"></i> 任务标题*</label
+            >
+            <input
+              type="text"
+              id="task-title"
+              class="form-control"
+              required
+              autofocus
+            />
+          </div>
+          <div class="form-group">
+            <label for="task-description"
+              ><i class="fas fa-align-left"></i> 任务描述</label
+            >
+            <textarea
+              id="task-description"
+              class="form-control"
+              placeholder="可输入任务详细说明..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="task-category"><i class="fas fa-tag"></i> 分类</label>
+            <select id="task-category" class="form-control">
+              <option value="general"><i class="fas fa-tag"></i> 常规</option>
+              <option value="work">
+                <i class="fas fa-briefcase"></i> 工作
+              </option>
+              <option value="personal"><i class="fas fa-user"></i> 个人</option>
+              <option value="study"><i class="fas fa-book"></i> 学习</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="task-priority"
+              ><i class="fas fa-exclamation"></i> 优先级</label
+            >
+            <select id="task-priority" class="form-control">
+              <option value="medium">中优先级</option>
+              <option value="high">高优先级</option>
+              <option value="low">低优先级</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="task-due"
+              ><i class="fas fa-calendar-alt"></i> 截止日期</label
+            >
+            <input type="date" id="task-due" class="form-control" />
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="task-daily" />
+            <label for="task-daily"><i class="fas fa-redo"></i> 每日任务</label>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-tasks"></i> 子任务</label>
+            <div id="subtask-list"></div>
+            <div
+              class="add-subtask"
+              style="display: flex; gap: 10px; margin-top: 10px"
+            >
+              <input
+                type="text"
+                id="new-subtask"
+                class="form-control"
+                placeholder="输入子任务内容"
+                style="flex-grow: 1"
+              />
+              <button
+                type="button"
+                class="btn btn-add-task"
+                onclick="addSubtask()"
+                style="padding: 0 15px"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-cancel" onclick="closeModal()">
+              <i class="fas fa-times"></i> 取消
+            </button>
+            <button
+              type="submit"
+              class="btn btn-add-task"
+              id="modal-submit-btn"
+            >
+              <i class="fas fa-save"></i> 保存
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 任务详情模态窗口 -->
+    <div id="detail-modal" class="modal">
+      <div class="modal-content" style="max-width: 600px">
+        <span class="close" onclick="closeDetailModal()">&times;</span>
+        <h2 class="modal-title" id="detail-title">
+          <i class="fas fa-info-circle"></i> 任务详情
+        </h2>
+        <div class="task-detail-content">
+          <div class="form-group">
+            <label><i class="fas fa-check-circle"></i> 任务状态</label>
+            <div id="detail-status" style="font-weight: 500"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-align-left"></i> 任务描述</label>
+            <div id="detail-description" class="task-description"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-tag"></i> 分类</label>
+            <div id="detail-category" style="font-weight: 500"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-exclamation"></i> 优先级</label>
+            <div id="detail-priority" style="font-weight: 500"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-calendar-alt"></i> 截止日期</label>
+            <div id="detail-due" style="font-weight: 500"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-clock"></i> 创建时间</label>
+            <div id="detail-created" style="font-weight: 500"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-tasks"></i> 子任务</label>
+            <div id="detail-subtasks" class="task-subtasks"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-cancel"
+              onclick="closeDetailModal()"
+            >
+              <i class="fas fa-times"></i> 关闭
+            </button>
+            <button type="button" class="btn btn-add-task" id="detail-edit-btn">
+              <i class="fas fa-edit"></i> 编辑
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认模态窗口 -->
+    <div id="confirm-modal" class="modal confirm-modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeConfirmModal()">&times;</span>
+        <h2 class="modal-title">
+          <i class="fas fa-exclamation-triangle"></i> 确认删除
+        </h2>
+        <div
+          class="confirm-message"
+          id="confirm-message"
+          style="line-height: 1.6"
+        >
+          确定要删除这个任务吗？
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            onclick="closeConfirmModal()"
+          >
+            <i class="fas fa-times"></i> 取消
+          </button>
+          <button
+            type="button"
+            class="btn btn-clear-completed"
+            id="confirm-delete-btn"
+          >
+            <i class="fas fa-trash-alt"></i> 删除
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 通知模态窗口 -->
+    <div id="notification-modal" class="modal">
+      <div class="modal-content" style="max-width: 500px">
+        <span class="close" onclick="closeNotificationModal()">&times;</span>
+        <h2 class="modal-title"><i class="fas fa-bell"></i> 任务通知</h2>
+        <div
+          id="notification-list"
+          style="max-height: 400px; overflow-y: auto; margin-top: 15px"
+        >
+          <!-- 通知内容将在这里动态生成 -->
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            onclick="closeNotificationModal()"
+          >
+            <i class="fas fa-times"></i> 关闭
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 初始化任务数组
+      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      let selectAll = false;
+      let currentEditingTaskId = null;
+      let taskToDeleteId = null;
+      let subtasks = []; // 当前正在编辑的子任务
+      let notifications =
+        JSON.parse(localStorage.getItem("notifications")) || [];
+      let draggedItem = null; // 当前拖动的任务项
+
+      // 在脚本的开头添加（在 DOMContentLoaded 事件监听器之前）
+      function exportTasks() {
+        const dataStr = JSON.stringify(tasks, null, 2);
+        const dataUri =
+          "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+        const exportFileDefaultName = `任务清单_${new Date().toISOString().split("T")[0]}.json`;
+
+        const linkElement = document.createElement("a");
+        linkElement.setAttribute("href", dataUri);
+        linkElement.setAttribute("download", exportFileDefaultName);
+        linkElement.click();
+
+        toastr.success("任务已成功导出！");
+      }
+
+      function importTasks() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+
+        input.onchange = function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            try {
+              const importedTasks = JSON.parse(event.target.result);
+
+              // 验证导入的数据格式
+              if (!Array.isArray(importedTasks)) {
+                throw new Error("导入的数据格式不正确");
+              }
+
+              // 检查是否需要合并或替换
+              if (tasks.length > 0) {
+                if (
+                  confirm(
+                    `当前有 ${tasks.length} 个任务，导入的 ${importedTasks.length} 个任务将：\n\n1. 添加到现有任务中\n2. 替换现有任务\n\n请点击"确定"进行合并添加，或点击"取消"进行替换。`,
+                  )
+                ) {
+                  // 合并任务（添加不重复的任务）
+                  const existingIds = tasks.map((task) => task.id);
+                  importedTasks.forEach((task) => {
+                    if (!existingIds.includes(task.id)) {
+                      tasks.push(task);
+                    }
+                  });
+                } else {
+                  // 替换任务
+                  tasks = importedTasks;
+                }
+              } else {
+                // 直接导入
+                tasks = importedTasks;
+              }
+
+              // 重新计算ID以避免冲突
+              const maxId = Math.max(...tasks.map((task) => task.id || 0), 0);
+              tasks.forEach((task) => {
+                if (!task.id || task.id <= maxId) {
+                  task.id = Date.now() + Math.floor(Math.random() * 1000);
+                }
+              });
+
+              saveTasks();
+              renderTasks();
+              updateStats();
+              updateProgress();
+
+              toastr.success(`成功导入 ${importedTasks.length} 个任务！`);
+            } catch (error) {
+              toastr.error("导入失败：" + error.message);
+              console.error("导入错误：", error);
+            }
+          };
+
+          reader.readAsText(file);
+        };
+
+        input.click();
+      }
+
+      function backupAllData() {
+        const backupData = {
+          tasks: tasks,
+          notifications: notifications,
+          darkMode: localStorage.getItem("darkMode") === "true",
+          lastResetDate: localStorage.getItem("lastResetDate"),
+          backupDate: new Date().toISOString(),
+        };
+
+        const dataStr = JSON.stringify(backupData, null, 2);
+        const dataUri =
+          "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+        const exportFileDefaultName = `任务清单备份_${new Date().toISOString().split("T")[0]}.json`;
+
+        const linkElement = document.createElement("a");
+        linkElement.setAttribute("href", dataUri);
+        linkElement.setAttribute("download", exportFileDefaultName);
+        linkElement.click();
+
+        toastr.success("完整数据已备份！");
+      }
+
+      function restoreFromBackup() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+
+        input.onchange = function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            try {
+              const backupData = JSON.parse(event.target.result);
+
+              // 验证备份数据格式
+              if (!backupData.tasks || !Array.isArray(backupData.tasks)) {
+                throw new Error("备份文件格式不正确");
+              }
+
+              if (confirm("警告：这将覆盖所有现有数据！确定要恢复备份吗？")) {
+                // 恢复任务
+                tasks = backupData.tasks;
+
+                // 恢复通知（如果有）
+                if (backupData.notifications) {
+                  notifications = backupData.notifications;
+                  saveNotifications();
+                }
+
+                // 恢复暗黑模式设置
+                if (backupData.darkMode) {
+                  document.body.classList.add("dark-mode");
+                  localStorage.setItem("darkMode", "true");
+                } else {
+                  document.body.classList.remove("dark-mode");
+                  localStorage.setItem("darkMode", "false");
+                }
+
+                // 恢复每日重置日期
+                if (backupData.lastResetDate) {
+                  localStorage.setItem(
+                    "lastResetDate",
+                    backupData.lastResetDate,
+                  );
+                }
+
+                saveTasks();
+                renderTasks();
+                updateStats();
+                updateProgress();
+                updateNotificationBadge();
+
+                toastr.success(
+                  `成功从备份恢复 ${backupData.tasks.length} 个任务！`,
+                );
+              }
+            } catch (error) {
+              toastr.error("恢复备份失败：" + error.message);
+              console.error("恢复错误：", error);
+            }
+          };
+
+          reader.readAsText(file);
+        };
+
+        input.click();
+      }
+
+      // DOM加载完成后初始化
+      document.addEventListener("DOMContentLoaded", function () {
+        renderTasks();
+        updateStats();
+        updateProgress();
+        updateNotificationBadge();
+        setupDragAndDrop();
+
+        // 表单提交事件
+        document
+          .getElementById("task-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            addTask();
+          });
+
+        // 设置今日日期为默认截止日期
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("task-due").min = today;
+
+        // 初始化暗黑模式
+        initDarkMode();
+
+        // 初始化每日任务检查
+        checkDailyTasksReset();
+
+        // 设置删除确认按钮事件
+        document.getElementById("confirm-delete-btn").onclick = function () {
+          if (taskToDeleteId) {
+            deleteTaskConfirmed(taskToDeleteId);
+          }
+        };
+
+        // 检查任务提醒
+        checkTaskReminders();
+
+        // 子任务输入框回车事件
+        document
+          .getElementById("new-subtask")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              addSubtask();
+            }
+          });
+      });
+
+      // 设置拖放功能
+      function setupDragAndDrop() {
+        const taskList = document.getElementById("task-list");
+
+        // 拖动开始
+        taskList.addEventListener("dragstart", function (e) {
+          if (e.target.tagName === "LI") {
+            draggedItem = e.target;
+            e.target.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/html", e.target.innerHTML);
+          }
+        });
+
+        // 拖动结束
+        taskList.addEventListener("dragend", function (e) {
+          if (e.target.tagName === "LI") {
+            e.target.classList.remove("dragging");
+            draggedItem = null;
+          }
+        });
+
+        // 拖动经过
+        taskList.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+
+          const targetItem = e.target.closest("li");
+          if (!targetItem || targetItem === draggedItem) return;
+
+          const rect = targetItem.getBoundingClientRect();
+          const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+
+          taskList.insertBefore(
+            draggedItem,
+            next ? targetItem.nextSibling : targetItem,
+          );
+        });
+
+        // 放置
+        taskList.addEventListener("drop", function (e) {
+          e.preventDefault();
+          if (draggedItem) {
+            // 更新任务顺序
+            updateTaskOrder();
+          }
+        });
+      }
+
+      // 更新任务顺序
+      function updateTaskOrder() {
+        const taskList = document.getElementById("task-list");
+        const newOrder = [];
+
+        // 获取新的任务顺序
+        Array.from(taskList.children).forEach((li) => {
+          const taskId = parseInt(li.getAttribute("data-id"));
+          if (taskId) {
+            newOrder.push(taskId);
+          }
+        });
+
+        // 重新排序任务数组
+        const orderedTasks = [];
+        newOrder.forEach((id) => {
+          const task = tasks.find((t) => t.id === id);
+          if (task) orderedTasks.push(task);
+        });
+
+        // 添加不在新顺序中的任务（以防万一）
+        tasks.forEach((task) => {
+          if (!newOrder.includes(task.id)) {
+            orderedTasks.push(task);
+          }
+        });
+
+        tasks = orderedTasks;
+        saveTasks();
+      }
+
+      // 初始化暗黑模式
+      function initDarkMode() {
+        if (localStorage.getItem("darkMode") === "true") {
+          document.body.classList.add("dark-mode");
+        }
+      }
+
+      // 打开添加任务模态窗口
+      function openModal() {
+        document.getElementById("task-modal").style.display = "block";
+        document.getElementById("task-title").focus();
+        document.getElementById("modal-task-title").textContent = "添加新任务";
+        document.getElementById("modal-submit-btn").textContent = "添加";
+        currentEditingTaskId = null;
+        subtasks = [];
+        renderSubtasks();
+      }
+
+      // 关闭添加任务模态窗口
+      function closeModal() {
+        document.getElementById("task-modal").style.display = "none";
+        document.getElementById("task-form").reset();
+        currentEditingTaskId = null;
+        subtasks = [];
+      }
+
+      // 打开任务详情模态窗口
+      function openDetailModal(taskId) {
+        const task = tasks.find((t) => t.id === taskId);
+        if (!task) return;
+
+        document.getElementById("detail-title").textContent = task.title;
+        document.getElementById("detail-status").textContent = task.completed
+          ? "已完成"
+          : "未完成";
+        document.getElementById("detail-status").style.color = task.completed
+          ? "var(--success-color)"
+          : "var(--warning-color)";
+
+        // 修改这里：使用 innerHTML 和 replace 保留换行
+        const description = task.description || "无描述";
+        document.getElementById("detail-description").innerHTML =
+          description.replace(/\n/g, "<br>");
+
+        document.getElementById("detail-category").textContent =
+          getCategoryName(task.category || "general");
+        document.getElementById("detail-priority").innerHTML =
+          getPriorityDisplay(task.priority || "medium");
+
+        document.getElementById("detail-due").textContent = task.due
+          ? new Date(task.due).toLocaleDateString("zh-CN")
+          : "无截止日期";
+
+        document.getElementById("detail-created").textContent = new Date(
+          task.createdAt,
+        ).toLocaleString("zh-CN");
+
+        // 渲染子任务
+        renderDetailSubtasks(task.subtasks || []);
+
+        // 设置编辑按钮事件
+        const editBtn = document.getElementById("detail-edit-btn");
+        editBtn.onclick = function () {
+          closeDetailModal();
+          editTask(task.id);
+        };
+
+        document.getElementById("detail-modal").style.display = "block";
+      }
+
+      // 关闭任务详情模态窗口
+      function closeDetailModal() {
+        document.getElementById("detail-modal").style.display = "none";
+      }
+
+      // 打开删除确认模态窗口
+      function openConfirmModal(taskId, taskTitle) {
+        taskToDeleteId = taskId;
+        document.getElementById("confirm-message").textContent =
+          `确定要删除任务"${taskTitle}"吗？`;
+        document.getElementById("confirm-modal").style.display = "block";
+      }
+
+      // 关闭删除确认模态窗口
+      function closeConfirmModal() {
+        document.getElementById("confirm-modal").style.display = "none";
+        taskToDeleteId = null;
+      }
+
+      // 确认删除任务
+      function deleteTaskConfirmed(taskId) {
+        tasks = tasks.filter((task) => task.id !== taskId);
+        saveTasks();
+        renderTasks();
+        updateStats();
+        updateProgress();
+        closeConfirmModal();
+      }
+
+      // 编辑任务
+      function editTask(taskId) {
+        const task = tasks.find((t) => t.id === taskId);
+        if (!task) return;
+
+        currentEditingTaskId = taskId;
+
+        // 填充表单
+        document.getElementById("task-title").value = task.title;
+        document.getElementById("task-description").value =
+          task.description || "";
+        document.getElementById("task-category").value =
+          task.category || "general";
+        document.getElementById("task-priority").value =
+          task.priority || "medium";
+        document.getElementById("task-due").value = task.due || "";
+        document.getElementById("task-daily").checked = task.isDaily || false;
+
+        // 填充子任务
+        subtasks = task.subtasks ? [...task.subtasks] : [];
+        renderSubtasks();
+
+        // 修改模态窗口标题和按钮文本
+        document.getElementById("modal-task-title").textContent = "编辑任务";
+        document.getElementById("modal-submit-btn").textContent = "保存";
+
+        // 打开模态窗口
+        document.getElementById("task-modal").style.display = "block";
+        document.getElementById("task-title").focus();
+      }
+
+      // 添加子任务
+      function addSubtask() {
+        const input = document.getElementById("new-subtask");
+        const text = input.value.trim();
+        if (text) {
+          subtasks.push({
+            id: Date.now(),
+            text: text,
+            completed: false,
+          });
+          input.value = "";
+          renderSubtasks();
+        }
+      }
+
+      // 渲染子任务列表
+      function renderSubtasks() {
+        const container = document.getElementById("subtask-list");
+        container.innerHTML = "";
+
+        subtasks.forEach((subtask, index) => {
+          const item = document.createElement("div");
+          item.className = "subtask-item";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "subtask-checkbox";
+          checkbox.checked = subtask.completed;
+          checkbox.onchange = () => {
+            subtasks[index].completed = !subtasks[index].completed;
+            renderSubtasks();
+          };
+
+          const text = document.createElement("span");
+          text.className = "subtask-text";
+          if (subtask.completed) {
+            text.classList.add("subtask-completed");
+          }
+          text.textContent = subtask.text;
+
+          const deleteBtn = document.createElement("span");
+          deleteBtn.className = "subtask-delete";
+          deleteBtn.innerHTML = "&times;";
+          deleteBtn.onclick = () => {
+            subtasks.splice(index, 1);
+            renderSubtasks();
+          };
+
+          item.appendChild(checkbox);
+          item.appendChild(text);
+          item.appendChild(deleteBtn);
+          container.appendChild(item);
+        });
+      }
+
+      // 渲染详情中的子任务
+      function renderDetailSubtasks(subtasks) {
+        const container = document.getElementById("detail-subtasks");
+        container.innerHTML = "";
+
+        if (!subtasks || subtasks.length === 0) {
+          container.innerHTML = "<div>无子任务</div>";
+          return;
+        }
+
+        subtasks.forEach((subtask) => {
+          const item = document.createElement("div");
+          item.className = "subtask-item";
+
+          const icon = document.createElement("span");
+          icon.textContent = subtask.completed ? "✓" : "○";
+          icon.style.marginRight = "5px";
+          icon.style.color = subtask.completed
+            ? "var(--primary-color)"
+            : "var(--text-light)";
+
+          const text = document.createElement("span");
+          text.className = "subtask-text";
+          if (subtask.completed) {
+            text.classList.add("subtask-completed");
+          }
+          text.textContent = subtask.text;
+
+          item.appendChild(icon);
+          item.appendChild(text);
+          container.appendChild(item);
+        });
+      }
+
+      // 添加或更新任务
+      function addTask() {
+        const title = document.getElementById("task-title").value.trim();
+        const description = document
+          .getElementById("task-description")
+          .value.trim();
+        const category = document.getElementById("task-category").value;
+        const priority = document.getElementById("task-priority").value;
+        const due = document.getElementById("task-due").value;
+        const isDaily = document.getElementById("task-daily").checked;
+
+        if (!title) {
+          alert("请填写任务标题");
+          return;
+        }
+
+        if (currentEditingTaskId) {
+          // 更新现有任务
+          tasks = tasks.map((task) => {
+            if (task.id === currentEditingTaskId) {
+              return {
+                ...task,
+                title,
+                description,
+                category,
+                priority,
+                due: due || null,
+                isDaily,
+                subtasks: [...subtasks],
+              };
+            }
+            return task;
+          });
+        } else {
+          // 添加新任务
+          const newTask = {
+            id: Date.now(),
+            title,
+            description,
+            category,
+            priority,
+            due: due || null,
+            isDaily,
+            completed: false,
+            createdAt: new Date().toISOString(),
+            lastCompletedDate: null,
+            subtasks: [...subtasks],
+          };
+
+          tasks.push(newTask);
+        }
+
+        saveTasks();
+        renderTasks();
+        updateStats();
+        updateProgress();
+        closeModal();
+      }
+
+      // 保存任务到本地存储
+      function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+
+      // 渲染任务列表
+      function renderTasks() {
+        const taskList = document.getElementById("task-list");
+        taskList.innerHTML = "";
+
+        if (tasks.length === 0) {
+          taskList.innerHTML =
+            '<div style="text-align: center; padding: 30px; color: var(--text-light);">' +
+            '<i class="fas fa-tasks" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>' +
+            '<div>暂无任务，点击"添加任务"按钮开始</div>' +
+            "</div>";
+          document.getElementById("task-count").textContent = "0 项";
+          return;
+        }
+
+        // 按优先级和创建日期排序
+        const priorityOrder = { high: 1, medium: 2, low: 3 };
+        const sortedTasks = [...tasks].sort((a, b) => {
+          // 先按完成状态排序（未完成的在前）
+          if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+          }
+          // 然后按优先级排序
+          if (a.priority !== b.priority) {
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+          }
+          // 最后按创建日期排序（最新的在前）
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        sortedTasks.forEach((task) => {
+          const li = document.createElement("li");
+          li.setAttribute("data-id", task.id);
+          li.setAttribute("draggable", "true");
+          if (task.isDaily) li.classList.add("task-daily");
+
+          // 检查是否过期
+          const now = new Date();
+          const today = new Date().toDateString();
+          const dueDate = task.due ? new Date(task.due) : null;
+
+          let isOverdue = false;
+
+          if (task.isDaily) {
+            // 每日任务的过期逻辑
+            if (!task.completed) {
+              // 如果没有完成，检查是否是今天创建的任务
+              const createdDate = new Date(task.createdAt).toDateString();
+              if (createdDate !== today) {
+                isOverdue = true;
+              }
+            }
+          } else {
+            // 普通任务的过期逻辑
+            isOverdue = dueDate && !task.completed && dueDate < now;
+          }
+
+          if (isOverdue) li.classList.add("task-overdue");
+
+          // 任务项容器
+          const taskItem = document.createElement("div");
+          taskItem.className = "task-item";
+          if (task.completed) {
+            taskItem.classList.add("completed");
+
+            // 添加已完成标记图标
+            const completedBadge = document.createElement("div");
+            completedBadge.className = "completed-badge";
+            completedBadge.innerHTML = '<i class="fas fa-check-circle"></i>';
+            completedBadge.style.position = "absolute";
+            completedBadge.style.right = "10px";
+            completedBadge.style.top = "10px";
+            completedBadge.style.color = "var(--success-color)";
+            taskItem.appendChild(completedBadge);
+          }
+
+          // 复选框
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "task-checkbox";
+          checkbox.checked = task.completed;
+          checkbox.onchange = () => toggleTaskCompletion(task.id);
+
+          // 任务内容
+          const taskContent = document.createElement("div");
+          taskContent.className = "task-content";
+
+          // 任务标题和元数据
+          const taskMain = document.createElement("div");
+          taskMain.className = "task-main";
+
+          const taskTitle = document.createElement("div");
+          taskTitle.className = "task-title";
+          taskTitle.textContent = task.title;
+
+          taskMain.appendChild(taskTitle);
+
+          // 任务元数据
+          const taskMeta = document.createElement("div");
+          taskMeta.className = "task-meta";
+
+          // 分类标签
+          if (task.category && task.category !== "general") {
+            const categorySpan = document.createElement("span");
+            categorySpan.className = "task-category";
+            categorySpan.innerHTML = `<i class="${getCategoryIcon(
+              task.category,
+            )}"></i> ${getCategoryName(task.category)}`;
+            categorySpan.style.backgroundColor = getCategoryColor(
+              task.category,
+            );
+            taskMeta.appendChild(categorySpan);
+          }
+
+          // 优先级
+          const prioritySpan = document.createElement("span");
+          prioritySpan.className = `priority-indicator priority-${
+            task.priority || "medium"
+          }`;
+          prioritySpan.innerHTML = `<i class="${getPriorityIcon(
+            task.priority || "medium",
+          )}"></i> ${getPriorityName(task.priority || "medium")}`;
+          taskMeta.appendChild(prioritySpan);
+
+          // 截止日期
+          if (task.due || task.isDaily) {
+            const dueSpan = document.createElement("span");
+            dueSpan.className = "task-due";
+            if (task.due) {
+              const dueDate = new Date(task.due);
+              dueSpan.innerHTML = `<i class="far fa-calendar-alt"></i> ${dueDate.toLocaleDateString(
+                "zh-CN",
+              )}`;
+              if (isOverdue) {
+                dueSpan.style.color = "var(--danger-color)";
+              }
+            } else if (task.isDaily) {
+              dueSpan.innerHTML = '<i class="fas fa-redo"></i> 每日';
+            }
+            taskMeta.appendChild(dueSpan);
+          }
+
+          // 子任务数量指示
+          if (task.subtasks && task.subtasks.length > 0) {
+            const completedSubtasks = task.subtasks.filter(
+              (st) => st.completed,
+            ).length;
+            const subtaskIndicator = document.createElement("span");
+            subtaskIndicator.className = "task-due";
+            subtaskIndicator.innerHTML = `<i class="fas fa-tasks"></i> ${completedSubtasks}/${task.subtasks.length}`;
+            taskMeta.appendChild(subtaskIndicator);
+          }
+
+          taskContent.appendChild(taskMain);
+          taskContent.appendChild(taskMeta);
+
+          // 任务描述
+          if (task.description) {
+            const descDiv = document.createElement("div");
+            descDiv.className = "task-description";
+            descDiv.innerHTML = task.description.replace(/\n/g, "<br>");
+            taskContent.appendChild(descDiv);
+          }
+
+          // 子任务列表
+          if (task.subtasks && task.subtasks.length > 0) {
+            const subtasksContainer = document.createElement("div");
+            subtasksContainer.className = "task-subtasks";
+
+            task.subtasks.forEach((subtask) => {
+              const subtaskItem = document.createElement("div");
+              subtaskItem.className = "task-subtask";
+
+              const subtaskCheckbox = document.createElement("input");
+              subtaskCheckbox.type = "checkbox";
+              subtaskCheckbox.className = "task-checkbox";
+              subtaskCheckbox.checked = subtask.completed;
+              subtaskCheckbox.disabled = true;
+
+              const subtaskText = document.createElement("span");
+              subtaskText.className = "task-subtask-text";
+              if (subtask.completed) {
+                subtaskText.classList.add("task-subtask-completed");
+              }
+              subtaskText.textContent = subtask.text;
+
+              subtaskItem.appendChild(subtaskCheckbox);
+              subtaskItem.appendChild(subtaskText);
+              subtasksContainer.appendChild(subtaskItem);
+            });
+
+            taskContent.appendChild(subtasksContainer);
+          }
+
+          // 任务操作按钮
+          const taskActions = document.createElement("div");
+          taskActions.className = "task-actions";
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn-action btn-edit";
+          editBtn.innerHTML = "<i class='fas fa-edit'></i>";
+          editBtn.onclick = (e) => {
+            e.stopPropagation();
+            editTask(task.id);
+          };
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn-action btn-delete";
+          deleteBtn.innerHTML = "<i class='fas fa-trash-alt'></i>";
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            openConfirmModal(task.id, task.title);
+          };
+
+          taskActions.appendChild(editBtn);
+          taskActions.appendChild(deleteBtn);
+
+          taskItem.appendChild(checkbox);
+          taskItem.appendChild(taskContent);
+          taskItem.appendChild(taskActions);
+
+          li.appendChild(taskItem);
+
+          // 点击任务显示详情
+          li.onclick = () => openDetailModal(task.id);
+
+          taskList.appendChild(li);
+        });
+
+        document.getElementById("task-count").textContent =
+          `${tasks.length} 项`;
+      }
+
+      // 获取分类图标
+      function getCategoryIcon(category) {
+        const icons = {
+          general: "fas fa-tag",
+          work: "fas fa-briefcase",
+          personal: "fas fa-user",
+          study: "fas fa-book",
+        };
+        return icons[category] || "fas fa-tag";
+      }
+
+      // 获取分类名称
+      function getCategoryName(category) {
+        const names = {
+          general: "常规",
+          work: "工作",
+          personal: "个人",
+          study: "学习",
+        };
+        return names[category] || category;
+      }
+
+      // 获取分类颜色
+      function getCategoryColor(category) {
+        const colors = {
+          general: "#a0d468",
+          work: "#5d9cec",
+          personal: "#ed5565",
+          study: "#ac92ec",
+        };
+        return colors[category] || "#a0d468";
+      }
+
+      // 获取优先级图标
+      function getPriorityIcon(priority) {
+        const icons = {
+          high: "fas fa-exclamation-circle",
+          medium: "fas fa-exclamation",
+          low: "far fa-circle",
+        };
+        return icons[priority] || "fas fa-exclamation";
+      }
+
+      // 获取优先级名称
+      function getPriorityName(priority) {
+        const names = {
+          high: "高",
+          medium: "中",
+          low: "低",
+        };
+        return names[priority] || "中";
+      }
+
+      // 获取优先级显示
+      function getPriorityDisplay(priority) {
+        const names = {
+          high: '<span style="color: var(--danger-color)">高优先级</span>',
+          medium: '<span style="color: var(--warning-color)">中优先级</span>',
+          low: '<span style="color: var(--text-light)">低优先级</span>',
+        };
+        return names[priority] || "中优先级";
+      }
+
+      // 切换任务完成状态
+      function toggleTaskCompletion(taskId) {
+        const now = new Date();
+        const today = now.toDateString();
+
+        tasks = tasks.map((task) => {
+          if (task.id === taskId) {
+            const newCompletedState = !task.completed;
+
+            // 如果是每日任务且标记为完成，记录完成日期
+            if (task.isDaily && newCompletedState) {
+              return {
+                ...task,
+                completed: newCompletedState,
+                lastCompletedDate: today,
+              };
+            }
+
+            return {
+              ...task,
+              completed: newCompletedState,
+            };
+          }
+          return task;
+        });
+
+        saveTasks();
+        renderTasks();
+        updateStats();
+        updateProgress();
+      }
+
+      // 删除任务
+      function deleteTask(taskId) {
+        openConfirmModal(
+          taskId,
+          tasks.find((t) => t.id === taskId)?.title || "",
+        );
+      }
+
+      // 更新统计信息
+      function updateStats() {
+        const total = tasks.length;
+        const completed = tasks.filter((task) => task.completed).length;
+        const pending = total - completed;
+
+        // 计算过期任务数
+        const now = new Date();
+        const today = now.toDateString();
+
+        const overdue = tasks.filter((task) => {
+          if (task.completed) return false;
+
+          if (task.isDaily) {
+            // 每日任务的过期判断
+            const createdDate = new Date(task.createdAt).toDateString();
+            return createdDate !== today;
+          } else {
+            // 普通任务的过期判断
+            if (!task.due) return false;
+            const dueDate = new Date(task.due);
+            return dueDate < now;
+          }
+        }).length;
+
+        document.getElementById("total-tasks").textContent = total;
+        document.getElementById("completed-tasks").textContent = completed;
+        document.getElementById("pending-tasks").textContent = pending;
+        document.getElementById("overdue-tasks").textContent = overdue;
+      }
+
+      // 更新进度条
+      function updateProgress() {
+        const total = tasks.length;
+        const completed = tasks.filter((task) => task.completed).length;
+        const percentage =
+          total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        const progressBar = document.getElementById("progress-bar");
+        progressBar.style.width = `${percentage}%`;
+        document.getElementById("progress-text").textContent =
+          `${percentage}% 完成`;
+
+        // 根据进度调整颜色
+        if (percentage > 70) {
+          progressBar.style.background =
+            "linear-gradient(90deg, var(--success-color), #8cc152)";
+        } else if (percentage > 30) {
+          progressBar.style.background =
+            "linear-gradient(90deg, var(--warning-color), #f6bb42)";
+        } else {
+          progressBar.style.background =
+            "linear-gradient(90deg, var(--danger-color), #da4453)";
+        }
+      }
+
+      // 全选/取消全选
+      function toggleSelectAll() {
+        selectAll = !selectAll;
+        tasks = tasks.map((task) => ({ ...task, completed: selectAll }));
+        saveTasks();
+        renderTasks();
+        updateStats();
+        updateProgress();
+      }
+
+      // 清除已完成任务
+      function clearCompletedTasks() {
+        if (confirm("确定要清除所有已完成的任务吗？")) {
+          tasks = tasks.filter((task) => !task.completed);
+          saveTasks();
+          renderTasks();
+          updateStats();
+          updateProgress();
+        }
+      }
+
+      // 每日重置每日任务状态
+      function checkDailyTasksReset() {
+        const lastResetDate = localStorage.getItem("lastResetDate");
+        const today = new Date().toDateString();
+
+        if (lastResetDate !== today) {
+          tasks = tasks.map((task) => {
+            if (task.isDaily) {
+              // 重置每日任务的完成状态
+              return {
+                ...task,
+                completed: false,
+                createdAt: new Date().toISOString(), // 更新创建时间为今天
+              };
+            }
+            return task;
+          });
+          saveTasks();
+          localStorage.setItem("lastResetDate", today);
+          renderTasks();
+          updateStats();
+          updateProgress();
+        }
+      }
+
+      // 切换暗黑模式
+      function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "darkMode",
+          document.body.classList.contains("dark-mode"),
+        );
+      }
+
+      // 检查任务提醒
+      function checkTaskReminders() {
+        const now = new Date();
+        const today = now.toDateString();
+
+        tasks.forEach((task) => {
+          if (!task.completed && task.due) {
+            const dueDate = new Date(task.due);
+            const diffHours = Math.floor((dueDate - now) / (1000 * 60 * 60));
+
+            if (diffHours <= 24 && diffHours > 0) {
+              addNotification(
+                `任务 "${task.title}" 即将到期，剩余${diffHours}小时！`,
+                "warning",
+              );
+            } else if (dueDate < now) {
+              addNotification(`任务 "${task.title}" 已过期！`, "error");
+            }
+          }
+        });
+
+        // 每30分钟检查一次
+        setTimeout(checkTaskReminders, 30 * 60 * 1000);
+      }
+
+      // 添加通知
+      function addNotification(message, type) {
+        // 检查是否已存在相同通知
+        const exists = notifications.some(
+          (n) => n.message === message && !n.read,
+        );
+        if (exists) return;
+
+        notifications.unshift({
+          id: Date.now(),
+          message: message,
+          type: type,
+          timestamp: new Date().toISOString(),
+          read: false,
+        });
+
+        // 保持通知数量不超过50条
+        if (notifications.length > 50) {
+          notifications.pop();
+        }
+
+        saveNotifications();
+        updateNotificationBadge();
+      }
+
+      // 保存通知
+      function saveNotifications() {
+        localStorage.setItem("notifications", JSON.stringify(notifications));
+      }
+
+      // 更新通知徽章
+      function updateNotificationBadge() {
+        const unreadCount = notifications.filter((n) => !n.read).length;
+        const badge = document.getElementById("notification-badge");
+        badge.textContent = unreadCount;
+        badge.style.display = unreadCount > 0 ? "flex" : "none";
+      }
+
+      // 显示通知模态窗口
+      function showNotifications() {
+        const container = document.getElementById("notification-list");
+        container.innerHTML = "";
+
+        if (notifications.length === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; padding: 20px;">暂无通知</div>';
+        } else {
+          notifications.forEach((notification) => {
+            const item = document.createElement("div");
+            item.style.padding = "10px";
+            item.style.borderBottom = "1px solid var(--border-color)";
+            item.style.display = "flex";
+            item.style.alignItems = "center";
+
+            if (!notification.read) {
+              item.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
+            }
+
+            const icon = document.createElement("div");
+            icon.style.marginRight = "10px";
+            icon.style.fontSize = "1.2em";
+
+            if (notification.type === "error") {
+              icon.textContent = "❗";
+              icon.style.color = "var(--danger-color)";
+            } else if (notification.type === "warning") {
+              icon.textContent = "⚠️";
+              icon.style.color = "var(--warning-color)";
+            } else {
+              icon.textContent = "ℹ️";
+              icon.style.color = "var(--secondary-color)";
+            }
+
+            const content = document.createElement("div");
+            content.style.flexGrow = "1";
+
+            const message = document.createElement("div");
+            message.textContent = notification.message;
+
+            const time = document.createElement("div");
+            time.style.fontSize = "0.8em";
+            time.style.color = "var(--text-light)";
+            time.textContent = new Date(notification.timestamp).toLocaleString(
+              "zh-CN",
+            );
+
+            content.appendChild(message);
+            content.appendChild(time);
+
+            item.appendChild(icon);
+            item.appendChild(content);
+
+            item.onclick = () => {
+              notification.read = true;
+              saveNotifications();
+              updateNotificationBadge();
+              item.style.backgroundColor = "";
+            };
+
+            container.appendChild(item);
+          });
+        }
+
+        // 标记所有通知为已读
+        notifications.forEach((n) => (n.read = true));
+        saveNotifications();
+        updateNotificationBadge();
+
+        document.getElementById("notification-modal").style.display = "block";
+      }
+
+      // 关闭通知模态窗口
+      function closeNotificationModal() {
+        document.getElementById("notification-modal").style.display = "none";
+      }
+
+      // 在脚本中添加这个函数
+      function toggleImportExportMenu() {
+        const menu = document.getElementById("import-export-menu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
+
+      // 点击其他地方关闭下拉菜单
+      document.addEventListener("click", function (event) {
+        const menu = document.getElementById("import-export-menu");
+        const btn = document.querySelector(".btn-import-export");
+
+        if (
+          menu &&
+          btn &&
+          !menu.contains(event.target) &&
+          !btn.contains(event.target)
+        ) {
+          menu.style.display = "none";
+        }
+      });
+
+      // 初始化toastr通知样式
+      toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        extendedTimeOut: 1000,
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      };
+    </script>
+  </body>
+</html>

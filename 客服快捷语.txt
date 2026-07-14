@@ -1,0 +1,1239 @@
+h3 欢迎结束
+
+您好，欢迎来到 25s 平台 24 小时在线客服中心！我是您的专属客服，很高兴为您服务，请问有什么可以帮到您的呢？
+Olá, bem-vindo à central de atendimento ao cliente online 24 horas da plataforma 25s! Sou seu atendimento exclusivo e terei prazer em atendê-lo. Como posso ajudar?
+
+h4 提供会员ID
+您好，请提供平台ID/手机号码，以便客服更好的给您提供服务。谢谢！
+Olá, por favor, informe seu ID de plataforma/número de celular para que o atendimento ao cliente possa lhe oferecer um serviço melhor. Obrigado.
+
+h4 结束语
+您好，请问还有什么问题可以帮助你的吗？
+Olá, posso ajudar em mais alguma coisa?
+
+如果您还有什么疑问，可以随时咨询我们的24小时在线客服，我们将竭诚为您服务🌹，谢谢~
+Obrigado pela sua consulta! Não se esqueça de ficar de olho nas últimas atividades e recompensas na plataforma. Há muitos benefícios esperando por você! Desejo a você uma colheita frutífera todos os dias! 🌹
+
+h3 充值问题
+您好亲，为了尽快帮您核实处理，请您提供一下付款成功的截图或交易明细，客服这边会第一时间提交财务核查哦～
+Olá! Para ajudar você a verificar e processar o mais rápido possível, envie uma captura de tela dos detalhes do pagamento ou da transação realizada. O atendimento ao cliente enviará a captura ao departamento financeiro para verificação o mais breve possível.
+
+h4 没有在平台付款
+您好，经过核实，您此次付款的账户并非平台官方指定的收款账户，因此你的资金是无法充值成功的。建议你每一次充值都前往平台获取最新的充值账户。谢谢
+Olá, após a verificação, a conta para a qual você pagou desta vez não é a conta de pagamento oficial designada pela plataforma, portanto, seus fundos não podem ser recarregados com sucesso. Recomendamos que você acesse a plataforma para obter a conta de recarga mais recente sempre que fizer uma recarga. Obrigado.
+
+h4 付款截图在存款下单前的回复
+您好！经核实，您是在未提交存款订单前先行转账。由于本平台采用系统自动匹配订单入款的方式，必须先在平台提交存款申请，系统才会生成对应的订单号及付款账户信息。没有提交订单是无法获取平台有效付款二维码或收款账户的，因此该笔转账无法与系统订单绑定。为避免类似问题，建议您在今后的存款中先在平台提交存款订单获取存款信息再付款。谢谢
+Olá! Após a verificação, você transferiu o dinheiro antes de enviar o pedido de depósito. Como esta plataforma adota o método de depósito automático de correspondência de pedidos, você deve primeiro enviar a solicitação de depósito na plataforma, e o sistema gerará o número do pedido correspondente e as informações da conta de pagamento. É impossível obter o código QR de pagamento válido da plataforma ou a conta de recebimento sem enviar o pedido, portanto, a transferência não pode ser vinculada ao pedido do sistema. Para evitar problemas semelhantes, é recomendável que você envie o pedido de depósito na plataforma para obter as informações do depósito antes de efetuar o pagamento no futuro. Obrigado.
+
+您好！为了确保正确匹配，您需要先在平台提交订单，才能获得有效的付款账户信息。但您是在获取收款账户前就付款了，因此此次付款未能与平台订单匹配，无法视为平台付款。为了避免类似问题，建议您今后先提交订单，再进行付款。感谢您的理解！
+
+您好，经过验证，您未在平台完成付款。所有付款需先在平台生成订单并获取有效付款账户信息，然而您在获取收款账户前就已付款，因此未能成功匹配订单。为了避免类似问题，建议您今后先提交订单，再进行付款。感谢您的理解
+
+您好，经过验证，您未在平台完成付款。所有付款需先在平台生成订单并获取有效付款账户信息，然而您在获取收款账户前就已付款，因此您没有在平台付款成功。为了避免类似问题，建议您今后先提交订单，再进行付款。感谢您的理解
+
+h3 无法付款
+您好，如果您当前获取的订单PIX无法完成存款，建议您在平台重新下单，以获取新的付款方式进行操作。感谢您的理解与配合！
+Olá, caso o PIX que você recebe atualmente não consiga concluir o depósito, recomendamos que você faça um novo pedido na plataforma para obter um novo método de pagamento para a operação. Agradecemos a sua compreensão e cooperação!
+
+h4 银行波动
+您好，由于银行系统出现短暂波动，可能会导致您的充值出现延迟入账的情况。请您不用担心，资金在通道中是安全的，我们也已在持续跟进处理。建议您耐心等待片刻，通常在系统恢复后资金会自动到账。如稍后仍未到账，欢迎随时联系我们，我们将第一时间为您处理并跟进。感谢您的理解与配合，祝您游戏愉快！
+Olá, devido a uma breve flutuação no sistema bancário, seu depósito pode sofrer atrasos. Não se preocupe, os fundos estão seguros no canal e continuaremos acompanhando. Recomendamos que você aguarde pacientemente. Normalmente, os fundos serão creditados automaticamente após a restauração do sistema. Caso ainda não cheguem, sinta-se à vontade para entrar em contato conosco e entraremos em contato o mais breve possível. Agradecemos a sua compreensão e cooperação e desejamos a você um bom jogo!
+
+您好，目前受巴西央行影响，波动原因导致未到账，相关人员已经加急处理，亲爱的会员，请您别担心资金问题，我们建议您稍坐等待，央行恢复后即可立即到账，给您带来不便，敬请谅解
+Olá, devido ao impacto do Banco Central do Brasil, as flutuações fizeram com que os fundos não fossem recebidos ou atrasassem. A equipe responsável agilizou o processamento. Prezados membros, não se preocupem com os fundos. Sugerimos que aguardem um pouco. Os fundos serão recebidos imediatamente após a recuperação do Banco Central. Pedimos desculpas pelo inconveniente causado.
+
+
+h4 充值成功查收
+您好，您的付款已成功到账，您可以登录游戏账号查看余额变动。感谢您的支持，祝您游戏愉快，好运连连，赢取更多丰厚奖励！
+Olá, seu pagamento foi recebido com sucesso. Você pode acessar sua conta do jogo para verificar as alterações no saldo. Agradecemos o seu apoio. Desejo a você um bom jogo, boa sorte e que conquiste ainda mais recompensas generosas!
+
+h3 提款成功
+您好，查询到你的提款已经处理成功了。请您登录您的银行账户查看余额哦。谢谢
+Olá, verifiquei que seu saque foi processado com sucesso. Por favor, acesse sua conta bancária para verificar o saldo. Obrigado.
+
+您好，查询到你的提款已经处理成功了。客服正在为您获取银行回执单。请稍等一会~
+Olá, verificamos que seu saque foi processado com sucesso. O atendimento ao cliente está processando o recibo para você. Aguarde um momento.
+
+您好，这是平台付款成功的明细凭证，您可以登录您的银行账户查看余额变动。如果您还未收到，您可以联系银行客服咨询哦。谢谢
+Olá, este é o comprovante detalhado do pagamento efetuado na plataforma. Você pode acessar sua conta bancária para verificar as alterações no saldo. Caso ainda não o tenha recebido, entre em contato com o atendimento ao cliente do banco para consulta. Obrigado.
+
+您好，经过核实，您的提款已成功处理，以上为付款完成的截图凭证。建议您登录银行账户进行确认，如暂时未到账，可能存在银行处理延迟，您也可以携带该付款凭证向银行客服进行咨询。
+Olá, após a verificação, seu saque foi processado com sucesso. A imagem acima é uma captura de tela da conclusão do pagamento. Recomendamos que você faça login na sua conta bancária para confirmar. Caso ainda não tenha recebido, pode haver um atraso no processamento bancário. Você também pode levar o comprovante de pagamento para consultar o atendimento ao cliente do banco.
+
+h3 提款人多
+您好，由于目前申请提款的用户较多，财务部门正在全力加急处理中。您的订单客服也已为您特别标注并催促财务优先处理，请您稍作等待。我们深知您的期待，对给您带来的不便深感抱歉，感谢您的理解与耐心。祝您今天心情愉快，游戏好运连连！
+Olá, devido ao grande número de usuários solicitando saques, o departamento financeiro está trabalhando arduamente para agilizar o processo. O atendimento ao cliente do seu pedido também o marcou especialmente para você e solicitou que o departamento financeiro o priorize. Aguarde um momento. Estamos cientes de suas expectativas e lamentamos profundamente o inconveniente causado. Agradecemos sua compreensão e paciência. Desejo a você um bom humor hoje e boa sorte no jogo!
+
+您好，目前由于提款用户较多，财务部门正在全力加急处理各笔订单。您的提款申请我们也已为您优先提交加急处理，请您耐心稍等片刻，相信很快就会到账啦~
+Olá, devido ao grande número de usuários sacando fundos, o departamento financeiro está trabalhando arduamente para agilizar o processamento de cada pedido. Também priorizamos sua solicitação de saque para processamento rápido. Aguarde pacientemente um momento, acredito que os fundos serão creditados em sua conta em breve.
+
+您好，目前由于平台提款用户较多，财务部门正在全力加急处理各笔订单，您的提款申请我们也已为您优先提交加急处理。资金会在1-2小时内到账。若超过2小时仍未到账，欢迎您再次联系在线客服，我们将第一时间为您跟进处理
+Olá, devido ao grande número de usuários sacando fundos da plataforma, o departamento financeiro está trabalhando arduamente para agilizar o processamento de cada pedido. Também priorizamos sua solicitação de saque para processamento rápido. Os fundos chegarão em 1 a 2 horas. Caso não cheguem em 2 horas, sinta-se à vontade para entrar em contato com o atendimento ao cliente online novamente e entraremos em contato o mais breve possível.
+
+h4 银行有问题
+您好，这类问题属于银行账户处理范畴，平台无法进行干预或处理。我们已严格按照提款流程，将资金汇入您绑定的银行账户，付款操作已完成，且资金一经发出便无法退回。若您的银行卡存在异常或暂未查收到款项，建议您尽快携带相关资料前往银行柜台，由工作人员协助核查并处理相关问题
+
+h3 银行波动
+您好，由于巴西央行系统出现波动，导致部分资金到账速度有所延迟或者失败的情况。请您放心，您的资金始终受到平台严格保障，不会出现任何问题。建议您耐心等待到账，同时可留意账户余额的变化。由此给您带来的不便，我们深表歉意，感谢您的理解与支持！
+Olá, devido a flutuações no sistema do Banco Central do Brasil, alguns fundos sofreram atrasos ou não chegaram. Tenha certeza de que seus fundos estão sempre rigorosamente protegidos pela plataforma e não haverá problemas. Recomendamos que você aguarde pacientemente o recebimento dos fundos e fique atento a quaisquer alterações no saldo da sua conta. Pedimos desculpas pelo inconveniente causado e agradecemos sua compreensão e apoio!
+
+您好，受巴西央行系统延迟影响，当前部分资金到账时间会有延迟的情况。请您放心，您的款项已由银行启动加急处理，资金全程受到平台保障，不会有任何丢失风险。如在12小时内仍未到账，建议您及时联系在线客服，我们将为您提交核查并跟进处理。对此给您带来的不便，我们深感抱歉，感谢您的理解与信任！
+Olá, devido ao atraso do sistema do Banco Central do Brasil, o recebimento de alguns fundos poderá sofrer atrasos. Tenha certeza de que seus fundos foram agilizados pelo banco e estão protegidos pela plataforma durante todo o processo, portanto, não haverá risco de perda. Caso seus fundos não cheguem em até 12 horas, recomendamos que você entre em contato com o atendimento online a tempo, para que possamos verificar e acompanhar o andamento do processo. Lamentamos profundamente o transtorno causado e agradecemos a sua compreensão e confiança!
+
+您好，近期巴西央行系统运行不稳定，造成银行处理速度变慢，因此您的款项到账时间可能会比平时稍有延迟。请您放心，平台已成功提交出款，资金目前正由银行清算中，安全性有保障，无需担心。建议您稍作等待，并留意余额变化，我们也会持续跟进订单状态，有最新消息第一时间通知您哦～感谢您的理解与支持！
+
+您好，关于您的出款情况我们仍在密切关注中，目前银行系统仍处于延迟状态。请您放心，资金仍在正规清算流程中，没有任何异常或风险。我们理解等待可能会带来不便，非常感谢您的耐心与信任。如有最新进展，我们将第一时间通知您
+
+您好，平台这边处理已全部完成，您的出款订单正在银行排队清算中，延迟是因央行系统波动所致，我们深感抱歉。资金安全，请您放心。为了让您在等待过程中不感无聊，建议您先参与当前的高返利游戏活动，不仅能放松心情，也有机会再赚一笔惊喜收益！
+
+您好，由于巴西中央银行系统出现延迟，导致部分资金到账时间较慢。目前银行方面已启动加急处理，我们也在持续跟进相关进度。请您稍作耐心等待，资金在银行系统恢复后将会自动到账，绝不会出现任何风险或问题。建议您在此期间先稍作休息，我们也会第一时间通知您最新的处理情况。感谢您的理解与配合！
+
+您好，真的非常理解您的心情，遇到这种延迟我们也感到非常抱歉。目前银行那边还在紧急处理中，我们这边也会持续帮您关注。请放心，您的资金是安全的，处理好后会第一时间到账，不会有任何损失。感谢您的耐心和理解，我们一直都在这边为您跟进。
+
+您好，我们非常理解您现在的焦急心情，换作是我们自己遇到延迟也会感到不安。但请放心，平台已完成所有出款流程，您的资金目前正在银行清算中。本次延迟是由于巴西央行系统出现波动，银行处理效率受到影响，但您的资金已在加急处理中，绝不会有任何风险或丢失。
+
+亲爱的，非常理解您现在的心情～因为银行系统维护，处理速度有点慢，但请放心，您的资金100%安全。建议您先休息一下或参与一下当前活动，我们会第一时间通知您到账的哦～感谢您的耐心和信任！
+
+您好，您的出款订单正在银行排队清算中，延迟是因央行系统波动所致，我们深感抱歉。平台这边处理已全部完成，资金安全，请您放心。为了让您在等待过程中不感无聊，建议您先参与当前的高返利游戏活动，不仅能放松心情，也有机会再赚一笔惊喜收益！
+Olá, seu pedido de saque está sendo compensado no banco. O atraso se deve a flutuações no sistema do banco central. Lamentamos profundamente. A plataforma concluiu todo o processamento. Seus fundos estão seguros. Fique tranquilo. Para evitar o tédio enquanto espera, recomendamos que você participe primeiro das atividades atuais do jogo com altos descontos. Você não só poderá relaxar, como também terá a oportunidade de ganhar outra renda surpresa!
+
+
+
+h3 稽核不足
+您好，经查询，您的账户当前未完成所需的有效打码稽核，因此暂时无法进行提款操作。您现在还需要投注 XX 有效投注，即可顺利通过稽核。您也可以在【提款页面】查看当前稽核进度和所需的打码金额。一旦满足要求后就可以申请提款了。谢谢
+Olá, após a verificação, sua conta ainda não concluiu a auditoria de código válido necessária, portanto, você está temporariamente impossibilitado de sacar dinheiro. Agora, você precisa fazer XX apostas válidas para passar na auditoria. Você também pode verificar o andamento da auditoria e o valor do código necessário na [Página de Saque]. Assim que os requisitos forem atendidos, você poderá solicitar um saque. Obrigado.
+
+平台设定此机制是为了保障系统的安全与所有玩家的公平体验，完成后即可自行提款。感谢您的理解与支持，祝您游戏愉快、盈利多多！
+A plataforma define este mecanismo para garantir a segurança do sistema e uma experiência justa para todos os jogadores. Após a conclusão, você poderá sacar o dinheiro por conta própria. Agradecemos a compreensão e o apoio, e desejo a você um bom jogo e muitos lucros!
+
+h3 驳回话术
+h4 银行信息有误
+尊敬的用户，您好！您的提款申请因银行卡信息有误已被驳回，请核实或者更换银行卡后重新提交。
+Prezado usuário, olá! Seu pedido de saque foi rejeitado devido a informações incorretas do cartão bancário. Por favor, verifique ou altere o cartão bancário e envie novamente.
+
+h4 稽核未完成驳回
+尊敬的用户您好！由于您的有效投注尚未达到提款要求，请您先完成相应的有效投注后，再提交提款申请。感谢您的理解与配合！
+Hello, dear user! Since your valid bets have not yet met the withdrawal requirements, please complete the corresponding valid bets before submitting your withdrawal application. Thank you for your understanding and cooperation!
+
+
+h4 银行波动的驳回话术
+尊敬的用户您好！由于您所绑定的银行目前正在波动，无法处理您的订单，您可以等待银行波动结束或者更换银行账户再提款哦。感谢您的配合
+Dear user, hello! Due to the current fluctuation of the bank account you are bound to, we are unable to process your order. You can wait for the bank fluctuation to end or change the bank account before withdrawing. Thank you for your cooperation.
+
+h4 不活跃罚没话术
+您好，由于您的账号近期不活跃，暂时无法享受活动彩金及其盈利权益。只要您激活账号，即可恢复彩金相关特权。感谢您的理解与支持。
+Olá, devido à recente inatividade da conta, você está temporariamente impossibilitado de aproveitar o bônus do evento e seus benefícios de lucro. Assim que ativar sua conta, o bônus e os privilégios relacionados serão restaurados. Agradecemos sua compreensão e apoio.
+
+h4 波动维护1个小时的驳回话术
+尊敬的用户，您好！由于央行维护暂时无法处理提款请求，请等待1个小时维护完成后再申请提款哦。谢谢
+Prezado usuário, olá! Devido à manutenção do Banco Central, estamos temporariamente impossibilitados de processar solicitações de saque. Aguarde 1 hora para que a manutenção seja concluída antes de solicitar o saque. Obrigado.
+
+
+h3 信息错误
+您好，查询到你的提款信息不正确导致了你的提款失败了，资金已经返回到你的游戏账号中了。你可以登录账号检查你的提款信息或者提供你提款信息客服为您发送至系统修改哦。谢谢
+Olá, descobrimos que suas informações de saque estavam incorretas, o que levou à falha no saque. Os fundos foram devolvidos à sua conta do jogo. Você pode fazer login na sua conta para verificar suas informações de saque ou fornecê-las ao serviço de atendimento ao cliente e eles as enviarão ao sistema para você modificar. Obrigado.
+
+h4 一直说提款不到账或者说不是他本人的银行信息
+您好，我非常理解您的心情。平台所有提款操作均严格按照您绑定在平台的银行卡号进行处理，确保资金安全无误。客服已为您提供了详细的付款凭证，您可以凭此凭证联系银行客服核实款项情况。感谢您的理解与配合，祝您一切顺利！
+Olá, entendo perfeitamente seus sentimentos. Todas as operações de saque na plataforma são processadas rigorosamente de acordo com o número do cartão bancário que você vincula à plataforma para garantir a segurança dos fundos. O atendimento ao cliente forneceu comprovantes de pagamento detalhados. Você pode usá-los para entrar em contato com o atendimento ao cliente do banco e verificar o status do pagamento. Agradecemos a sua compreensão e cooperação e desejamos a todos um ótimo negócio!
+
+h4 质疑提款不到账
+您好，您的提款平台这边已经正常处理并提供付款凭证，平台一律是根据您绑定的银行卡号进行转账，无法自行更改信息。如果您这边尚未到账，可能是银行网络延迟，建议您稍作等待或携带凭证咨询银行客服核实。
+
+h3 密码问题
+您好，平台有两种密码类型：登录密码和资金密码（用于提款）。请问您是忘记了哪一种密码呢？方便我们为您准确协助。
+Olá, a plataforma possui dois tipos de senha: senha de login e senha de fundos (para saques). Qual senha você esqueceu? Será conveniente para nós lhe fornecermos assistência precisa.
+
+如果需要重置密码，请提供以下信息：
+span 用户ID：
+span 电话号码：
+span CPF号码：
+span CPF正反面
+Caso precise redefinir sua senha, forneça as seguintes informações:
+spanID do Usuário:
+span Número de Telefone:
+span CPF:
+span CPF frente e verso
+
+如果需要重置提款密码，请提供以下信息：
+span 用户ID：
+span 电话号码：
+span CPF号码：
+span CPF正反面：
+span 手持身份证照片：
+span 最近两笔在平台PIX付款明细截图
+Caso precise redefinir sua senha de saque, forneça as seguintes informações:
+span ID do usuário:
+span Número de telefone:
+span Número do CPF:
+span Frente e verso do CPF
+span Foto sua segurando seu documento de identidade
+span Capturas de tela das suas duas transações de pagamento PIX mais recentes na plataforma
+
+
+
+./image/05X账号
+./image/cpf
+
+您好，请提供绑定的手机号码以及您在平台绑定的CPF号码我们核对哦。谢谢
+Olá, por favor, informe o número do celular e o CPF que você vinculou na plataforma para que possamos verificar. Obrigado.
+
+您好，为了你的账号安全，请您提供一张本人手持身份证的清晰照片并发送给我。请确保证件信息清楚可见，面部无遮挡，以便我们尽快为您处理
+Olá, para a segurança da sua conta, por favor, envie-me uma foto nítida sua segurando seu documento de identidade. Certifique-se de que as informações do documento estejam claramente visíveis e que seu rosto não esteja obscurecido para que possamos processar sua solicitação o mais rápido possível.
+
+您好，请提供最近两笔PIX付款成功的明细截图核对
+Olá, por favor, envie capturas de tela dos seus dois pagamentos PIX mais recentes para verificação.
+
+您好，请提供以上所需的完整信息我们核对哦，一旦核对无误后立即为您提交系统修改。谢谢
+Olá, forneça as informações completas solicitadas acima para que possamos verificar. Assim que a verificação estiver correta, enviaremos a modificação do sistema para você imediatamente. Obrigado.
+
+您好，为了保障您的账号安全，需要您提供相关信息进行身份核对。信息核实无误后，客服才能协助为您进行修改，请您理解与配合。
+Olá, para garantir a segurança da sua conta, precisamos que você forneça as informações necessárias para a verificação de identidade. Somente após a verificação dessas informações, o atendimento ao cliente poderá ajudá-lo(a) a realizar as alterações necessárias. Agradecemos a sua compreensão e cooperação.
+
+您好，您的登录密码已发送至系统修改为：aa123123 。请您登录后自行修改并正确保存。
+Olá, sua senha de login foi alterada para: aa123123. Por favor, faça login, altere-a você mesmo e salve as alterações corretamente.
+
+您好，请提供你能记住的提现密码。我们帮你提交至系统修改
+Olá, por favor, forneça uma senha de saque que você consiga lembrar. Nós a enviaremos para o sistema para alteração.
+
+您好，您的提现密码已发送至系统修改为：123123 。请您登录平台自行修改密码并妥善保管。
+Olá, sua senha de saque foi alterada para 123123. Por favor, guarde sua senha de saque em segurança.
+
+h4 用户无法提供CPF照片的时候的处理方式
+您好，如果您暂时无法提供以上信息，也没关系，您可以提供在平台的最后一笔付款明细截图，客服将为您提交相关验证流程，协助您尽快处理问题。感谢您的配合与理解！
+Olá, se você não puder fornecer as informações acima no momento, não se preocupe. Você pode enviar uma captura de tela dos detalhes do seu último pagamento na plataforma, e o atendimento ao cliente enviará o processo de verificação relevante para ajudar você a resolver o problema o mais rápido possível. Agradecemos a sua cooperação e compreensão!
+
+
+
+h3 短信推📩
+亲爱的用户！由于本次活动名额有限，目前席位已全部报满，未能为您保留席位，我们对此深表歉意。为了让您有更好的体验，平台正在进行累计存款优惠活动，只要充值达到对应金额，即可享受相应的专属福利和丰厚奖励，机会同样精彩，不容错过！此外，平台每日还会不定时发放神秘奖金及其他高额活动奖励，建议您持续关注，随时参与赢取更多惊喜。如果您希望通过推广赚取额外奖励，也欢迎参与邀请好友活动：每邀请1位好友完成指定有效投注，即可开启1个宝箱，获得55雷亚尔奖励，邀请越多，奖励越高，最高可获得高达100,000雷亚尔的惊喜回报
+
+您好，非常抱歉，本次活动由于名额有限，目前席位已全部报满，未能为您预留参与资格。为了感谢您的积极参与，平台正在进行【累计充值送彩金】活动，充值即可参与。同时，您还可以加入每日签到活动，最高可领取320雷亚尔奖励。此外，平台还会每天不定时发放神秘奖金以及高额奖励活动，单笔奖励最高可达8888雷亚尔，欢迎您随时参与，赢取更多惊喜！
+
+如果您还需要更多的奖励，你也可以考虑成为代理，每成功邀请1位好友并完成有效投注，您即可开启1个宝箱，获得 55雷亚尔奖励！邀请越多，奖励越高，最高可领取高达100,000雷亚尔的惊喜回馈！
+
+
+
+您好，此活动回报好，您迟到了一点，名额已经满了哦，客服建议您查看其它活动哦，您还可以通过邀请好友游戏，当你邀请1个好友达到指定的有效投注时您可以获得1个宝箱55雷亚尔奖励，邀请好友越多就奖励越多高达100000雷亚尔
+Olá, esta atividade tem uma boa recompensa. Você está um pouco atrasado e a cota já está cheia. O atendimento ao cliente recomenda que você confira outras atividades. Você também pode convidar amigos para jogar. Ao convidar 1 amigo para atingir a aposta válida especificada, você pode ganhar um baú do tesouro de 55 reais. Quanto mais amigos você convidar, mais recompensas você receberá, até 100.000 reais.
+
+您好，这边理解您的感受。本次活动的奖励是系统随机发送的，并且名额有限，所以部分用户可能未能领取到，确实比较遗憾。平台同时还推出了其他精彩活动，像是充值后可参与的神秘矿石、每日签到等，都有机会获得不同的惊喜奖励，欢迎您多多参与哦！
+
+您好，本次活动名额已满，真的很可惜～但平台还有累充送彩金、签到领320雷亚尔等福利，此外新用户还有神秘奖励随机送，奖励高达9999雷亚尔，保持活跃就能不断领取，千万别错过！
+
+您好，这是一项热门活动，参与人数非常多，由于名额有限，目前已全部报满。不过别担心，新会员充值后仍可以参与累计充值活动，并在第2、3、7、15、30天获得神秘奖励，最高可达2888雷亚尔！
+
+您好，由于本次活动名额有限，当前名额已经满额。未能为您保留名额对此深感抱歉。为了回馈您的积极参与，平台还推出了累计充值活动，并会不定期发放神秘奖金以及其他大型活动奖励。您还可以通过邀请好友加入来赢取推荐奖励。每邀请1位好友并满足活动要求，您即可获得55雷亚尔，邀请人数越多，奖励越丰厚，最高可达10万雷亚尔！
+
+您好，理解您因为未领取到彩金而产生疑虑，这种情况确实会让人感到遗憾。但平台始终欢迎您以小金额开始尝试合作，逐步体验我们的服务流程与信誉保障。在合作过程中，您的活跃度将被系统实时记录并作为奖励发放的依据。只要保持活跃，平台将根据您的账户情况赠送更多彩金，期待为您带来长期稳定的回报。
+
+亲，活动虽然已经满额了~但还有更多福利等着您！推荐好友完成有效投注，每人可领55雷亚尔，邀请越多，奖励越高，轻松拿大奖！
+
+h3 📢 短信
+亲爱的用户！由于本次活动名额有限，目前席位已全部报满，未能为您保留席位，我们对此深表歉意。为了让您有更好的体验，平台正在进行累计存款优惠活动，只要充值达到对应金额，即可享受相应的专属福利和丰厚奖励，机会同样精彩，不容错过！此外，平台每日还会不定时发放神秘奖金及其他高额活动奖励，建议您持续关注，随时参与赢取更多惊喜。如果您希望通过推广赚取额外奖励，也欢迎参与邀请好友活动：每邀请1位好友完成指定有效投注，即可开启1个宝箱，获得55雷亚尔奖励，邀请越多，奖励越高，最高可获得高达100,000雷亚尔的惊喜回报
+Olá, devido ao número limitado de vagas para o evento, a cota atual foi totalmente preenchida e não podemos reservar uma vaga para você. Pedimos sinceras desculpas por isso. Para garantir sua experiência de participação, recomendamos que você participe das atividades promocionais de depósito cumulativo em andamento da plataforma, e você ainda poderá desfrutar dos benefícios e recompensas correspondentes. Além disso, a plataforma ocasionalmente emitirá bônus misteriosos e outros bônus de eventos de grande escala todos os dias. Preste atenção e não perca a emoção. Você também pode convidar amigos para jogar. Ao convidar 1 amigo para atingir a aposta válida especificada, você pode ganhar um baú do tesouro com recompensas de mais de R$ 55. Quanto mais amigos você convidar, mais recompensas receberá, até R$ 100.000.
+
+亲爱的用户！本次活动名额已满，未能为您保留席位，非常抱歉😢
+span 为了回馈大家积极参与～现充值即可享受【新会员神秘彩金】高达 8,888 雷亚尔🎁，更有【邀请好友】赢取丰厚奖励与佣金！精彩不停，福利不断✨
+
+您好，由于本次活动非常成功，参与人数众多，且活动名额有限，目前活动名额已全部用完。现在注册平台的新会员，除了每日登录活动外，还有机会在2日、3日、7日、15日和30日获得神秘奖励。这些奖励为长期有效。
+Olá, devido ao ótimo efeito desta atividade, um grande número de pessoas participou, e a atividade é limitada, e agora a cota de atividades está esgotada. Novos membros que se cadastrarem na plataforma agora têm a oportunidade de obter recompensas misteriosas nos dias 2, 3, 7, 15 e 30, além de atividades diárias de login. As recompensas são de longo prazo.
+
+由于本次活动的参与人数远超预期，名额已满。为了感谢大家的积极参与，我们平台还推出了其他活动，例如首存红利、每日登录、新会员神秘奖励以及高达8,888雷亚尔的奖金。
+Como o número de participantes neste evento superou em muito as expectativas, a cota do evento foi preenchida. Para agradecer a sua participação ativa, nossa plataforma também lançou outras atividades, como bônus de primeiro depósito, login diário, bônus mistério para novos membros e bônus de até R$ 8.888.
+
+您好，这是一个非常受欢迎的活动，由于该活动的名额有限，参与人数又非常多，目前已全部报满。为了感谢大家的积极参与，现在新会员充值后仍可以参与累计充值活动，并在第2、3、7、15、30天获得神秘奖励，最高可达2888雷亚尔！
+Olá, este é um evento muito popular. Devido às vagas limitadas e ao grande número de participantes, as vagas estão esgotadas. Para agradecer a todos pela participação ativa, novos membros ainda podem participar do evento de recarga cumulativa após a recarga e receber recompensas misteriosas no 2º, 3º, 7º, 15º e 30º dias, de até 2.888 reais!
+
+h4 安抚
+您好，我们理解您的感受。本次活动的奖励由系统随机发放，参与人数有限，部分用户可能无法获得。这真的很遗憾。平台还提供其他精彩活动，例如充值即可使用的神秘矿物、每日签到等，有机会获得各种惊喜奖励。
+Olá, entendemos seus sentimentos. As recompensas deste evento são distribuídas aleatoriamente pelo sistema e o número de participantes é limitado, portanto, alguns usuários podem não recebê-las. Isso é realmente lamentável. A plataforma também oferece outras atividades emocionantes, como minérios misteriosos que podem ser aproveitados após a recarga, check-ins diários e outras oportunidades para receber diversas recompensas surpresa.
+
+h4 质疑
+亲爱的用户，我们所有的促销活动均真实有效。本次短信奖励活动非常受欢迎，名额已满🥺。虽然错过有点遗憾，但您仍然可以参加[首存红利]和[每日登录]等促销活动，最高可赢取8,888巴西雷亚尔！
+Caros usuários, todas as nossas promoções são reais e válidas. Esta campanha de bônus por SMS é incrivelmente popular e já esgotou. 🥺 É uma pena que você tenha perdido, mas ainda pode participar de promoções como o [Bônus de Primeiro Depósito] e o [Login Diário] e ganhar até R$ 8.888!
+
+h4 坚持要短信彩金
+您好，我理解您坚持领取奖金的心情。不过，奖金已被兑换，系统也关闭了补发通道。平台的其他长期活动也不容错过，您可以进一步了解。
+Olá, entendo sua insistência em reivindicar o bônus. No entanto, o bônus foi resgatado e o sistema fechou o canal de reemissão. As outras atividades de longo prazo da plataforma também são imperdíveis. Você pode saber mais sobre elas.
+
+h4 会员说你们说彩金已经在账号了的回复
+亲爱的用户，真的很抱歉让您产生误会🙏
+span 短信活动属于【限量奖励】，因为参与人数太多，名额很快就被抢完了，所以未能成功到账，并不是欺骗，还请理解。
+span 同时平台也有【长期福利活动】，彩金力度同样可观，您随时都能参与领取哦～🎁
+
+h4 会员说要揭露虚假平台的回复
+亲爱的用户，真的非常抱歉让您产生这样的不满和误解🙏
+span 我们理解您的心情，这次活动因为太受欢迎，名额很快就被抢光，未能为您保留到席位，确实很遗憾。
+span 为了避免类似情况，平台也准备了【长期活动】，百分百真实有效，只要达到要求即可领取，福利同样丰厚✨
+span 希望这能弥补您的失落，我们也会不断改进，带来更好的体验。
+Caro usuário, lamentamos profundamente ter causado essa frustração e mal-entendido. 🙏
+span Entendemos seus sentimentos. Devido à imensa popularidade deste evento, as vagas esgotaram rapidamente e não conseguimos reservar um lugar para você. Lamentamos profundamente.
+span Para evitar situações semelhantes, preparamos uma [Promoção de Longo Prazo] 100% autêntica e válida. Desde que você atenda aos requisitos, poderá reivindicar as recompensas, que são igualmente generosas. ✨
+span Esperamos que isso possa compensar sua decepção e continuaremos a melhorar e proporcionar uma experiência ainda melhor.
+
+亲爱的用户，真的非常抱歉让您产生这样的困扰😔
+span 为了让您仍能获得奖励，您可以通过充值参与【新会员神秘奖活动】、每日签到活动以及每日兑换奖励等多种活动，所有奖励都是实实在在可领取的💰
+span 机会多多，福利丰富，随时参与就能获得属于您的惊喜✨
+Caro usuário, lamentamos profundamente o inconveniente. 😔
+span Para garantir que você continue recebendo recompensas, você pode fazer recargas e participar de diversas atividades, incluindo o [Evento Bônus Misterioso para Novos Membros], eventos de check-in diário e recompensas de resgate diárias. Todas as recompensas são reais e podem ser resgatadas. 💰
+span Existem inúmeras oportunidades e benefícios a serem conquistados. Participe a qualquer momento para receber suas próprias surpresas.✨
+
+亲爱的用户，理解您的感受🙏充值即可参与平台多种活动，获得真实福利与每日惊喜
+Caros usuários, entendemos seus sentimentos. 🙏Recarregue para participar de diversas atividades da plataforma e ganhe benefícios reais e surpresas diárias.
+
+h4 会员说没有为什么要给我发短信的回复
+亲爱的用户，非常抱歉让您产生这样的不满和误解🙏我们理解您的心情，也非常重视您的反馈。这次短信活动确实名额有限，用户收到提示是为了通知有机会参与，先到先得，并非故意欺骗。为了补偿您的遗憾，平台为您准备了【新会员神秘彩金】最高 8,888 雷亚尔💰，以及【邀请好友赢奖励】活动，这些福利都是百分百真实、可领取的。您随时参与，就能获得实际奖励✨
+Prezado usuário, lamentamos profundamente por causar essa insatisfação e mal-entendido. 🙏 Entendemos seus sentimentos e levamos seu feedback muito a sério. Esta promoção por SMS tem vagas limitadas. Os usuários receberam esta notificação para informá-los sobre a oportunidade de participar. A promoção é por ordem de chegada e não se trata de um golpe intencional. Para compensar, preparamos um [Bônus Misterioso para Novo Membro] de até 8.888 reais💰 e uma promoção [Convide Amigos para Ganhar Recompensas]. Esses benefícios são 100% reais e estão disponíveis. Participe a qualquer momento para ganhar recompensas reais.✨
+
+h4 要注销
+您好，非常理解您的感受💖。虽然这次活动您没赶上，但平台还有多项福利活动正在进行，例如【每日签到奖励】【首存福利】，并且还有机会获得最高 R$ 8.888 的彩金。建议您可以先体验一下再做决定也不迟
+Olá, entendo seus sentimentos. Embora você tenha perdido este evento, a plataforma ainda oferece diversas atividades de bem-estar, como [Recompensas de Login Diário] e [Recompensas de Primeiro Depósito], e também há a chance de ganhar um bônus de até R$ 8.888. Recomendamos que você experimente antes de tomar uma decisão.
+
+h4 会员说“你们虚假宣传，我要举报”
+您好，真的很抱歉让您有这样的感受😔
+span 我们理解您的担心，这次活动因参与人数过多，名额很快就满了，绝非故意误导。
+span 为了让您获得实际奖励，我们为您准备了【新会员神秘奖】和每日签到奖励，只要参与就能真实领取💰
+
+h4 会员威胁“我要曝光你们”
+亲爱的用户，我们非常重视您的反馈😔
+span 本次短信活动因名额有限，部分用户未能到账，并非故意误导。
+span 为了弥补遗憾，我们为您准备了真实可领取的【新会员神秘奖】和每日签到活动🎁
+
+h4 会员说“这是欺骗
+真的很抱歉让您失望😢
+span 活动确实名额有限，未能成功到账，我们理解您的感受。
+span 不过平台还有长期活动，充值即可获得真实奖励，还有邀请好友、每日签到等多种方式拿福利💰
+span 希望您再尝试一次，错过就太可惜了✨
+
+h4 会员说“你们告诉我彩金已经到账了”
+亲爱的用户，抱歉让您困扰了🙏
+span 短信提示只是活动通知，实际到账受名额限制影响，并非欺骗。
+span 现在您可以通过充值参与【神秘彩金活动】和每日签到，奖励都是百分百真实可领取的🎁
+
+h4 会员说“为什么要给我发这种信息”
+抱歉让您觉得困扰😅
+span 我们的短信是提醒大家有机会参与活动，先到先得，并非欺骗。
+span 不过别担心，充值即可参加【新会员神秘奖】、每日签到和兑换奖励，多种福利等您来拿✨
+
+h4 会员说“我不相信，你们都是骗钱的”
+您好，非常抱歉让您感到不信任🙏
+span 我们理解您的感受，活动确实名额有限，但所有奖励活动都是可实际领取的。
+span 您可以尝试参与【新会员神秘奖】或【邀请好友活动】，体验真实奖励💰
+
+
+
+h3 短信推广
+亲爱的玩家，您的账户目前是未激活状态，激活后才有资格领取随机注册彩金哦。只要充值即可激活账户，充值金额越高，系统发放的奖励额度也会越丰厚，这都是平台对新用户的特别回馈！很多新会员都是通过激活后获得第一笔惊喜奖励的～
+
+现在充值不仅能激活账户，还能享受新人神秘彩金，2,3,7,15,30都可以获得神秘彩金派发，错过今天就没了哦～
+
+h4 案例增强
+昨天有个新用户只充了50元，晚上就赢了300，现在已经成功提现到账了
+
+很多人就是抓住了新人活动，才拿到第一笔盈利的机会，您要不要也试试？
+
+h4 用户犹豫
+我理解您的想法，其实激活只需小额充值就行，门槛很低，而且赠送的福利金远超充值金额，等于免费玩
+
+不充值也可以玩，但无法领取新人奖励和高额返利，错过这次活动就要等下次了
+
+h4 后续充值后没有领取到的回复
+关于您参与的活动，平台采用的是 随机派发奖励机制，每位用户都有机会获得不同额度的奖励，虽然这次您可能没有幸运抽中，但请放心，平台还为您准备了其他丰富的奖品和专属福利，等待您去领取和参与。我们每天都会推出多种优惠活动和神秘奖金，建议您持续关注和参与，机会多多，惊喜不断！
+
+您好，客服非常理解您的不满。活动彩金确实需要先激活领取资格，只有激活后才有机会参与系统的随机派发，因此并不是每位用户都一定能获得。对此给您带来的误会，我们深感抱歉。请您放心，平台为了感谢您的积极参与，还准备了许多力度更大的活动，例如累计充值、每日签到、神秘矿井等，这些活动都是百分百有奖励的，您一定可以收获更多惊喜
+
+活动是随机派发的，这次没中奖不要灰心哦，平台为您准备了丰富的其他专属福利，比如签到奖励、累计充值返利和限时加赠活动，都可以为您带来实实在在的收益。
+
+同时，我们还有每日随机发放的神秘奖金和高额奖励池，建议您多多参与，相信下次好运一定属于您！
+
+h4 会员说诈骗
+虽然之前的活动名额满了，但现在的【累计充值送彩金】和【签到领320雷亚尔】活动，比之前的注册送金力度更高。很多老会员都说现在的活动更划算。
+
+您可以先小额体验，感受一下平台的速度与返利力度，满意了再决定是否继续参与。这样对您也更稳妥，对吗？
+
+您收到的活动短信是阶段性福利，不同时间奖励规则会有调整，这也是为了给大家提供更高额度的回馈。即便这次活动没有如您预期，但平台还有更多实在福利，让您体验到真正的价值。
+
+为了表达我们的诚意，我可以帮您申请一个专属的加赠福利，您充值后可以额外获得奖励。希望您能再体验一次，我们一定让您看到平台的诚意
+
+如果您仍然决定要注销账户，我们也尊重您的选择，但真的很可惜。建议您先使用完现有的福利和活动机会，这样不会浪费您的权益
+
+h5 会员质疑担忧
+我们平台支持秒到账和快速提现，昨天就有超过1000位新会员成功提现了奖金
+
+这是官方唯一认证平台，所有资金都安全到账，您可以先小额充值体验一下，满意了再增加额度。
+
+h3 注册彩金
+您好，注册彩金是由系统随机派发的，如果这次您未能领取到，也不必灰心哦～平台还为您准备了丰富的福利活动：比如累计存款活动、每日签到、以及每日神秘矿井等，这些活动都是百分百有奖励的！您参与得越多，获得的回馈也会越丰厚，期待您能收获更多惊喜
+
+非常理解您的心情～注册彩金是名额有限，并且由系统随机派发的，如果这次没有获得也别灰心哦。平台同时准备了其他彩金活动，力度同样非常大，比如累计存款彩金、每日签到奖励、以及神秘矿井活动等，都能让您持续获得惊喜！
+
+亲，很抱歉让您有这样的感觉～其实注册彩金是系统名额有限、随机派发的福利，不是每个人都能领取到。您这次没拿到确实有点遗憾，但别担心，平台还有很多活动，像每日签到、累计存款、神秘奖金，这些都是百分百有奖励的，回馈力度也不小哦！
+
+您好，活动彩金本身是限量随机派发的福利，并不能保证每位用户都能领取。如果您想获得更多奖励，可以参与累计存款活动、每日签到、VIP专属活动，也可以通过邀请好友加入赢取额外奖励，邀请越多，奖励越丰厚，最高可达10万雷亚尔！
+
+
+h3 宝箱🎁
+h4 未达标
+您好，经过查询，您邀请的下级玩家目前尚未满足活动要求。因此无法领取宝箱奖励哦。谢谢
+
+根据活动规则，下级需充值满10雷亚尔，并且在平台游戏中完成500雷亚尔以上的有效投注，您才可领取对应的邀请奖励。您需要让您的下级继续投注，满足要求后您就能在活动页面中手动领取奖励啦！邀请越多、达标越快，您获得的返利和宝箱奖励也会越丰富！
+
+
+您好，宝箱活动奖励需要您的下级成员充值10雷亚尔以上，并且在有效投注中达到500或者以上的有效投注。当您的下级满足要求后，你可以在平台首页点击左下角“Promoção”，然后点击相应的活动页面中领取哦~邀请人数越多，获得的宝箱和奖励也越多！
+Olá, as recompensas da atividade do baú do tesouro exigem que seus subordinados façam um depósito de 10 reais ou mais e façam 500 ou mais apostas válidas. Quando seus subordinados atenderem aos requisitos, você pode clicar em "Promoção" no canto inferior esquerdo da página inicial da plataforma e, em seguida, clicar na página da atividade correspondente para recebê-la. Quanto mais pessoas você convidar, mais baús do tesouro e recompensas você ganhará!
+
+您好，根据活动规则，您邀请的下级需要同时满足以下两个条件才能计入活动奖励：
+span 1️⃣ 累计充值 10 雷亚尔或以上
+span 2️⃣ 有效投注达到500雷亚尔或以上
+
+span 经客服核实，您邀请的 9 位直属下级只有 1 位满足活动要求并已经领取了宝箱奖励，其中： 
+span 2399879167 所参与的娱乐游戏 Tiny Toads 不在本次活动的有效范围内，因此该游戏的投注不计入有效投注。
+span 其余的下级充值或有效投注是没有达到活动要求的。
+span 目前该下级尚未达到有效投注要求，你需要继续引导下级成员在活动范围内的游戏进行投注，建议投注PG,CP等游戏，待满足条件后，即可领取对应的宝箱奖励。
+
+./image/25s宝箱
+
+您好，你可以建议你的直属下级投注PG，CP等电子游戏，一旦达到活动要求后即可领取宝箱奖励了
+
+h5 如果会员说为什么活动内容没有写明清楚
+您好，活动页面没有写明是由于不同类型游戏的机制存在差异，尤其是部分游戏波动较大，为了保障宝箱活动的公平性与奖励发放的稳定性，平台在本次活动设置中，对部分游戏暂未纳入有效投注范围。如果您希望顺利获得宝箱奖励，建议引导您的下级优先选择 PG、JDB等热门推荐游戏进行娱乐。满足活动要求后即可前往活动页面中领取宝箱奖励了
+
+您好，活动页面为了简洁明了，只展示了核心内容。考虑到不同游戏机制差异较大，为保证活动公平和奖励稳定，具体有效投注范围由平台统一设定并自动执行，暂未全部展示。建议您引导下级选择PG、JDB及热门游戏，达到要求后即可获得奖励。感谢理解！
+
+您好，页面中没有活动限制游戏说吗是因为规则需要简单明了，方便大家快速了解活动。您也可以让您的下级先娱乐一些主流热门游戏，以确保有效投注计入活动范围内。您的反馈我们已记录，会反馈给运营部门，争取优化后续页面说明。
+
+亲，理解您的心情～活动页面没写明具体范围，是因为系统会自动根据后台设定的游戏类型执行。平台游戏较多，如果全部列出不仅展示繁琐，也可能在游戏更新调整时造成信息不一致。为了保证活动公平、公正，页面采用统一说明，以系统后台规则为准。您可以推荐您的下级投注PG游戏，只要满足要求后即可领取奖励了。
+
+您好，我理解您的疑问～这次活动页面没有列出具体游戏，是因为系统会根据后台设定自动统计。平台游戏种类很多，如果全部列出，不仅页面难以展示，也容易在游戏更新或调整时与后台规则不一致，造成误解。为了保证统计公平和准确，系统判定为准。您可以让下级投注PG游戏，一旦达到要求即可领取奖励哦。
+
+亲，理解您的疑问～活动统计是由系统后台自动判定的，只计算符合设定类型的游戏投注。因为平台游戏种类众多，页面无法列出全部，也容易与后台规则不一致。为保证公平和准确，系统判定为准。您可以让下级投注PG游戏，达到要求即可领取奖励。
+
+亲，理解您的疑问～这次活动页面没有列出具体游戏，是为了保证统计准确、透明，同时兼顾活动灵活性和用户体验。后台系统会自动识别符合条件的游戏投注，避免误解、滥用或与合规要求冲突，确保每位会员公平参与。您可以让下级投注PG游戏，一旦达到要求即可领取奖励。
+
+h4 游戏不达要求
+您好~经查询核实，您邀请的 X 位好友中：
+span X 位已经完成了 500 雷亚尔的投注要求，并成功领取了宝箱奖励；
+span 另一位正在玩 PP 游戏（Big Bass Splash、幸运牛），但遗憾的是，这款游戏不在本次活动范围内，所以投注不会被计入；
+span 其余的下级还未达到500+的有效投注要求，您可以建议你的下级投注PG游戏，一旦满足存款有效投注要求系统会自动派发宝箱奖励
+
+
+
+h3 拼多多
+每日登录平台可领取免费旋转与起始奖金。活动结束后，只需通过您的代理链接邀请好友注册并充值，即可继续享受游戏乐趣。邀请越多，奖金进度条涨得越快，进度满后可领取高达100雷亚尔奖金并申请提现！
+Entre na plataforma todos os dias para reivindicar rodadas grátis e bônus iniciais. Após o término do evento, basta convidar amigos para se cadastrarem e fazerem recargas através do seu link de agente para continuarem aproveitando o jogo. Quanto mais você convidar, mais rápido a barra de progresso do bônus aumentará. Quando o progresso estiver completo, você poderá reivindicar um bônus de até R$ 100 e solicitar saques em dinheiro!
+
+
+h3 导流引导
+您好，注册奖励由系统随机发放，至于奖金多少是随机无法预测的。为了回馈新用户，平台还精心准备了其他丰富的活动奖励，欢迎您前往活动专区了解并参与，精彩福利等您来拿！
+
+您好，注册成功后，您将有机会参与平台的多项热门活动！
+span 🎁 新会员专属福利：注册后的第 2、3、7、15 和 30 天可领取神秘奖励，最高可达 8,888 雷亚尔！
+span 📅 累计签到活动：每日签到，最高可获得 320 雷亚尔！
+span 💰 红包雨活动：不定时掉落，人人有份，惊喜连连！
+span 每一个活动都能为您带来丰厚奖励，平台也期待您满载而归，畅享精彩体验！
+
+您好！我们 D16.com 现已与 05X.com 正式展开合作推广！凡是在 05X.com 成功注册的新玩家，都有机会 免费参与新手抽奖活动，🎉 最高可赢取 99 雷亚尔现金奖励，让您轻松开启畅玩之旅，乐趣翻倍！
+
+
+h3 安抚回复
+h4 如果客服一直在骂可以申请一些额外的奖励
+您好，为了感谢您一直以来对平台的支持，客服也可以为您申请一些平台优惠或专属奖励，希望能为您带来更多的好运与盈利机会！请问您是否需要我为您提交申请呢？
+
+h4 安抚会员的回复
+您好，我们非常理解您的心情，游戏中输赢起伏是很正常的，谁都有运气不佳的时候。请您放心，保持平和的心态是获得好运的关键。客服真诚地相信，您在未来的游戏中一定会迎来更多的胜利和收获。我们一直在这里支持您，祝您游戏愉快，好运常伴！
+
+您好，游戏过程中出现输赢是非常正常的，一时的失利并不代表您的整体表现。客服非常理解您的心情，也建议您放平心态、轻松娱乐，良好的心态往往也能带来更好的运气和游戏体验。祝您接下来的游戏好运连连，收益满满！
+
+您好，游戏中胜负乃常事，输赢皆属正常。只要您保持平和愉快的心态，好运自然会随之而来。祝您在接下来的游戏中收获更多奖金，赢得更多财富！
+
+您好，客服能理解您现在的心情，游戏中有起有落是很正常的。建议您先休息一下，调整好心态，或许好运正在悄悄向您靠近呢～
+
+您好，我们非常理解您的情绪，希望您不要灰心。平台也会不定期推出一些福利活动，为的就是让每一位用户都能有机会翻盘回血，建议您稍作调整再战，相信好运还会回来的！
+
+亲，其实很多玩家都跟您有相似的经历，刚开始也会感到气馁，但只要稳住节奏，保持理性，反而更容易把握住反弹的机会。建议您先放松一下，等心情好一点再继续，会有意想不到的好运等着您！
+
+您好，建议您现在可以先暂停一下游戏，休息一下眼睛，喝点水放松一下心情。有时候一个冷静的调整，反而能让后面的运气更加顺利，平台一直在这里陪着您，不会让您一个人面对。
+
+根据平台过往数据来看，许多用户在短暂起伏之后都能快速回暖，建议您试试选择一些中奖率更高的热门游戏，比如PG或者JDB系列，可能会有更不错的体验哦！
+
+有时候只是运气还没到，但请相信，风水轮流转，好运也会如期而至，客服也在为您默默祝福呢～
+
+亲，博彩的本质就是娱乐为主，盈利为辅。有时候只是运气暂时没眷顾，但只要坚持合理投注，好运一定会回来！平台近期也有不少加码彩金活动，您可以趁机参与一下，增加获胜机会~
+
+输赢都是过程的一部分，很多用户在低谷后都迎来了高光时刻。客服也真心祝您好运快快回来，若您需要一些转运福利，我这边可以为您登记提交～
+
+您好，客服理解您目前情绪激动，博彩本身就有风险，我们希望您可以冷静下来，保持理性沟通。如果有任何疑问或问题，客服都愿意协助您一一解决，帮助您安心游戏。
+
+亲，我知道输钱可能会让人感到沮丧，但请相信客服是真心希望帮您找回信心的，如果您愿意，客服也可以帮您申请一些额外优惠补贴，助您逆转当前的局面。
+
+h3 输钱注销
+您好，请问您是在平台遇到什么问题了吗？方便的话可以和客服说明一下原因吗？如果您在使用过程中遇到任何问题，都可以随时告知客服，我们会竭诚为您提供协助与服务
+Olá, qual problema você encontrou na plataforma? Se possível, poderia explicar o motivo ao atendimento ao cliente? Caso encontre algum problema durante o uso, não hesite em entrar em contato com o atendimento ao cliente a qualquer momento. Teremos prazer em ajudá-lo(a) e prestar assistência.
+
+您好，客服非常理解您当前的心情，这只是短暂的运气波动，相信您一定能在后续的游戏中扭转局势，赢回精彩！为了给您加油打气，客服也愿意为您申请一笔额外的助力彩金，帮助您在接下来的游戏中有更好的发挥。请问您是否需要我现在为您提交申请呢？
+
+您好，请您先不要着急注销账户。建议您暂时保留账号，等您有空想再次娱乐时，随时都可以登录平台继续体验。另外，您目前还有一笔助力彩金尚未领取，这是客服特别为您申请的，希望这份奖励能为您带来好运，助您满载而归，收获惊喜！
+
+您好，建议您可以先保留账号，暂时不用急着做出决定。很多用户在休息一段时间后，重新登录时反而有了更好的状态和体验。而且您目前还有一笔助力彩金没有领取，或许可以成为您的一个好转机会收获更多~
+
+h4 可以根据这里的回复改成当前的彩金活动
+您好，游戏本就是一种放松方式，您可以先休息一下，不急于注销账号。平台也经常会推出新的活动和奖励机制，给玩家更多机会与惊喜~而且目前您账户上还有一笔助力彩金，先领取试试看，说不定好运就在下一局呢！
+
+h3 客户质疑
+您好，完全不存在这样的情况哦！我们是一家国际正规平台，所有运营均在相关监管部门的严格监督下进行，确保公开、公正、公平。平台的每一笔交易和操作都有完整记录，透明可查。我们始终秉持“客户至上”的服务理念，把客户当作上帝来对待，这也是我们企业文化和发展的核心宗旨。感谢您的信任与支持！
+
+您好！我们理解您目前可能有些顾虑，因此诚挚建议您先通过小额合作的方式，亲自体验我们平台的信誉与实力。平台运营合法，持有有效经营执照，并受到巴西联邦政府的严格监管，确保您的资金安全和交易透明。我们始终秉承诚信经营的原则，致力于为客户提供优质、高效的服务体验。欢迎您放心合作，开启安心之旅！
+
+您好，我们平台一直秉持公开、公平、公正的原则，所有游戏结果都由第三方游戏公司提供，不支持任何人为干预。
+
+亲，我们是巴西本地合法注册的平台，平台运行均受相关机构监管，每一笔数据和资金都有迹可循，您可以完全放心使用。同时我们也建议您娱乐为主，理性投注，调整心态，好运就会越来越近！
+
+您好，平台所有游戏均接入国际认证的第三方游戏系统，每一次投注结果均由系统自动结算，无法人为干预。我们平台始终坚持公平、公正的游戏环境，也支持您保留投注记录，如有疑问我们可为您进一步提交核查。
+
+您好，您的感受我们完全理解，游戏中确实会有起伏，但请您放心，我们平台所有游戏均接入国际第三方认证系统（如PG、JDB、CP等），所有结果由系统通过算法自动生成，平台方无法也绝不会干预任何游戏结果。我们始终坚持公平、公正、公开的运营理念，您的每一笔投注记录在后台都能清晰查询，公开可查，这一点您可以完全安心。
+
+平台每日有上千名用户进行游戏，您可以看到排行榜上不乏高额盈利的玩家，这也是平台无法控制的直接体现。我们理解您在游戏中可能遇到暂时性的波动，但正是因为平台不干预结果，才有了真实的输赢起伏。建议您保持冷静心态，以娱乐为主，长期来看理性投注更容易带来积极回报。
+
+平台每天都有大量用户参与游戏，胜负结果各有不同，如果游戏真的“被控制”，是无法出现排行榜中那么多高额盈利玩家的。输赢本身就是游戏的正常现象，建议理性娱乐、合理安排投注策略，保持良好心态也会带来更好的游戏体验。
+
+h3 无优惠
+h4 罚没回复
+您好，经过系统风控审查，发现您邀请的下级账号存在异常套利行为，已违反平台的公平游戏规定。根据平台活动规则，对于此类违规行为，系统将自动取消其相关奖励，并罚没本次所得。建议您在后续邀请中，选择真实有活跃投注意愿的朋友进行推广，平台仍将为您提供丰厚的代理奖励与持续返利支持。谢谢
+
+h4 无优惠的回复
+您好，经过风控部门检测，您的下级账号存在异常套利行为。根据平台风控规则，为保障所有用户的公平权益，您本次从下级中获得的奖励奖会被扣除，取消相应奖励。请您放心，您的账户出入款功能不受影响，可正常使用。我们建议您后续继续正常参与平台娱乐活动，若您或下级账号持续保持正常使用行为，系统将重新评估账号信誉，后续仍有机会恢复相应的彩金奖励及优惠资格。感谢您的理解与配合。如有任何疑问，欢迎随时联系在线客服，我们将竭诚为您服务
+
+您好，经风控系统核查，您名下的部分下级账号存在异常套利行为。根据平台风控管理规定，为维护所有会员的公平权益，您本次因邀请该类下级所获得的奖励彩金将被取消扣除，相应金额将不予发放。请您放心，此次处理仅针对该部分异常奖励，不会影响您账户的正常充值与提款功能，您仍可继续畅享平台的各项服务。我们建议您后续继续保持正常使用，并甄选优质且真实活跃的团队成员进行发展。如您的账号及其下级账号在后续使用中无异常行为，系统将自动重新评估账号信誉，您仍有机会重新获得相应的奖励资格及优惠权益。感谢您的理解与配合。如您对此有任何疑问，欢迎随时联系在线客服，我们将竭诚为您服务。
+
+您好！经风控系统核查，您本次提现金额来源于涉嫌套利的下级账号所产生的邀请奖励，平台依据规则已取消该部分奖励。请您放心，此处理不影响您账户的正常充值与提款。若您后续发展团队成员为正常活跃用户，系统将重新评估账户信誉，您仍有机会恢复奖励资格及相关优惠。感谢您的理解与支持。如有疑问，请联系在线客服
+
+h5 后续的回复
+本次处理仅针对通过异常行为产生的邀请奖励进行取消，并非针对您的个人账户或正常操作。您的充值、游戏和提现功能仍可正常使用。
+
+我们完全理解您希望获得奖励的心情，也欢迎您继续发展真实、活跃的用户团队。系统会持续评估账号的正常使用行为，只要后续使用无异常，平台将有可能恢复相关奖励资格。
+
+理解您的不满，但本次处理是基于风控规则，风控部门识别异常后自动执行。建议您继续正常使用账号，后续仍有机会恢复奖励资格。
+
+h5 会员情绪激动说乱扣钱
+您好，您的心情我们完全理解。但请您放心，本次处理只是针对系统识别为异常行为产生的奖励，是平台保障公平环境的自动机制，并非人工操作。
+
+您的账号功能不受影响，正常充值、游戏、提现都可继续。后续如账号保持正常使用，奖励资格仍有恢复机会。希望您理解我们的风控职责。
+
+h4 威胁侮辱欺骗的回复
+您好，平台风控规则对所有账号一视同仁，处理结果是系统依据行为记录自动判断，并非单方面操作，也无法人为更改。
+
+我们理解您对奖励的重视，但也请理解我们维护平台公平运营的责任。建议您继续正常使用账号，保持良好记录，系统将重新评估您未来的奖励资格。
+
+h4 恢复活动的说法
+您好，经核实，因账号存在疑似套利行为，系统已限制您参与代理宝箱活动。但不影响您和下级的正常充值与提款。您可以与下级保持活跃，一旦系统检测到您的团队活跃度达到一定程度后，您的宝箱奖励就会自动恢复
+
+h3 活跃度低
+
+h4 下级不活跃的回复
+您好，由于您与您的下级账户活跃度较低，系统检测到当前团队整体活跃度未达标，因此暂时无法访问平台的折扣页面和代理奖励功能。若您希望恢复访问权限并继续领取代理活动奖励，建议您引导下级继续充值娱乐，或持续发展新成员以提升团队活跃度。一旦系统检测到团队活跃度达到要求，您的权限将自动恢复
+
+h4 我也有下级在玩啊，凭什么说不活跃？
+您好，系统评估团队活跃度是根据多个维度综合判断，例如下级账号的充值频率、投注行为、持续时间等。
+
+即使有少量活跃，也需达到整体标准才能恢复奖励。建议您继续引导团队正常使用，系统将定期自动评估并恢复权限。
+
+h5 会员不满
+您好，理解您的不满，平台设置活跃度标准是为确保奖励真实发放，避免异常套利行为，保障每位代理的公平利益。
+
+只要您发展的是真实活跃用户，保持自然使用，系统检测达标后权限会自动恢复，欢迎您继续参与代理计划。
+
+h4 投诉威胁辱骂的回复
+您好，我们完全理解您的情绪。但请理解，平台风控与奖励机制是系统自动执行，对所有账号一视同仁。
+
+当前只是暂时限制奖励权限，账户正常功能不受影响。只要团队活跃度达标，系统将自动恢复相关权益。我们欢迎您继续合作，发展真实用户，平台也将持续为您提供支持。
+
+h5 其他回复
+您的账号本身没有问题，仅因团队整体数据未达标准导致奖励功能暂时关闭。
+
+系统评估是动态的，只要团队数据有改善，系统会重新检测并自动恢复。
+
+平台的目的是支持长期稳定发展的代理用户，公平发放奖励。
+
+
+h3 活跃低👨‍
+您好！平台为了保障公平娱乐环境及活动的正常运行，对会员账户的活跃状态有相关管理要求。长期未进行有效充值的账户，会被认定为非活跃状态，而非活跃期间领取的彩金属于体验性质，不作为正常盈利发放。因此，为保障平台规则和公平性，您在非活跃期间产生的彩金及其相关盈利已按规则处理（罚没）。请理解，这并非针对个人，而是平台统一执行的制度。建议您今后保持账户活跃，通过正常充值参与游戏，以享受平台活动及奖励。
+
+您好！您的账户长期未充值，被认定为非活跃状态。非活跃期间领取的彩金属于体验性质，不作为正常盈利发放，因此相关彩金已按规则处理。这并非针对个人，平台统一执行制度。建议您保持账户活跃，通过正常充值参与游戏，以享受活动及奖励。
+
+亲爱的会员，系统检测到您的账号近期活跃度不足，所以目前无法享受彩金福利，相关彩金及盈利会由系统自动收回哦～ 但别担心，只要您激活账号，就能重新参与活动并领取奖励，我们也为您准备了更多福利等您来享受！
+
+您好，系统检测到您的账号近期活跃度较低，因此暂时无法享受彩金相关权益，您已领取的活动彩金及对应盈利的提款金额会被系统自动罚没。若您希望继续享受彩金及更多特权，只需激活账号即可恢复资格。
+
+只要您激活账号，就能重新获得奖励资格，而且后续还有更多丰厚福利等待着您。早点回来，别错过属于您的惊喜哦！ 🎁
+
+您好！系统检测到您的账号近期活跃度不足，因此暂时无法享受彩金福利，相关彩金及盈利已由系统收回。非活跃期间领取的彩金属于体验性质，不作为正常盈利发放。别担心，只要您激活账号并参与游戏，就可以重新享受活动奖励。建议您保持账户活跃，通过正常充值参与游戏，我们还为您准备了更多福利，期待您回来体验！
+
+h3 多IP设备
+
+h4 多IP多设备关联的回复
+您好！经平台风控系统检测，您名下的部分下级账号存在多IP、多设备频繁关联等异常使用行为，疑似非正常操作。为维护平台公平环境，依据风控规则，本次涉及该行为所产生的邀请奖励将被取消。请您放心，此次仅处理异常部分奖励，不会影响您账户的正常充值与提款功能。我们建议您后续仅邀请真实活跃用户参与，保持账号正常使用，系统将持续评估账户情况，未来仍有机会恢复相关奖励与优惠资格。
+
+h5 会员可能说：“为什么说我异常？我就是正常玩的
+您好，感谢您的理解与配合。系统检测基于多项数据综合分析，发现部分账号存在多IP、多设备频繁关联的情况，可能影响公平性。
+
+平台对异常行为会自动做出处理，您的账户充值和提款功能不受影响。建议您继续邀请真实活跃用户参与，系统将持续动态评估，期待您后续获得更多奖励。
+
+h5 会员情绪激动的回复
+您好，理解您对此结果的关切。平台风控系统是依据规则自动执行，旨在保障所有用户的公平权益。
+
+本次处理仅针对系统检测出的异常奖励，不影响您的正常账户使用。您可以继续正常使用账号，后续如无异常行为，奖励资格将有机会恢复。
+
+h5  高压对抗型（会员威胁、辱骂或强烈反对）
+您好，我们尊重您的感受，但平台风控规则对所有用户一视同仁，系统处理结果是根据账号实际行为自动生成，无法人为更改。
+
+本次异常奖励取消仅为维护公平原则，您的账户充值、提款及游戏功能不受影响。
+
+我们欢迎您继续发展真实活跃的用户，保持正常使用，系统会重新评估您的奖励资格。
+
+h3 添加稽核
+
+h4  娱乐三方游戏添加流水的回复
+您好，经风控部门监测，您在【PP游戏馆 - Mines游戏】中存在异常投注行为。为维护平台公平、公正、公开的游戏环境，系统已对本次异常投注增加稽核处理（仅针对本次行为，不影响其他操作）。请您在后续游戏中遵守平台规则，进行正常投注，以避免触发系统风控并影响相关优惠及奖励资格。
+
+
+h4 稽核打码未完成
+您好，经查询，您的账户当前未完成所需的有效打码稽核，因此暂时无法进行提款操作。请您继续进行游戏投注，达到系统要求的稽核额度后，即可顺利提款。您也可以在提款页面清楚查看当前打码进度与所需完成的金额。如有其他疑问，欢迎随时联系在线客服，我们将竭诚为您服务！
+
+h4 为什么需要稽核
+您好，平台在您领取相关奖励后会自动开启稽核要求，这是平台防止恶意套利的保护机制。您可以在提款页面清楚看到打码进度，完成稽核后就能顺利提款。建议优先选择“PG”等高有效投注的游戏，更快完成稽核。
+
+h4 娱乐三方游戏需要稽核的回复 
+你好，经平台风控系统监测，您在Aviator 游戏中存在异常投注行为，该行为已违反平台的正常游戏规则。为保障平台秩序和所有玩家的公平权益，您的相关盈利将被暂时冻结，需进行重新有效打码以完成系统审核。请注意，
+
+h5 我就是正常玩，怎么说我异常？
+您好，风控系统通过综合多项指标检测异常投注行为，是为了保障所有玩家的公平权益。本次稽核仅针对检测到的异常投注，不影响您的其他正常操作。希望您后续继续遵守平台规则，避免触发风控，保障自己的优惠资格。
+
+h5 你们乱查！我要申诉！
+您好，理解您的关切，平台风控系统根据规则自动执行，旨在维护公平的游戏环境，保护所有用户利益。
+
+本次稽核只针对异常投注行为，不影响您账户的其他功能。您可随时联系客服了解详情，我们也欢迎您继续正常参与游戏，系统会根据后续表现评估您的账号状态。
+
+h5 威胁、辱骂或强烈反对型
+您好，平台风控管理是自动且公正的，处理结果依据真实数据判定，无法人为更改。
+
+本次处理仅限于异常投注部分，账户其他功能正常。请您理解平台维护公平原则的重要性。
+
+建议您保持正常游戏行为，未来系统将重新评估并有机会恢复您的相关权益。我们愿意为您提供必要协助，欢迎随时联系客服。
+
+h3 加稽核🎰
+您好，系统在例行的安全结算监测中发现，您的部分注单在系统记录中出现了数据异常，这可能是由于网络波动或数据延迟造成的。为确保您的账户资金和结算数据的准确性，根据平台统一的资金安全规则，系统已重新计算您的有效流水要求，目前您需要完成系统指定的有效流水，请放心，您的资金是由平台保障，不会有任何损失完成流水期间您可以继续畅玩，并有机会获得更多的奖励
+
+您好，系统可以更准确的计算你有效投注 ，避免你的投注没有被计算进去，请您娱乐PG游戏哦，这也是为了你可以更快的达到提款要求，谢谢！
+
+这是因为系统在结算时需要保证所有注单数据完整无误，部分注单因网络波动未能正常记录，所以会重新计算有效流水。只要您在系统指定的游戏中完成剩余流水，系统会立即解锁提现功能。期间您的资金始终由平台全额保障，并且在游戏过程中您还有机会争取更多额外奖励，让这段等待更有收获。
+
+我完全理解您的心情，如果是我遇到这种情况也会着急。这并不是针对您个人的要求，而是系统在结算过程中发现部分注单因网络波动未被正常记录，导致之前的有效流水未能完整计算。为了确保您的资金结算安全，系统会自动重新核算并匹配指定的游戏完成剩余流水，一旦完成，提现功能会立即解锁。
+
+您好，系统在结算时发现部分注单因网络波动未被完整记录，之前的流水需重新核算。完成系统指定的流水后，提现即可解锁，您的资金全额保障，请放心。
+
+h4 会员质疑的回复
+请您放心，这并不是针对您个人，也与您赢取奖金多少无关。系统在结算时发现部分注单数据未完整记录，为保障资金安全和结算准确，需要完成系统核算的有效流水后才能解锁提现功能。
+
+您的资金全额由平台保障，并且在完成流程期间，您还可以继续畅玩游戏、参与活动，争取更多奖励。
+
+我理解您的担心，但这与您输赢金额无关。系统在结算时是统一规则，对所有会员都是自动监测并处理的。只要完成系统核算的有效流水，提现功能会立即解锁。您的资金始终安全，不会有任何损失。
+
+h4 会员说已经投注达到要求了
+是的，我了解您之前的流水情况。但因部分注单数据未及时同步到账，系统会将未被计算的部分重新核算，所以需要完成系统指定的有效流水才能完成结算。这是为了确保结算结果准确，也是对您的资金负责。
+
+是的，我也看到您之前的流水记录了。不过因为部分数据没能正常同步到账，系统只能重新核算，所以才需要您补足这部分流水。这样可以确保结算没误差，也是为了您的资金安全着想。
+
+h4 会员抱怨这是平台的问题
+我理解您的感受，这种情况确实会让人着急。实际上这是因为网络传输延迟造成部分注单记录不完整，属于技术数据同步问题，并非人为操作。系统会根据规则自动处理，完成所需流水后即可提现。
+
+我明白您的感受，其实这并不是人为的问题哦~ 就像网络信号不好会卡顿一样，这次是数据传输延迟导致部分注单没及时记录下来。系统是自动监测的，补足流水后就能正常提了。
+
+h5 会员说我输完了这都是你们故意的
+我很理解您的心情，我们的目标也是希望您顺利结算并提现。这笔资金已由平台锁定保障，不会无故扣留。现在只需要完成剩余的有效流水，系统就会自动解锁提现功能。期间我们也会为您持续跟进。
+
+我能体会您现在的心情，这种情况真的会让人不舒服。我们这边的目标也是尽快帮您提到款，只是现在系统需要先完成剩余的流水才能放款。我会一直帮您跟进到结算完成。
+
+h3 注单异常 
+您好，经平台风控系统检测，您的部分游戏注单存在异常操作行为，被风控部门检测到判定违规。根据平台规则，对于异常或非正常娱乐行为所产生的注单，平台有权进行限制处理，包括取消相关盈利或限制账户活动。谢谢
+Olá, após a detecção pelo sistema de controle de risco da plataforma, algumas de suas apostas em jogos apresentaram operações anormais e foram detectadas e consideradas uma violação pelo departamento de controle de risco. De acordo com as regras da plataforma, a plataforma reserva-se o direito de restringir apostas geradas por comportamento anormal ou não normal em entretenimento, incluindo o cancelamento de lucros relacionados ou a restrição de atividades da conta. Obrigado.
+
+h4 如果会员问哪里异常的回复
+您好，平台确实提供多种游戏内容供用户选择，但系统在后台会持续监测所有用户的操作行为。风控部门判定异常并非针对游戏本身，而是基于用户在投注过程中的行为模式，例如：短时间内频繁异常进出、规律性套利、非正常投注方式等，这些都可能被系统识别为非正常娱乐。
+Olá, a plataforma oferece uma variedade de conteúdo de jogos para os usuários escolherem, mas o sistema continuará monitorando o comportamento operacional de todos os usuários em segundo plano. O departamento de controle de risco determina que a anormalidade não se baseia no jogo em si, mas sim no padrão de comportamento do usuário durante o processo de apostas, como: entradas e saídas anormais frequentes em um curto período de tempo, arbitragem regular, métodos de apostas anormais, etc., que podem ser identificados pelo sistema como entretenimento anormal.
+
+h4 飞行员警告
+您好，系统检测到您在“aviator”游戏中同一局下了两个注单，根据游戏规则这是不允许的，您本次投注行为已经构成了违规投注，现予以警告。若再次投注违规，平台将扣除该违规投注产生的全部盈利（含彩金、派彩及活动奖励），请您仔细阅读，回复“OK”表示已阅读并理解，客服将为您处理提款请求。
+
+h4 其他老虎机玩法的警告
+您好！系统检测到您在 XXX 游戏中存在异常投注行为，该行为违反了平台的正常游戏规则。此次先给予您警告，请您严格遵守平台规则进行娱乐。若再次发生类似情况，平台将扣除因该违规行为产生的全部盈利，并有权对账户采取进一步限制措施。请确认已阅读并理解本提醒，回复“OK”。
+
+您好，平台会持续监测所有会员的投注情况，以保障所有玩家的公平游戏体验。您近期在老虎机投注中出现了不符合平台正常玩法的下注方式，系统已判定为违规。具体风控细则属于平台内部机制，不对外公开，但所有用户均遵循相同的规则执行。请理解并遵守，如再次发生违规，相关盈利将会被扣除。
+
+尊敬的会员，您好！平台的风控系统会根据所有玩家的下注习惯来判断是否存在异常，主要包括：
+span 在极短时间内连续进行异常大额下注；
+span 同一设备或网络下多个账号同时投注；
+span 在同一玩法里进行重复或对冲下注等。
+这些行为会影响到游戏的公平性，所以会被判定为违规。请您放心，平台会统一标准对所有会员执行，并不会针对个人。
+
+通常违规投注行为有： 非正常的投注行为(span短时间内连续异常大额下注，或明显超出常规投注频率的操作)，多账号关联异常投注(同一设备/网络下出现多个账号同时投注，系统会自动识别为风险行为)，不符合游戏规则(如同一时段在同一玩法上进行重复或对冲下注)
+
+非正常投注行为
+span 为了保证游戏的公平性，平台会监测投注频率与金额。若在极短时间内出现连续大额下注，或投注频率明显超出正常娱乐习惯，系统会判定为异常投注。
+
+多账号或关联账号异常
+span 系统会识别同一设备、同一网络下的多个账号同时投注，这类情况容易造成不公平竞争或协同套利，因此会被判定为违规。
+
+不符合游戏规则的下注方式
+span 在同一时段、同一玩法中重复下注，或进行互相对冲的投注方式，都会破坏游戏的正常公平机制，因此平台会视为违规。
+
+./image/异常投注.png
+
+h3 套利🚨
+您好，经系统长期监测，您的账号存在套利行为，已被风控部门判定为违反平台游戏公平性相关规则。为保障平台所有用户的正常体验，相关充值、提款及活动权益已被取消，平台将不再为该账号提供后续服务。我们建议您选择其他平台继续娱乐。感谢您的理解与配合。
+Olá, após um longo monitoramento pelo sistema, sua conta apresenta comportamento de arbitragem e foi determinada pelo departamento de controle de risco como violadora das regras de justiça de jogos da plataforma. Para garantir a experiência normal de todos os usuários da plataforma, os direitos de recarga, saque e atividade relevantes foram cancelados, e a plataforma não fornecerá mais serviços subsequentes para esta conta. Recomendamos que você escolha outras plataformas para continuar se divertindo. Agradecemos sua compreensão e cooperação.
+
+您好，我理解您对当前情况的疑问和不满，但平台风控系统是根据大数据自动识别套利行为的，并非人为操作或针对个人。由于相关行为影响到了平台的公平性，系统已终止账号服务权限。我们尊重您的选择，也建议您后续选择其他平台娱乐
+
+您好，平台风控系统通过长时间数据监测，发现您的账号存在明显的套利行为。此类行为已严重违反平台公平娱乐的原则，并对其他用户权益造成影响。因此，风控部门根据平台规则，已终止该账号的所有服务权限，包括充值、提款及活动参与资格。
+
+您好，关于您账号目前无法继续使用的情况，我们已经进行了复核。平台风控系统的判定基于您账户在一定周期内的投注行为、资金流向及异常操作模式，并结合平台风险模型进行识别，判断结果并非单次操作决定，也不涉及人工干预或主观判断。套利行为属于严重影响平台公平运营的违规行为，一经确认，根据平台使用协议，系统会自动取消该账号的相关服务权限，包括充值、提款和活动参与资格。
+
+您好，您的账户因系统识别出套利行为，违反了平台的公平规则。为保障其他用户权益，平台已暂停该账号所有服务，感谢您的配合。
+
+您好，您的账号是由系统根据长期投注行为自动识别为套利账号，判定结果非单次操作或人工处理，已违反平台公平规则，服务权限已终止，感谢理解。
+
+h4 会员说诈骗的回复
+您好，您的感受我们非常理解，也很重视您对平台的信任。我们绝无任何欺诈行为，平台所有规则和处理机制，都是为了维护一个公平、安全的娱乐环境，并由系统自动执行，并非针对个人。关于您账号的情况，是由风控系统根据您的操作数据进行自动判定的，例如投注方式、频率、资金流向等，都会触发系统的行为分析。
+
+您好，我非常理解您的心情。但此次是由风控系统检测后做出的处理，目前您的优惠资格暂时被取消。不过请您放心，风控部门会持续关注您的账户情况，一旦后续无违规行为，您的相关资格将会自动恢复。建议您后续以正常娱乐为主，优先选择PG类游戏，客服这边也会持续为您提供协助，感谢您的理解与配合。
+
+h3 批量注册
+您好，系统检测发现您的账号以及团队存在批量注册以套取活动奖励的行为。平台旨在为每一位玩家提供良好的娱乐环境，对于任何形式的套利行为，平台是严格禁止的。鉴于您存在套利行为，您的账户将无法再进行存款或游戏。若您继续批量注册或从事任何套利行为，一经核实，平台将对您的账户采取冻结措施，并对违规所得予以全部扣除。请悉知
+
+您好，平台一直坚持公平、公正的运营原则，对任何利用非法手段进行套利的行为零容忍。对于涉嫌此类行为的账户，平台不予接纳，也不欢迎继续在本平台进行任何活动。建议您选择其他平台进行游戏
+
+您好，我们理解您的说法，也愿意相信您这次可能是因操作或账号管理不当而引起的误会。不过，系统记录确实显示出与批量注册、套利行为相符的异常数据。平台一直致力于维护公平的游戏环境，不欢迎任何试图通过非常规手段获利的玩家。客服建议您可以选择其他平台进行游戏
+
+h4 拉回观察层级的回复
+您好，我们理解您的说明，但系统检测到您的账户数据与批量注册、套利行为高度相似。平台一向零容忍任何利用非法手段牟利的行为，不欢迎此类玩家继续在本平台活动。鉴于您首次出现此类情况，我们将视为一次警告并暂不采取进一步处罚，但请您确保今后不再发生任何违规操作，否则平台将直接冻结账户并收回全部违规所得。希望你可以珍惜这一次的机会
+
+h3 05P风控回复
+您好，系统审核过程中，我们发现您存在通过多台设备或不同IP地址重复参与新手活动并领取奖励的情况。每位用户仅限使用一台设备+一个IP参与活动并领取奖励。严禁任何形式的重复领取及套利操作。目前您的账户已被系统认定为异常参与，我司将对此类行为进行清除。为确保活动的公平公正，平台将严格执行风控机制，并保留相应处理的权利。请您自觉遵守平台规则，感谢您的理解与配合！
+Olá, durante a verificação do sistema, constatamos que você participou repetidamente do evento para novatos e recebeu recompensas por meio de vários dispositivos ou endereços IP diferentes. Cada usuário está limitado a usar um dispositivo + um IP para participar do evento e receber recompensas. Qualquer forma de recebimento repetido e operações de arbitragem são estritamente proibidas. Atualmente, sua conta foi identificada pelo sistema como participação anormal, e tal comportamento será eliminado por nossa empresa. Para garantir a imparcialidade e a justiça do evento, a plataforma implementará rigorosamente o mecanismo de controle de riscos e se reserva o direito de lidar com isso. Por favor, cumpra conscientemente as regras da plataforma e agradecemos sua compreensão e cooperação!
+
+您好，查询到您的账号存在涉嫌套利活动，这是严谨禁止的，我们将对你的进行扣除相应的利润，此次为您罚没处理，希望您理解
+Olá, descobrimos que sua conta é suspeita de atividades de arbitragem, o que é estritamente proibido. Deduziremos os lucros correspondentes e os confiscaremos. Esperamos que você entenda.
+
+您好，因系统监测到您的账户存在疑似套利行为，依据平台相关规则，本次产生的异常盈利已被扣除处理，以维护平台的公平运营环境。请您放心，只要后续操作为正常娱乐行为，您的提款将不受影响，依旧可以正常申请提款。风控部门也将持续观察账户行为，若无再次出现异常情况，您的活动彩金和相关权益也会逐步恢复。
+Olá, como o sistema detectou suspeita de comportamento de arbitragem em sua conta, de acordo com as regras relevantes da plataforma, o lucro anormal gerado desta vez foi deduzido para manter o ambiente operacional justo da plataforma. Tenha certeza de que, desde que as operações subsequentes sejam comportamentos de entretenimento normais, seu saque não será afetado e você ainda poderá solicitar saques normalmente. O departamento de controle de risco também continuará monitorando o comportamento da conta. Se não houver outra situação anormal, seu bônus de atividade e direitos relacionados serão gradualmente restaurados.
+
+您好，平台一直致力于维护一个公平、公正的娱乐环境，因此对于套利等行为会严格管控。系统在此次检测中发现您的部分操作存在套利特征，已对相应收益进行了处理。我们相信您可能并非有意违规，因此此次处理仅作为提醒与规范，后续只要您维持正常娱乐，平台将继续保留您的提款通道，并在观察期结束后恢复您的所有福利权益。
+Olá, a plataforma sempre se comprometeu a manter um ambiente de entretenimento justo e equitativo, portanto, arbitragem e outros comportamentos serão rigorosamente controlados. O sistema detectou que algumas de suas operações apresentam características de arbitragem durante essa detecção, e a receita correspondente foi processada. Acreditamos que você não tenha violado as regras intencionalmente, portanto, este processamento serve apenas como um lembrete e regulamentação. Enquanto você mantiver seu entretenimento normal no futuro, a plataforma continuará mantendo seu canal de saque e restaurando todos os seus direitos de bem-estar após o período de observação.
+
+您好，平台为持牌合法运营的正规娱乐平台，始终严格遵守相关法律法规，并致力于为用户提供公平、公正、透明的娱乐环境。您的账户本次存在明显的套利行为，该行为已违反平台用户规则。根据规定，涉及的异常盈利将不予发放，并已由系统执行扣除处理。
+Olá, a plataforma é uma plataforma de entretenimento formal licenciada e operada legalmente. Ela sempre cumpre rigorosamente as leis e regulamentos aplicáveis ​​e está comprometida em fornecer aos usuários um ambiente de entretenimento justo, imparcial e transparente. Desta vez, sua conta apresenta comportamento de arbitragem evidente, o que viola as regras de uso da plataforma. De acordo com os regulamentos, os lucros anormais envolvidos não serão emitidos e foram deduzidos pelo sistema.
+
+您好，平台始终遵循合法合规运营，所有数据与操作均由系统记录并可查证。由于你涉嫌套利，本次的利润将会扣除。只要您后续正常娱乐，那么你的充值提款是没有任何问题的，并且也会恢复你享有彩金的特权
+Olá, a plataforma sempre segue as regras legais e em conformidade, e todos os dados e operações são registrados e verificáveis ​​pelo sistema. Como você é suspeito de arbitragem, o lucro desta vez será deduzido. Contanto que você continue jogando normalmente, não haverá problemas com suas recargas e saques, e seu privilégio de aproveitar o bônus também será restaurado.
+
+h3 平台维护
+h4 波动临时维护
+您好，由于目前受到国际线路波动的影响，我们的技术团队已在第一时间加急处理，请您稍作等待。在此期间，您可以先稍作休息，或关注平台正在进行的活动奖励。稍后您可重新进入游戏继续娱乐，客服在此预祝您游戏愉快，好运连连！
+
+亲爱的玩家，由于系统优化升级，平台暂时进入维护状态。这是为了给您带来更稳定、更流畅的体验，请您稍作等待。预计维护需要1个小时左右，我们会尽快完成维护，届时欢迎您回来继续畅玩，祝您游戏开心，好运常伴！
+
+您好，平台正在进行例行维护，部分功能暂不可用。请放心，本次维护不会影响您的账户及资金安全。我们的技术团队正在加速处理，感谢您的耐心等待与支持。
+
+您好，平台维护仍在进行中，技术团队正加紧处理，预计在1个小时后维护完成。感谢您的理解与耐心，我们会第一时间通知您恢复情况。
+
+您好，目前平台升级维护已在逐步恢复中，预计大约1小时左右即可完成。期间，您可以先稍作休息，或先了解一下我们的活动奖励，为接下来的游戏增添更多惊喜与收益。客服在此预祝您游戏愉快，收获满满，好运连连！
+
+您好，目前平台升级维护已进入逐步恢复阶段，预计大约1小时左右即可完成。请您耐心等待，您的账户与资金安全不会受到任何影响。维护完成后，您即可正常使用全部功能，感谢您的理解与支持。
+
+h4 波动维护完成
+感谢您的耐心等待，目前维护已顺利完成，您现在可以刷新页面重新进入游戏啦！同时也欢迎您关注平台正在进行的活动奖励，或许能为您的游戏增添更多惊喜和收益哦～客服在此祝您游戏愉快，收获满满，好运连连！
+
+h4 注单延迟
+尊敬的用户，您好！关于注单延迟的问题，我们已在第一时间将相关情况记录并已经提交至技术团队处理。目前技术人员正在加急排查并修复该问题，我们将竭尽所能尽快为您恢复正常状态，并确保您的账户权益不受影响。请您别担心，技术很快就能解决这个问题，感谢您对我们公司的支持与信赖，我们将竭尽全力做的更好
+
+h4 注单延迟维护完成
+您好，关于注单延迟的问题，技术团队现已完成维护并恢复正常。需要提款的用户现可前往平台提交提款申请，财务部门将第一时间为您处理。感谢您的理解与支持，祝您游戏愉快！
+
+h4 关于提款限额的回复
+您好！根据巴西中央银行的最新规定，自2025年7月9日起，以下时间段将受到提款和支付的限额限制：巴西时间晚上10:00至早上6:00。为了确保您不受影响，我们建议您在该时间段内进行小额提款或支付。感谢您的信任与支持，我们始终致力于为您提供优质的服务。如有任何疑问，欢迎随时联系我们，我们将竭诚为您解答。
+
+h3 关于平台
+h4 平台信息安全
+平台对所有用户的信息实行严格保密，采用银行级加密技术（包括 AES-256、RSA、ECC、SHA-256），确保每一位用户的资金与个人信息安全不受威胁。同时，平台通过 SSL/TLS 协议保障数据在传输过程中的加密防护，防止中间人攻击和数据泄露。为了您的账户安全，也请您妥善保管好登录密码和提款密码信息，切勿泄露给他人。
+
+
+h3 其他回复
+您好，目前系统正在进行例行优化调整，旨在为大家带来更流畅、更稳定的使用体验。期间暂时无法访问平台，还请您稍作休息。技术团队已加急处理中，预计很快就会恢复正常。请您放心，平台运行一切安全稳定，账户及资金不会受到任何影响。在等待的时候可以了解下平台的活动奖励哦，例如每日签到，神秘矿石，VIP奖励等，系统恢复后你就可以第一时间参与了哦。感谢您的理解与支持，客服在此预祝您好运连连，收益满满！
+
+h4 关于RTP 的回复
+您好，部分游戏由于设计限制，未在游戏界面直接显示RTP（理论回报率）信息，但请您放心，这些游戏均由国际认证的第三方供应商提供，其RTP数据已通过平台审核并符合行业标准，安全可靠。根据平台统计，部分游戏的RTP可高达95%至98%，长期参与更具优势。
+
+根据综合数据统计，我们平台中部分优质游戏的理论回报率（RTP）可高达98%，在同类平台中处于领先水平。当然，游戏的结果会受到多种因素影响，短期内可能出现波动，但从长远来看，回报率是趋于稳定的。
+
+h5 游戏显示有钱，账号没有钱的回复
+您好，关于您提到的游戏中显示有余额，但账户中无金额的问题，其实是因为部分游戏在完成免费旋转后，中奖金额会直接结算到账户余额中。而游戏界面可能会因为还在播放未结束的画面，而暂时显示“游戏中仍有余额”。请放心，系统中奖金额已经准确结算至您的账户
+
+h4 会员不想下载APP的回复
+您好，平台并不会强制要求您下载APP，您完全可以通过网页登录的方式进行娱乐，功能也是一致的。不过客服建议您下载官方APP，一方面可以让您更加便捷地随时访问平台，另一方面部分专属活动和额外奖励仅限APP用户参与，能为您带来更多实惠和娱乐体验
+
+h4 会员问中奖时间的回复
+您好，平台上的所有游戏均基于公平、公正、公开的机制运行，游戏结果由系统通过随机算法生成，完全不受人工干预，具有高度的不可预测性和概率性。您可以关注我们的电报频道，频道中会不定期分享部分热门游戏的爆奖时段和娱乐建议，供您参考
+
+h4 关于活动红点
+您好，活动页面上带红点的活动就是当前最火爆、最值得参加的活动，同时也是平台推荐的优质活动。只要您完成条件，就能立即在页面领取奖励，千万别错过！
+
+您好，带有红色标记的活动是平台特别推荐的热门活动。只要您达成活动的条件，就能在活动页面领取相应奖金，机会千万别错过哦！
+
+
+h4 救援金的派发公式
+额外救援金2%，计算公式=（现在充提差-上次申请充提差）*2%，充提差≥50，最低派送R$ 1。（彩金登记表格：日期，会员ID，充提差，派送金额）
+
+h4 —- 05X —-
+Tg022
+TG335
+TG336
+
+h4 —- 25S —-
+TG020
+TG021
+
+h4 —- D16 —-
+Tg021
+TG188
+TG189
+
+h3 代理维护
+
+您好，最近使用我们的平台感觉怎么样呢？有没有什么地方让您觉得需要改进或者优化的？您的意见对我们非常重要。
+
+h4 询问会员是否有兴趣成为代理
+我们非常重视您的建议和意见，每一条反馈对我们都很重要。与此同时，也想和您分享一个新机会——平台正在开展合作项目，如果您希望通过平台赚取收益，这是一个非常不错的选择。您想进一步了解吗？
+
+h5 第二种回复
+您的意见对我们来说都十分宝贵，我们一直努力让平台更好。顺便想告诉您一个好消息：目前平台推出了合作项目，如果您想借助平台轻松赚钱，这是绝佳的机会。要不要我为您介绍一下？
+
+h4 发送推广链接
+我们的合作方式很简单：当您成为代理后，我们会为您提供一个专属的推广链接。确认合作后，我会立即帮您申请并开通这个链接。您只需要通过该链接完成注册并登录，就能正式开始合作，轻松开启赚钱之旅。
+
+h4 介绍代理模式
+👉 本计划提供以下主要功能：
+span 1. 等级制度：代理商分为不同等级，每个等级的要求和福利各不相同。
+span 2. 月薪奖励：只要您符合平台要求并保持活跃参与，即可获得与您等级对应的固定月薪（即使是新代理商也有机会获得月薪）。
+span 3. 额外福利：除了月薪外，代理商还可以参与平台宝箱活动，并享受低等级佣金折扣，从而获得更多福利。
+span 4. 专家协助：每位代理商都将有一位专属专家为您解答疑问，确保发展更顺畅。
+span 🌟 简而言之，通过团队合作和积极参与，您不仅可以通过游戏赚钱，还可以获得稳定的月薪和额外奖励。
+
+这是您专属的代理推广链接，您需要先注册一个新游戏账号，然后发给我进行代理注册。
+
+您的专属代理账号已成功开通！该账号兼具两大功能：既能正常游戏，又能作为推广工具帮助您获取收益。
+
+当您把专属邀请链接成功分享给30多人后，我会立即为您升级为代理账户，让您享受更多奖励与收益机会。
+
+只需把您的专属分享链接推广给身边的朋友或发布在 Facebook、Twitter、YouTube 等平台上，就能轻松吸引新用户注册成为您的联盟会员。每成功邀请，您不仅能获得 55 个宝箱奖金，还将享受博彩公司特别折扣。
+
+您邀请的人越多，获得的收益就越高。同时，您的代理等级也会不断提升，等级越高，您能享受的收益比例也就越可观。
+
+成为一级代理条件：
+span 团队人数每月新增 ≥ 30 人
+span 新增首批存款用户 ≥ 10 名
+span 团队活跃率 ≥ 40%
+span 待遇：月薪 800 雷亚尔
+
+h3 电报链接
+
+h4 25S
+Telegram
+https://t.me/b25s_com
+
+Whatsapp
+https://whatsapp.com/channel/0029VbAbOuDF1YlVG3kjcs25
+
+h4 05X
+Telegram
+https://t.me/www05xcom
+
+Whatsapp
+https://whatsapp.com/channel/0029VbAQObO9mrGUNs3iKS1D
+
+Facebook
+https://www.facebook.com/profile.php?id=61576891110745
+
+Instagram
+https://www.instagram.com/05xcom
+
+Twitter
+https://x.com/05xcom
+
+h4 D16
+Telegram
+https://t.me/wwwd16_com
+
+Whatsapp
+https://whatsapp.com/channel/0029VbBJGNa8qIzwZ5HKKh3d
+
+Facebook
+https://www.facebook.com/profile.php?id=61576876561474
+
+Instagram
+https://www.instagram.com/d16com/
+
+Twitter
+https://x.com/D16COM
+
+h4 05P
+Telegram
+https://t.me/www05pcom
+
+Whatsapp
+https://whatsapp.com/channel/0029VbAdnma5fM5bNk6ZvG19
+
+Facebook
+https://www.facebook.com/profile.php?id=61577724666994
+
+Instagram
+https://www.instagram.com/05pcom/
+
+h4 A02
+Telegram
+https://t.me/c_a02com
+
+Whatsapp
+https://whatsapp.com/channel/0029Vb61ta67oQharIYhso1k
+
+Facebook
+https://www.facebook.com/profile.php?id=61577974877237
+
+Instagram
+https://www.instagram.com/a02.c.om/
+
+Twitter
+https://x.com/A02com1
+
+h4 x06
+Telegram
+https://t.me/wwwx06com
+
+Whatsapp
+https://whatsapp.com/channel/0029VbBEJ795PO0uCSMyYx3Q
+
+Facebook
+https://www.facebook.com/profile.php?id=61580297271110
+
+Instagram
+https://www.instagram.com/x06com/
+
+h4 i05
+Telegram
+https://t.me/wwwi05com
+
+Whatsapp
+https://whatsapp.com/channel/0029VbB2PtSBfxoENKTyTp2a
+
+Facebook
+https://www.facebook.com/profile.php?id=61579994506620
+
+Instagram
+https://www.instagram.com/i05com/
+
+h3 25SURL
+
+签到活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTJdpUhSxapiRzyASswVvfepLB9qV1gACMh0AAoBckFaW9XZPc94LKzYE.png
+
+宝箱活动50
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTJ9pUhUCmVDQJr4u4h57Jg6B_advhQACOx0AAoBckFYYFoRG_tSq4DYE.jpg
+
+自身投注返点5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTKJpUhU18L_kjzDmrEXtJTLtlahQlAACPh0AAoBckFZ7S3Ff-4LvPjYE.png
+
+答谢日 5号
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTKtpUhVksXSpttV2HsWv88PNQXou1gACRx0AAoBckFZYRIAQWsh8ijYE.png
+
+日救援30%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTKxpUhWF1bYSc4jvdFPZxkH10CePYAACSB0AAoBckFZCdomeBiC9PzYE.jpg
+
+周救援30%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTK9pUhW2if_IJfm7PQnstEejQr6AFQACSx0AAoBckFY-PLk0h6LjSzYE.png
+
+VIP活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTK5pUhWfnSC3dNpNvLECj8ZZlN67ewACSh0AAoBckFYT3Vxn3J9ZDTYE.jpg
+
+2.3.7.15.30神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTLBpUhXVAc6kZvsLUTtsAcZ68nMENgACTB0AAoBckFbFq9IRu1-hsjYE.jpg
+
+代理佣金5%返点
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTLhpUhX94tWZSh6U39muco4hnyIOAwACVB0AAoBckFY8IZ4Ho77fLzYE.jpg
+
+拼多多\助力彩金-转盘活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTLlpUhYUcg66YUq4ftKILH368PZbOAACVh0AAoBckFZ3oOvPLNU6-jYE.jpg
+
+红包雨- 神秘矿井活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTLtpUhY7_VqblCf-rW69Tzu3saw-PQACWB0AAoBckFbnM7NCm5uq-DYE.jpg
+
+双30%活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTLxpUhZvj0CmhneOnIWi_uF6hiG6DgACWR0AAoBckFakOhoStqK8jTYE.jpg
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXiZpU2pdi8goPXdI4nnL1xIWDna4FAACiyAAAoBcmFYc8GK3EIlHjzgE.jpg
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYfdpU46qf_W4Exmu-6F2UIhkxZNwugACGCYAAoBcmFYVwc60tZC9qDgE.jpg
+
+h3 05XRL
+
+2.3.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTMppUhaqGM3ik-adQVrY1Bk8dJQhlgACZx0AAoBckFbCT0S04GCctzYE.png
+
+自身投注返点 5% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTMxpUhbV1vXANCqjIpQs1KK_b-RAswACaR0AAoBckFYsKTLT02eV8jYE.png
+
+日救援50% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTM1pUhbV4GqcaUE_qfXeDH-Xrpef_wACah0AAoBckFaA8NO7SRxnFzYE.png
+
+代理佣金 5% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTNdpUhdTXKp_yKbbN_5r1I56DplDwAACdB0AAoBckFYQmxIRN9ZndDYE.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTNhpUhdTmeNxLtEmmnrK7fDlqox3mgACdR0AAoBckFbPitAfnFFZhTYE.png
+
+宝箱奖励邀请55
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTNJpUhdOEh6F1MyyaVTj9matVVgjIQACbx0AAoBckFYKC4Ath0E62zYE.png
+
+签到活动
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTNZpUhdPP7Ltkuwg7oMdwguvawMD5gACcx0AAoBckFb5SUISS4HU4TYE.png
+
+红包雨 \ 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYZxpU4kCZrcnRpKJqUxxdvXFcqowmQACkCUAAoBcmFbKwv03nARTGzgE.png
+
+答谢日
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTNRpUhdP1pG3tMDOOalWwcGYxkgl4AACcR0AAoBckFaj0BO6kB_kUjYE.png
+
+拼多多 \ 助力彩金-转盘
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTOxpUhfE7K7TvqT8KBdv1GR4LXeLswACih0AAoBckFbedDp6C7ps3TYE.png
+
+双50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTO1pUhfGloAww7jSIaBuanMJkTKCIgACix0AAoBckFbkmfm7kpw95zYE.jpg
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXkZpU21kPsWFCQGoAYAy5rLYV2pzOwAC_SAAAoBcmFYVzArhQwRf2TgE.jpg
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYgABaVOP-I8MsmkseSQdwe9LT0DBHZ4AAiomAAKAXJhW_6kpO1HMmsQ4BA.jpg
+
+h3 D16URL
+2.3.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTPBpUhgoNJ29FnnGfoup__inUkgU0wACjh0AAoBckFZgLp74em_uuzYE.png
+
+自身投注返点 5% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTPFpUhgonWJNGwPUyMQWi5QE0rQGtAACjx0AAoBckFZYG6rYXTQOYTYE.png
+
+双50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTO9pUhgoWQlyNB3gumYuNS2aY6Yp6wACjR0AAoBckFafAAGcgxc1BoA2BA.jpg
+
+日救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTRBpUhiM97JKwLVKlezRFCdcTQRpSwACrh0AAoBckFbVXlHs9rQ0HzYE.png
+
+周救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTQ5pUhiMeWoAAZLRMPaPX5lcWjRSELoAAqwdAAKAXJBWiWLuraH6W5E2BA.png
+
+代理佣金50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTRRpUhiSNq6bvndwYkzUmMbEeT1PYAACsh0AAoBckFbkIJ2gumhsSDYE.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTRNpUhiSXt5ZAAG63WS-EXtCUm0UcKsAArEdAAKAXJBWfVX-uxwT7Oo2BA.png
+
+宝箱-邀请55
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTQxpUhiM2EAP1_4egWDZUwefC5e7yAACqh0AAoBckFbzj0vK2u59pTYE.png
+
+签到奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTQ1pUhiMxlIkn2LZU6xFcTgQk2qJpQACqx0AAoBckFYkx_3k5l3L9zYE.png
+
+红包雨 - 神秘矿井
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTQ9pUhiM20JYlHbz8yXzpUbh5JJ6rAACrR0AAoBckFZkDIY3C5-IUTYE.png
+
+答谢日 5号
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTRFpUhiSKocNn7tCwtKY9Q-_V4NH-gACrx0AAoBckFZWxWwYZo2ZaDYE.png
+
+拼多多-助力彩金-转盘
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTRJpUhiStncZ2R69TzHEbSuppX-ykgACsB0AAoBckFZFj59h3zKI-DYE.png
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXoBpU26iT-wgzP5O_81x_FD8wiRM_QACQSEAAoBcmFYO--J8-pk5ITgE.jpg
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYiFpU5MeY30skU4qgA1i6zqzHhchuAACUyYAAoBcmFbKrN8Mw6uCSDgE.jpg
+
+h3 05URL
+2.3.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTStpUhmDypMll4DFNqY2JkyI9Zxl8QAC2B0AAoBckFaYhIpJ3mDzozYE.png
+
+自身投注返点 5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTS5pUhmD30R-qMnlhOP0DyPTNmhTBQAC2x0AAoBckFby1l8I6mwI7TYE.png
+
+日救援 50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTSxpUhmDv8yz57o32aHD6A7OAzcNSwAC2R0AAoBckFb7sGj5X3SPfzYE.png
+
+周救援
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTSppUhmDVqw47c73GcHV7b0agdRcPwAC1x0AAoBckFazXhHfRrxPETYE.png
+
+代理佣金返点 5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTS1pUhmDDEsfUV-a4gABWMsmxtP_oM8AAtodAAKAXJBWfWs_gDvpKJ02BA.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTThpUhoIHbLpQoO5jmjYR0MdOv63rAAC5h0AAoBckFauo_w_5dfe1zYE.png
+
+宝箱-邀请55
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTTtpUhoIpUj_PguYQSb79x6hbF2iagAC6R0AAoBckFaL_jXg0iYN1jYE.png
+
+签到奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTTppUhoIxI8vjUz7JhfH_8hU3socJQAC6B0AAoBckFZmjGzVJQzVqDYE.png
+
+红包雨-神秘矿井
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTTxpUhoIPOdQXW-SwhcK2jSc2aWosAAC6h0AAoBckFYPuU9CDV_g5DYE.png
+
+答谢日
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTTlpUhoItCxEhSParDh4c2Fml5rYkQAC5x0AAoBckFbJqZad1uojdjYE.png
+
+拼多多-助力-轮盘
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTT1pUhoOp3H3syJxqeIy0USm1VVsRgAC6x0AAoBckFY0Dl_ppOVhwzYE.png
+
+双50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTT5pUhoORWHbDzxwHGeUBIyEgdasoQAC7B0AAoBckFa79w333_jeGzYE.jpg
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXrFpU3C_Y9JC7AAB66lwvrqAkfDy6IMAAo8hAAKAXJhW7HBGfo90Kro4BA.png
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYk9pU5Pm4iWrn2OZnJjOAcROx9FrewAChCYAAoBcmFahI5vU3sS-ejgE.jpg
+
+h3 A02URL
+2.3.5.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTU9pUhsJ8PiDqqVOJZZ1o1Z2Fzhe0wAC_h0AAoBckFYeGmnvmQYeyDYE.png
+
+自身投注返点 5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTVBpUhsJ4fUhL3BI-1eNYEYV1CuQ_gAC_x0AAoBckFY7_nPiBzrItTYE.png
+
+日救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTU5pUhsJ4d-63y7AgcJJl2tK56AT1QAC_R0AAoBckFaj_6xHK57m_DYE.png
+
+周救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTVFpUhsK0k4J57jwE-qOYs1PAAHrHh8AAx4AAoBckFYkNbZJLTPg3zYE.png
+
+代理返佣 5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTWBpUhujL_0HwTTfMa_0EcaXzorIjQACEB4AAoBckFYVuZ_O1qFy5DYE.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTV5pUhueH-YedJrFtPeC-5mQ2Fy_DgACDh4AAoBckFYDZT6ogepTwzYE.png
+
+宝箱 - 邀请55%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTVtpUhueQrBvbD5TEghVCOF3NqjHywACCx4AAoBckFYdPJ8x5aJGJjYE.png
+
+签到奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTV1pUhueFckfWvaVgsNINOmg8kvkZwACDR4AAoBckFbDHwXpWt_ctzYE.png
+
+红包雨 - 神秘矿井
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTV9pUhufFuqFoto4KBytNYMJbywXQgACDx4AAoBckFbHBasAAXNdoCE2BA.png
+
+答谢日 5号
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTVxpUhueLRPTnhuy5xKIBoP61Aq-AwACDB4AAoBckFYBGiBA8YJ8eTYE.png
+
+拼多多-助力-转盘
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOU7ZpUkslg8KrnCZfsR-6DPBYJvvtQQACKSUAAoBckFYGt3WzslHIBTYE.png
+
+双50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTWFpUhujcunFyV8aTt5ZlXuX5bSwugACER4AAoBckFamWGaNVK_NIjYE.jpg
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXtppU3Orm2Eo8f0UG7GKOYbCpZ2F_AAC1iEAAoBcmFbN57NJLzHPAjgE.png
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYmlpU5SdWLrQQMcznwyC28Uk2uCZswACoCYAAoBcmFZ0XuYreV2moDgE.png
+
+h3 X06URL
+2.3.5.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTYNpUhzNiPZ50xF1R3V7oKvFKUffwgACMx4AAoBckFatZzU2HQ_6UjYE.png
+
+自身投注5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTYFpUhzMdp1dIZ38wC7WtQ6Qgeb-ZwACMR4AAoBckFbpOk5nhPO4HzYE.png
+
+日救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTYRpUhzNUwH7EwQFJDoS0eNfagrQWAACNB4AAoBckFZnuQzyUUnaBDYE.png
+
+周救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTYJpUhzNkHhj1zDq7ui6aGV_7bbsnAACMh4AAoBckFa0uh3gkxGdRjYE.png
+
+代理返佣 5% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZZpUh0o7CuN8owQ424llHLRUFR3awACRh4AAoBckFZwfbJEzZDwdDYE.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZRpUh0oR-WaU1H0Nh61pKBE2VKu5QACRB4AAoBckFZ1imVmugYSIDYE.png
+
+宝箱 - 邀请60
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZhpUh0o_X2nFC7zNu9aLALUPUnC7AACSB4AAoBckFY20XgmpA7FJzYE.png
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTY9pUh0jOmLEoxcsqdVW8Jt0VgMpyAACPx4AAoBckFbKAAFoyjV-nLw2BA.png
+
+签到奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZFpUh0k7uMYmpSy8yOD2qqyW5G0SQACQR4AAoBckFaMbPQ4LLlr1jYE.png
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZdpUh0oZ_0stqEohO7e6TB5qilfgwACRx4AAoBckFZtHo5y-ds-fDYE.png
+
+红包雨- 神秘矿井
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZNpUh0kEWAe182qyhP0sHpbaIOFIwACQx4AAoBckFbl3qNJ_xyz5TYE.png
+
+答谢日 5号
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZBpUh0kNT5kvBrl6uAaFTIFXVzaZAACQB4AAoBckFZSj2UrpQZESDYE.png
+
+拼多多 - 助力彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZJpUh0k0CsS_X8D7194gZPIJw3DTgACQh4AAoBckFYMEvnJEAhhhTYE.png
+
+双50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZVpUh0ovSs1doVOsdRtGQABGGmuIe8AAkUeAAKAXJBWOq7k0JVYx7g2BA.jpg
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXv1pU3VSOMuIjIDTgLHGWtNd3x47wgACCyIAAoBcmFbYncyjhDa2BjgE.png
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYoppU5Vhf9WyXgcAAaz68aU5V3ok7MIAAscmAAKAXJhWr47FqqMQVOI4BA.jpg
+
+h3 i05URL
+2.3.5.7.15.30 神秘奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZxpUh257ht0AU2u4tpX2TcpCPIVqwACTx4AAoBckFaHZh-RKo68KDYE.png
+
+自身投注返点 5% 
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZ1pUh26c5rF2O2fZcnDzATzMjIeHAACUB4AAoBckFaXX6O-H3OISjYE.png
+
+日救援50%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZ9pUh26vdtx5v0TPnS2xJDdvHx9dgACUh4AAoBckFZvlmQaMtmHxTYE.png
+
+代理返佣 5%
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTZ5pUh26rBmQcpqmH6KqhebZfcz0OAACUR4AAoBckFaohxs-3N3IQzYE.png
+
+VIP奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTbBpUh5hnaVORShAyvD_KOhQB24grgACah4AAoBckFYuUcTdok2_dDYE.png
+
+宝箱 - 邀请80
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTbRpUh5nVzvRURfOIubJeh7Nji2hdgACbh4AAoBckFadUNtPp5ephDYE.png
+
+签到奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTbJpUh5hSHtC9UHS9CbG65Wa4JDRLgACbB4AAoBckFYGzLqeXXQVcTYE.png
+
+红包雨 - 神秘矿井
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTbNpUh5hny4ehclKEnKUC7-O-JqFaQACbR4AAoBckFbWpxtnkDXWsDYE.png
+
+答谢日 5号
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTbFpUh5h_xYcooKhxFP3SeJD22WKbAACax4AAoBckFYYCGVcnpeVJjYE.png
+
+拼多多-助力-轮盘
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOTa9pUh5husRUifqWKecTflChfOK3jwACaR4AAoBckFbhNJN0mTgdYjYE.png
+
+登录奖励
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOXw5pU3YjfiusLtBa-D2WG9zNJcmJuwACRCIAAoBcmFb31n7R1yOnszgE.png
+
+周5彩金
+https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEOYq1pU5YueM0n9BcPwC_FLDqZSNcOdgAC7SYAAoBcmFYirivq_HtM1TgE.jpg

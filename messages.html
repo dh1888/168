@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>站内信极光推送 - 固定表头</title>
+	  <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/mubai16888/mb/main/mb.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/mubai16888/mb/main/mb.png"
+      type="image/png"
+      sizes="192x192"
+    />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        background: linear-gradient(135deg, #e0e0e0, #f8f8f8);
+        color: #333;
+      }
+      .container {
+        width: 100%;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(15px);
+        border-radius: 25px;
+        padding: 25px;
+        box-sizing: border-box;
+      }
+      h1 {
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        background: linear-gradient(270deg, #ff6a00, #2575fc, #6a11cb, #00c6ff);
+        background-size: 800% 800%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: flowGradient 8s linear infinite;
+      }
+      @keyframes flowGradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .filters {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+      }
+      #file-input {
+        display: none;
+      }
+      .file-button {
+        display: inline-block;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        text-transform: uppercase;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(45deg, #6a11cb, #2575fc, #00c6ff, #ff6a00);
+        background-size: 300% 300%;
+        animation: gradientMove 5s ease infinite;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      .file-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      #sheet-select,
+      #date-filter {
+        padding: 10px 15px;
+        border-radius: 12px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        cursor: pointer;
+        background: linear-gradient(45deg, #6a11cb, #2575fc, #00c6ff, #ff6a00);
+        background-size: 300% 300%;
+        animation: gradientMove 5s ease infinite;
+        color: #fff;
+        font-weight: bold;
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        position: relative;
+        min-width: 150px;
+      }
+      #sheet-select::after,
+      #date-filter::after {
+        content: "▼";
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #fff;
+        font-size: 0.8rem;
+      }
+      #sheet-select::-ms-expand,
+      #date-filter::-ms-expand {
+        display: none;
+      }
+      #sheet-select option,
+      #date-filter option {
+        background: #fff;
+        color: #333;
+        font-weight: bold;
+        padding: 8px 15px;
+      }
+      #sheet-select option:hover,
+      #date-filter option:hover {
+        background: #2575fc;
+        color: #fff;
+      }
+
+      /*表格容器*/
+      .table-wrapper {
+        width: 100%;
+        max-height: 80vh; /* 表格高度自适应屏幕，高度为视口的80% */
+        overflow: auto;
+        border-radius: 20px;
+        position: relative;
+        scrollbar-width: none; /* Firefox 隐藏滚动条 */
+        -ms-overflow-style: none; /* IE 10+ */
+      }
+      .table-wrapper::-webkit-scrollbar {
+        display: none; /* Chrome/Safari/Edge 隐藏滚动条 */
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.95rem;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+      }
+
+      th,
+      td {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 12px;
+        text-align: left;
+        border-radius: 10px;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        /* background: linear-gradient(90deg, #4b6cb7, #182848); */
+        background: linear-gradient(90deg, #468b9c, #06667e);
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      tr:hover {
+        background: rgba(0, 123, 255, 0.1);
+        box-shadow: inset 0 0 15px rgba(0, 123, 255, 0.3);
+      }
+      td:hover {
+        cursor: pointer;
+        background: rgba(0, 123, 255, 0.15);
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+      }
+
+      td.copied {
+        animation: glow 0.8s ease forwards;
+      }
+      @keyframes glow {
+        0% {
+          box-shadow: 0 0 0 rgba(0, 255, 0, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 15px rgba(0, 255, 0, 1);
+        }
+        100% {
+          box-shadow: 0 0 0 rgba(0, 255, 0, 0);
+        }
+      }
+
+      .time-period {
+        color: #0066cc;
+        font-weight: bold;
+      }
+      .portuguese {
+        color: #cc0066;
+        font-weight: bold;
+      }
+      .code {
+        color: #009966;
+        font-weight: bold;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: rgba(76, 175, 80, 0.85);
+        color: #fff;
+        border-radius: 8px;
+        font-weight: bold;
+        display: none;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 0.85rem;
+        color: #666;
+      }
+      .filter-label {
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>站内信极光推送 ⚡</h1>
+      <div class="filters">
+        <label class="file-button" for="file-input">📂 选择文件上传</label>
+        <input type="file" id="file-input" accept=".csv,.xls,.xlsx" />
+        <select id="sheet-select" style="display: none"></select>
+        <select id="date-filter" style="display: none">
+          <option value="all">全部日期</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="promotion-table">
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>时间段</th>
+              <th>代码</th>
+              <th>站内信</th>
+              <th>巴西时间</th>
+              <th>极光推送</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="footer">© 2025 极光推送 - 灰白玻璃风格</div>
+    </div>
+
+    <div class="notification" id="notification">✅ 复制成功</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+      const tableBody = document.querySelector("#promotion-table tbody");
+      const notification = document.getElementById("notification");
+      const sheetSelect = document.getElementById("sheet-select");
+      const dateFilter = document.getElementById("date-filter");
+      let workbookData = null;
+      let currentSheetData = null;
+
+      document.getElementById("file-input").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const data = new Uint8Array(evt.target.result);
+          workbookData = XLSX.read(data, { type: "array" });
+          if (workbookData.SheetNames.length > 1) {
+            sheetSelect.innerHTML = "";
+            workbookData.SheetNames.forEach((name, idx) => {
+              const option = document.createElement("option");
+              option.value = idx;
+              option.textContent = name;
+              sheetSelect.appendChild(option);
+            });
+            sheetSelect.style.display = "inline-block";
+          } else {
+            sheetSelect.style.display = "none";
+          }
+          renderTable(workbookData.Sheets[workbookData.SheetNames[0]]);
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      sheetSelect.addEventListener("change", () => {
+        const sheetIndex = parseInt(sheetSelect.value);
+        const sheetName = workbookData.SheetNames[sheetIndex];
+        renderTable(workbookData.Sheets[sheetName]);
+      });
+
+      dateFilter.addEventListener("change", () => {
+        filterTableByDate();
+      });
+
+      function renderTable(sheet) {
+        currentSheetData = sheet;
+        const merges = sheet["!merges"] || [];
+        let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+        tableBody.innerHTML = "";
+        const dates = new Set();
+        let lastDate = "";
+        const prevSelectedDate = dateFilter.value;
+
+        rows.forEach((row, r) => {
+          const tr = document.createElement("tr");
+          let dateValue = row[0] || lastDate;
+          tr.setAttribute("data-date", dateValue);
+          if (dateValue) dates.add(dateValue);
+          lastDate = dateValue;
+
+          row.forEach((cell, c) => {
+            const mergeCell = merges.find((m) => m.s.r === r && m.s.c === c);
+            const inMerged = merges.some(
+              (m) => m.s.c === c && r > m.s.r && r <= m.e.r
+            );
+            if (inMerged) return;
+
+            const td = document.createElement("td");
+            td.textContent = cell;
+            if (mergeCell) td.rowSpan = mergeCell.e.r - mergeCell.s.r + 1;
+            if (c === 1) td.classList.add("time-period");
+            if (c === 2) td.classList.add("code");
+            if (c === 3 || c === 5)
+              td.innerHTML = `<div class="portuguese">${cell}</div>`;
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+        updateDateFilter(Array.from(dates), prevSelectedDate);
+        addCopyListeners();
+      }
+
+      function updateDateFilter(dates, selectedDate = "all") {
+        dateFilter.innerHTML = '<option value="all">全部日期</option>';
+        dates.forEach((date) => {
+          const option = document.createElement("option");
+          option.value = date;
+          option.textContent = date;
+          dateFilter.appendChild(option);
+        });
+        dateFilter.style.display = "inline-block";
+        if (dates.includes(selectedDate)) dateFilter.value = selectedDate;
+        else dateFilter.value = "all";
+        filterTableByDate();
+      }
+
+      function filterTableByDate() {
+        const selectedDate = dateFilter.value;
+        const rows = tableBody.querySelectorAll("tr");
+        rows.forEach((row) => {
+          const rowDate = row.getAttribute("data-date");
+          row.style.display =
+            selectedDate === "all" || rowDate === selectedDate ? "" : "none";
+        });
+      }
+
+      function addCopyListeners() {
+        tableBody.querySelectorAll("td").forEach((td) => {
+          td.addEventListener("click", () => {
+            const portuguese = td.querySelector(".portuguese");
+            if (portuguese) {
+              navigator.clipboard
+                .writeText(portuguese.textContent.trim())
+                .then(() => {
+                  notification.style.display = "block";
+                  setTimeout(() => (notification.style.display = "none"), 2000);
+                  td.classList.add("copied");
+                  setTimeout(() => td.classList.remove("copied"), 800);
+                });
+            }
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
