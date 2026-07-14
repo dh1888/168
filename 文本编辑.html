@@ -436,12 +436,14 @@
       /* ===== 图片样式 ===== */
       .image-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-auto-flow: dense;
         gap: 12px;
         width: 100%;
+        max-width: 100%;
         margin: 15px 0;
+        box-sizing: border-box;
       }
-
       .image-container {
         min-width: 0;
         box-sizing: border-box;
@@ -450,6 +452,47 @@
 
       .image-container:hover {
         transform: translateY(-5px);
+      }
+
+      .image-preview-card {
+        position: relative;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 8px;
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        cursor: pointer;
+      }
+
+      .image-preview-card.selected {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.16), 0 10px 24px rgba(24, 144, 255, 0.14);
+        transform: translateY(-2px);
+      }
+
+      .image-selection-check {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        color: #cbd5e1;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .image-preview-card.selected .image-selection-check {
+        background: var(--primary-color);
+        color: #fff;
+        border-color: var(--primary-color);
       }
 
       .thumbnail {
@@ -468,6 +511,24 @@
         transform: scale(1.02);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       }
+
+      /* 上传区域样式 */
+      .image-uploader-dropzone {
+        border: 2px dashed rgba(15, 23, 42, 0.08);
+        border-radius: 10px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: space-between;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      }
+      .image-uploader-dropzone .drop-inner { display:flex; align-items:center; gap:12px; width:100%; }
+      .image-uploader-dropzone .drop-icon { font-size:24px; }
+      .image-uploader-dropzone .drop-text { color:#6b7280; flex:1; }
+      .image-uploader-dropzone .btn-choose { background: var(--primary-color); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+      .image-uploader-dropzone.drag-over { border-color: var(--primary-color); box-shadow: 0 8px 30px rgba(24,144,255,0.12); background: linear-gradient(180deg,#f0f8ff,#ffffff); }
 
       .thumbnail.loading {
         opacity: 0.7;
@@ -494,12 +555,6 @@
       @media (max-width: 900px) {
         .image-row {
           grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        }
-      }
-
-      @media (max-width: 640px) {
-        .image-row {
-          grid-template-columns: 1fr;
         }
       }
 
@@ -1047,17 +1102,40 @@
         }
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 960px) {
         body {
-          padding: 15px;
+          padding: 90px 16px 20px 170px;
         }
 
         .sidebar {
-          transform: translateX(-150px);
+          transform: translateX(0);
         }
 
         .sidebar-toggle {
-          left: 0;
+          left: 150px;
+        }
+
+        .topbar {
+          left: 150px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 70px 12px 20px 12px;
+        }
+
+        .sidebar {
+          transform: translateX(0);
+          width: 150px;
+        }
+
+        .sidebar-toggle {
+          left: 150px;
+        }
+
+        .topbar {
+          left: 150px;
         }
 
         .container {
@@ -1157,10 +1235,16 @@
       }
 
       .topbar .btn.secondary#btnOpenFile {
-        background: linear-gradient(135deg, #fff, #f3fbff);
-        color: var(--primary-dark);
-        border: 1px solid rgba(24,144,255,0.12);
-        box-shadow: 0 6px 14px rgba(24,144,255,0.06);
+        background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+        color: #ffffff;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 10px 22px rgba(59,130,246,0.14);
+        text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+      }
+
+      .topbar .btn.secondary#btnOpenFile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(59,130,246,0.18);
       }
 
       .topbar .spacer {
@@ -1272,6 +1356,16 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+      }
+
+      .custom-modal.dragging {
+        cursor: grabbing;
+        user-select: none;
+      }
+
+      .custom-modal-header.drag-handle {
+        cursor: grab;
+        user-select: none;
       }
 
       @keyframes modalFadeIn {
@@ -1809,6 +1903,71 @@
           setupScrollSpy();
         }
 
+        function resetCustomModalPosition(modal) {
+          if (!modal) return;
+          modal.style.position = "";
+          modal.style.left = "";
+          modal.style.top = "";
+          modal.style.margin = "";
+          modal.style.transform = "";
+          modal.classList.remove("dragging");
+        }
+
+        function setupCustomModalDragBehavior(modal) {
+          if (!modal || modal.dataset.dragBound === "true") return;
+          const header = modal.querySelector(".custom-modal-header");
+          if (!header) return;
+
+          modal.dataset.dragBound = "true";
+          header.classList.add("drag-handle");
+
+          let dragging = false;
+          let startX = 0;
+          let startY = 0;
+          let startLeft = 0;
+          let startTop = 0;
+
+          const onPointerDown = (event) => {
+            if (event.button !== 0) return;
+            if (event.target.closest("button, input, textarea, select, a")) return;
+
+            dragging = true;
+            modal.classList.add("dragging");
+            modal.style.position = "absolute";
+            modal.style.margin = "0";
+            modal.style.transform = "none";
+
+            const rect = modal.getBoundingClientRect();
+            startX = event.clientX;
+            startY = event.clientY;
+            startLeft = rect.left;
+            startTop = rect.top;
+            event.preventDefault();
+          };
+
+          const onPointerMove = (event) => {
+            if (!dragging) return;
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+            const maxLeft = Math.max(12, window.innerWidth - modal.offsetWidth - 12);
+            const maxTop = Math.max(12, window.innerHeight - modal.offsetHeight - 12);
+            const nextLeft = Math.min(maxLeft, Math.max(12, startLeft + deltaX));
+            const nextTop = Math.min(maxTop, Math.max(12, startTop + deltaY));
+            modal.style.left = `${nextLeft}px`;
+            modal.style.top = `${nextTop}px`;
+          };
+
+          const onPointerUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            modal.classList.remove("dragging");
+          };
+
+          header.addEventListener("mousedown", onPointerDown);
+          window.addEventListener("mousemove", onPointerMove);
+          window.addEventListener("mouseup", onPointerUp);
+        }
+
         function showCustomModal(options = {}) {
           return new Promise((resolve) => {
             const overlay = domCache.customModalOverlay;
@@ -1969,6 +2128,12 @@
             overlay.style.display = "flex";
             document.body.style.overflow = "hidden";
             document.addEventListener("keydown", handleKeyDown);
+
+            const modalBox = overlay.querySelector(".custom-modal");
+            if (modalBox) {
+              resetCustomModalPosition(modalBox);
+              setupCustomModalDragBehavior(modalBox);
+            }
 
             setTimeout(() => {
               if (inputEl) {
@@ -2258,7 +2423,14 @@
                 </div>
                 <div class="custom-modal-field">
                   <label class="custom-modal-label">或上传多张图片</label>
-                  <input type="file" accept="image/*" id="imageFileUploader" multiple />
+                  <div class="image-uploader-dropzone" id="imageDropzone">
+                    <div class="drop-inner">
+                      <div class="drop-icon">📁</div>
+                      <div class="drop-text">拖拽图片到此处或点击选择（支持多张）</div>
+                      <button type="button" class="btn-choose" id="chooseFilesBtn">选择文件</button>
+                      <input type="file" accept="image/*" id="imageFileUploader" multiple style="display:none" />
+                    </div>
+                  </div>
                 </div>
                 <div class="custom-modal-field">
                   <label class="custom-modal-label">预览</label>
@@ -2270,40 +2442,14 @@
             const urlInput = contentEl.querySelector('#imageUrlInput');
             const fileInput = contentEl.querySelector('#imageFileUploader');
             const preview = contentEl.querySelector('#imagePreview');
+            const dropzone = contentEl.querySelector('#imageDropzone');
+            const chooseBtn = contentEl.querySelector('#chooseFilesBtn');
+
             let selectedSources = sources.slice();
+            let selectedIndices = new Set();
 
-            function updatePreview() {
-              preview.innerHTML = '';
-              if (!selectedSources.length) return;
-              selectedSources.forEach((src, index) => {
-                const imageContainer = document.createElement('div');
-                imageContainer.className = 'image-container';
-                const img = document.createElement('img');
-                img.src = src;
-                img.className = 'thumbnail';
-                img.alt = `图片${index + 1}`;
-                imageContainer.appendChild(img);
-                preview.appendChild(imageContainer);
-              });
-            }
-
-            if (selectedSources.length) {
-              updatePreview();
-            }
-
-            urlInput.addEventListener('input', () => {
-              const value = urlInput.value.trim();
-              if (value) {
-                selectedSources = [value];
-                updatePreview();
-              } else if (!fileInput.files || !fileInput.files.length) {
-                selectedSources = [];
-                updatePreview();
-              }
-            });
-
-            fileInput.addEventListener('change', function () {
-              const files = Array.from(this.files || []);
+            function handleFilesList(fileList) {
+              const files = Array.from(fileList || []);
               if (!files.length) return;
               const nextSources = [];
               let pending = files.length;
@@ -2319,27 +2465,92 @@
                 };
                 reader.readAsDataURL(file);
               });
+            }
+
+            function updatePreview() {
+              preview.innerHTML = '';
+              if (!selectedSources.length) return;
+
+              // 默认选中所有新上传的图片
+              selectedIndices = new Set(selectedSources.map((_, i) => i));
+
+              selectedSources.forEach((src, index) => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'image-preview-card';
+                imageContainer.setAttribute('role', 'button');
+                imageContainer.setAttribute('tabindex', '0');
+                imageContainer.dataset.index = String(index);
+
+                const check = document.createElement('span');
+                check.className = 'image-selection-check';
+                check.textContent = '✓';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'thumbnail';
+                img.alt = `图片${index + 1}`;
+
+                if (selectedIndices.has(index)) imageContainer.classList.add('selected');
+
+                const toggleSelection = (event) => {
+                  if (event) { event.preventDefault(); event.stopPropagation(); }
+                  if (selectedIndices.has(index)) selectedIndices.delete(index); else selectedIndices.add(index);
+                  imageContainer.classList.toggle('selected', selectedIndices.has(index));
+                };
+
+                imageContainer.addEventListener('click', toggleSelection);
+                imageContainer.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') toggleSelection(event); });
+
+                imageContainer.appendChild(check);
+                imageContainer.appendChild(img);
+                preview.appendChild(imageContainer);
+              });
+            }
+
+            if (selectedSources.length) updatePreview();
+
+            urlInput.addEventListener('input', () => {
+              const value = urlInput.value.trim();
+              if (value) { selectedSources = [value]; updatePreview(); }
+              else if (!fileInput.files || !fileInput.files.length) { selectedSources = []; updatePreview(); }
             });
 
-            const finish = (value) => {
-              overlay.style.display = 'none';
-              document.body.style.overflow = '';
-              resolve(value);
-            };
+            // 点击选择
+            const openFilePicker = () => { if (fileInput) fileInput.click(); };
+            if (chooseBtn) chooseBtn.addEventListener('click', openFilePicker);
+            if (dropzone) dropzone.addEventListener('click', openFilePicker);
+
+            // 拖拽
+            if (dropzone) {
+              dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+              dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+              dropzone.addEventListener('dragleave', (e) => { dropzone.classList.remove('drag-over'); });
+              dropzone.addEventListener('drop', (e) => {
+                e.preventDefault(); dropzone.classList.remove('drag-over');
+                const files = e.dataTransfer && e.dataTransfer.files;
+                if (files && files.length) handleFilesList(files);
+              });
+            }
+
+            fileInput.addEventListener('change', function () { handleFilesList(this.files); });
+
+            const finish = (value) => { overlay.style.display = 'none'; document.body.style.overflow = ''; resolve(value); };
 
             domCache.customModalConfirm.onclick = () => {
               const v = urlInput.value && urlInput.value.trim();
-              const finalSources = selectedSources.length ? selectedSources : (v ? [v] : []);
-              if (!finalSources.length) {
-                urlInput.focus();
-                return;
-              }
-              finish(finalSources);
+              const finalSources = selectedSources.filter((_, idx) => selectedIndices.has(idx));
+              const resolved = finalSources.length ? finalSources : (v ? [v] : []);
+              if (!resolved.length) { urlInput.focus(); return; }
+              finish(resolved);
             };
+
             domCache.customModalCancel.onclick = () => finish(null);
             domCache.customModalClose.onclick = () => finish(null);
+
             overlay.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            const modalBox = overlay.querySelector('.custom-modal');
+            if (modalBox) { resetCustomModalPosition(modalBox); setupCustomModalDragBehavior(modalBox); }
             setTimeout(() => urlInput.focus(), 0);
           });
         }
@@ -3566,10 +3777,31 @@
 
           const lines = content.split("\n");
           let i = 0;
+          let pendingImages = [];
+
+          const flushPendingImages = () => {
+            if (!pendingImages.length) return;
+            const row = createImageRow(pendingImages);
+            domCache.fileContent.appendChild(row);
+            pendingImages = [];
+          };
 
           while (i < lines.length) {
             const line = lines[i];
             const trimmedLine = line.trim();
+
+            if (trimmedLine === "") {
+              i++;
+              continue;
+            }
+
+            if (isImagePath(trimmedLine)) {
+              pendingImages.push(trimmedLine);
+              i++;
+              continue;
+            }
+
+            flushPendingImages();
 
             // 处理块
             if (
@@ -3615,6 +3847,8 @@
 
             i++;
           }
+
+          flushPendingImages();
           syncViewState();
         }
 
@@ -3805,17 +4039,56 @@
           }
         }
 
+        function isImagePath(value) {
+          const normalizedLine = String(value || "").trim();
+          if (!normalizedLine) return false;
+          if (/^(data:|https?:|blob:|file:)/i.test(normalizedLine)) {
+            return true;
+          }
+
+          const imagePattern = /(?:\.\/|\.\\|\.\.\/|\.\.\\|(?:\\|\/)?image(?:\\|\/))/i;
+          const extensionPattern = /\.(png|jpe?g|gif|bmp|webp|svg)(\?.*)?$/i;
+
+          if (extensionPattern.test(normalizedLine)) {
+            return (
+              normalizedLine.startsWith("./") ||
+              normalizedLine.startsWith("../") ||
+              normalizedLine.startsWith(".\\") ||
+              normalizedLine.startsWith("..\\") ||
+              normalizedLine.startsWith("/") ||
+              imagePattern.test(normalizedLine)
+            );
+          }
+
+          return imagePattern.test(normalizedLine) && /^[^\s]+$/.test(normalizedLine);
+        }
+
+        function buildImageCandidates(imagePath) {
+          const normalizedPath = String(imagePath || "").trim();
+          if (!normalizedPath) return [];
+
+          const queryMatch = normalizedPath.match(/(\?.*)$/);
+          const query = queryMatch ? queryMatch[1] : "";
+          const pathWithoutQuery = queryMatch ? normalizedPath.slice(0, -query.length) : normalizedPath;
+          const extensionPattern = /\.(png|jpe?g|gif|bmp|webp|svg)$/i;
+
+          if (extensionPattern.test(pathWithoutQuery) || /^(data:|https?:|blob:|file:)/i.test(pathWithoutQuery)) {
+            return [normalizedPath];
+          }
+
+          const suffixes = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".svg"];
+          return [
+            normalizedPath,
+            ...suffixes.map((suffix) => `${pathWithoutQuery}${suffix}${query}`),
+          ];
+        }
+
         // ===== 内容行创建功能 =====
         function createLine(line, parentElement = null) {
           const normalizedLine = line.trim();
 
           // 检查是否是图片路径
-          if (
-            normalizedLine.startsWith("./") ||
-            normalizedLine.startsWith("../") ||
-            normalizedLine.startsWith("/") ||
-            /\.(png|jpe?g|gif|bmp|webp|svg)(\?.*)?$/i.test(normalizedLine)
-          ) {
+          if (isImagePath(normalizedLine)) {
             return createImageElement(normalizedLine, parentElement);
           }
 
@@ -3840,41 +4113,59 @@
         }
 
         // ===== 图片处理功能 =====
+        function addImageToRow(row, imagePath) {
+          const imageContainer = document.createElement("div");
+          imageContainer.className = "image-container";
+          const img = document.createElement("img");
+          img.className = "thumbnail loading";
+          img.alt = "内容图片";
+          img.dataset.index = state.allImages.length;
+          state.allImages.push(imagePath);
+
+          const candidates = buildImageCandidates(imagePath).map(resolveImageSource);
+          let attemptIndex = 0;
+
+          function loadNextCandidate() {
+            if (attemptIndex >= candidates.length) {
+              img.alt = `图片加载失败: ${imagePath}`;
+              img.classList.remove("loading");
+              return;
+            }
+            img.src = candidates[attemptIndex];
+            attemptIndex += 1;
+          }
+
+          img.onload = function () {
+            img.classList.remove("loading");
+          };
+          img.onerror = function () {
+            loadNextCandidate();
+          };
+
+          loadNextCandidate();
+          imageContainer.appendChild(img);
+          row.appendChild(imageContainer);
+        }
+
         function createImageRow(images) {
           const row = document.createElement("div");
           row.className = "image-row";
 
-          (images || []).forEach((imagePath, index) => {
-            const resolvedImagePath = resolveImageSource(imagePath);
-            const imageContainer = document.createElement("div");
-            imageContainer.className = "image-container";
-            const img = document.createElement("img");
-            img.src = resolvedImagePath || imagePath;
-            img.className = "thumbnail loading";
-            img.alt = `内容图片${index + 1}`;
-            img.dataset.index = state.allImages.length;
-            state.allImages.push(resolvedImagePath || imagePath);
-
-            img.onload = function () {
-              img.classList.remove("loading");
-            };
-            img.onerror = function () {
-              img.alt = "图片加载失败";
-              img.classList.remove("loading");
-            };
-
-            imageContainer.appendChild(img);
-            row.appendChild(imageContainer);
-          });
-
+          (images || []).forEach((imagePath) => addImageToRow(row, imagePath));
           return row;
         }
 
         function createImageElement(imagePath, parentElement = null) {
           const targetParent = parentElement || domCache.fileContent;
-          const row = createImageRow([imagePath]);
-          targetParent.appendChild(row);
-          return row;
+          let imageRow = targetParent.lastElementChild;
+          if (!imageRow || !imageRow.classList.contains("image-row")) {
+            imageRow = document.createElement("div");
+            imageRow.className = "image-row";
+            targetParent.appendChild(imageRow);
+          }
+
+          addImageToRow(imageRow, imagePath);
+          return parentElement ? null : imageRow;
         }
 
         // ===== 表格处理功能 =====
