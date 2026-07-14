@@ -220,6 +220,7 @@ function refreshContent() {
   renderNavItems();
   renderContent();
   updateEmptyStateVisibility();
+  setupScrollSpyObserver();
   requestAnimationFrame(() => updateActiveNavFromScroll());
 }
 
@@ -239,7 +240,7 @@ function updateActiveNavFromScroll() {
     return;
   }
 
-  const probeLine = getNavScrollOffset();
+  const probeLine = getScrollProbeLine();
 
   let currentId = sections[0].dataset.id || "";
 
@@ -263,8 +264,51 @@ function getContentScrollRoot() {
     return document.scrollingElement || document.documentElement;
   }
 
-  const canScroll = contentArea.scrollHeight > contentArea.clientHeight + 1;
-  return canScroll ? contentArea : document.scrollingElement || document.documentElement;
+  return contentArea;
+}
+
+function getScrollSpyRoot() {
+  const scrollRoot = getContentScrollRoot();
+  if (
+    scrollRoot === document.documentElement ||
+    scrollRoot === document.body ||
+    scrollRoot === document.scrollingElement
+  ) {
+    return null;
+  }
+  return scrollRoot;
+}
+
+let scrollSpyObserver = null;
+
+function teardownScrollSpyObserver() {
+  if (!scrollSpyObserver) return;
+  scrollSpyObserver.disconnect();
+  scrollSpyObserver = null;
+}
+
+function setupScrollSpyObserver() {
+  teardownScrollSpyObserver();
+  if (!navItemsContainer) return;
+
+  const sections = document.querySelectorAll(".main-title");
+  if (!sections.length) return;
+
+  const root = getScrollSpyRoot();
+  const topInset = contentArea ? 12 : getNavScrollOffset();
+
+  scrollSpyObserver = new IntersectionObserver(
+    () => {
+      updateActiveNavFromScroll();
+    },
+    {
+      root,
+      rootMargin: `-${topInset}px 0px -55% 0px`,
+      threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+    },
+  );
+
+  sections.forEach((section) => scrollSpyObserver.observe(section));
 }
 
 function getNavScrollOffset() {
@@ -274,6 +318,13 @@ function getNavScrollOffset() {
       10,
     ) || 50;
   return navHeight + 24;
+}
+
+function getScrollProbeLine() {
+  if (contentArea) {
+    return contentArea.getBoundingClientRect().top + 12;
+  }
+  return getNavScrollOffset();
 }
 
 function getElementDocumentTop(element, scrollRoot) {
@@ -914,25 +965,12 @@ function showContextMenu(e) {
 // 滚动到指定内容项
 function scrollToItem(itemId) {
   const itemElement = document.getElementById(`item-${itemId}`);
-  if (itemElement) {
-    const scrollRoot = getContentScrollRoot();
-
-    if (scrollRoot === contentArea) {
-      const targetTop = getElementDocumentTop(itemElement, scrollRoot);
-      contentArea.scrollTo({
-        top: Math.max(0, targetTop - getNavScrollOffset()),
-        behavior: "auto",
-      });
-    } else {
-      const targetTop =
-        itemElement.getBoundingClientRect().top +
-        window.scrollY -
-        getNavScrollOffset();
-      window.scrollTo({
-        top: Math.max(0, targetTop),
-        behavior: "auto",
-      });
-    }
+  if (itemElement && contentArea) {
+    const targetTop = getElementDocumentTop(itemElement, contentArea);
+    contentArea.scrollTo({
+      top: Math.max(0, targetTop - 12),
+      behavior: "auto",
+    });
 
     const originalBackground = itemElement.style.background;
     if (isLightMode) {
@@ -3165,12 +3203,17 @@ function initScrollSpy() {
     });
   };
 
-  window.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("scroll", onScroll, { passive: true, capture: true });
   if (contentArea) {
     contentArea.addEventListener("scroll", onScroll, { passive: true });
   }
-  window.addEventListener("resize", onScroll, { passive: true });
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", () => {
+    setupScrollSpyObserver();
+    onScroll();
+  }, { passive: true });
 
+  setupScrollSpyObserver();
   requestAnimationFrame(() => updateActiveNavFromScroll());
 }
 
