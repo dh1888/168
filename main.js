@@ -18,14 +18,16 @@ let lastX = 0,
   lastY = 0;
 let lastTime = 0;
 
+const DEFAULT_BACKGROUND = {
+  type: "image",
+  src: "https://raw.githubusercontent.com/dh1888/dh18/main/imge/1.jpg",
+  isLocalFile: false,
+};
+
 // 当前选中的背景 - 从本地存储加载
 let currentBackground = JSON.parse(
   localStorage.getItem("contentSystemBackground"),
-) || {
-  type: "none",
-  src: "",
-  isLocalFile: false,
-};
+) || DEFAULT_BACKGROUND;
 
 // 透明度设置 - 从本地存储加载
 let backgroundOpacity =
@@ -33,27 +35,24 @@ let backgroundOpacity =
 let overlayOpacity =
   parseInt(localStorage.getItem("contentSystemOverlayOpacity")) || 80;
 
-// 主题模式 - 从本地存储加载
-// 主题模式 - 默认设为浅色模式（白色主题）
-let isLightMode =
-  localStorage.getItem("contentSystemTheme") === "light" || true;
-// 如果本地存储没有值，则使用浅色模式
-if (localStorage.getItem("contentSystemTheme") === null) {
-  isLightMode = true;
+// 主题模式 - 从本地存储加载（默认浅色）
+const savedTheme = localStorage.getItem("contentSystemTheme");
+let isLightMode = savedTheme !== "dark";
+if (savedTheme === null) {
   localStorage.setItem("contentSystemTheme", "light");
 }
 
 // DOM元素
 const navItemsContainer = document.getElementById("navItems");
 const contentContainer = document.getElementById("contentContainer");
+const contentArea = document.getElementById("contentArea");
 const emptyState = document.getElementById("emptyState");
 const addMainTitleBtn = document.getElementById("addMainTitleBtn");
 const addSubtitleBtn = document.getElementById("addSubtitleBtn");
 const addContentBtn = document.getElementById("addContentBtn");
 const backgroundSelectorBtn = document.getElementById("backgroundSelectorBtn");
 const opacityControlBtn = document.getElementById("opacityControlBtn");
-const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
+const importExportBtn = document.getElementById("importExportBtn");
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const modalOverlay = document.getElementById("modalOverlay");
 const modalTitle = document.getElementById("modalTitle");
@@ -173,8 +172,9 @@ let autoHideTime =
 let hideTimeout = null;
 let mouseInWindow = true;
 
-// 保存数据到本地存储
-function saveToLocalStorage() {
+let saveStorageTimer = null;
+
+function persistToLocalStorage() {
   localStorage.setItem("contentSystemData", JSON.stringify(contentItems));
   localStorage.setItem("contentSystemNextItemId", nextItemId.toString());
   localStorage.setItem(
@@ -196,7 +196,43 @@ function saveToLocalStorage() {
   localStorage.setItem("contentSystemNextImageId", nextImageId.toString());
 }
 
-// 初始化页面
+function saveToLocalStorage() {
+  if (saveStorageTimer) clearTimeout(saveStorageTimer);
+  saveStorageTimer = setTimeout(() => {
+    saveStorageTimer = null;
+    persistToLocalStorage();
+  }, 250);
+}
+
+function flushLocalStorage() {
+  if (saveStorageTimer) {
+    clearTimeout(saveStorageTimer);
+    saveStorageTimer = null;
+  }
+  persistToLocalStorage();
+}
+
+// 仅刷新内容区与导航（增删改后调用，避免重复加载背景/主题）
+function refreshContent() {
+  if (!navItemsContainer || !contentContainer || !emptyState) return;
+
+  contentItems.sort((a, b) => a.order - b.order);
+  renderNavItems();
+  renderContent();
+  updateEmptyStateVisibility();
+}
+
+function updateEmptyStateVisibility() {
+  if (!emptyState) return;
+  const isEmpty = contentItems.length === 0;
+  emptyState.classList.toggle("is-visible", isEmpty);
+  emptyState.setAttribute("aria-hidden", isEmpty ? "false" : "true");
+  if (contentArea) {
+    contentArea.classList.toggle("show-empty-guide", isEmpty);
+  }
+}
+
+// 完整初始化（首次加载）
 function initPage() {
   if (!navItemsContainer || !contentContainer || !emptyState) {
     console.error("必要的DOM元素未找到，等待页面加载");
@@ -204,36 +240,23 @@ function initPage() {
     return;
   }
 
-  contentItems.sort((a, b) => a.order - b.order);
-
-  renderNavItems();
-  renderContent();
-
-  if (contentItems.length === 0) {
-    emptyState.style.display = "block";
-  } else {
-    emptyState.style.display = "none";
-  }
-
+  refreshContent();
   setBackground(
     currentBackground.type,
     currentBackground.src,
     currentBackground.isLocalFile,
+    false,
   );
-  setOpacity(backgroundOpacity, overlayOpacity);
-  setTheme(isLightMode);
-  saveToLocalStorage();
+  setOpacity(backgroundOpacity, overlayOpacity, false);
+  setTheme(isLightMode, false);
+  persistToLocalStorage();
 }
 
 // 设置主题
-function setTheme(isLight) {
+function setTheme(isLight, persist = true) {
   isLightMode = isLight;
-  if (isLightMode) {
-    document.body.classList.add("light-mode");
-  } else {
-    document.body.classList.remove("light-mode");
-  }
-  saveToLocalStorage();
+  document.body.classList.toggle("light-mode", isLightMode);
+  if (persist) saveToLocalStorage();
 }
 
 function toggleTheme() {
@@ -241,7 +264,7 @@ function toggleTheme() {
 }
 
 // 设置透明度
-function setOpacity(bgOpacity, olOpacity) {
+function setOpacity(bgOpacity, olOpacity, persist = true) {
   backgroundOpacity = bgOpacity;
   overlayOpacity = olOpacity;
 
@@ -269,37 +292,30 @@ function setOpacity(bgOpacity, olOpacity) {
     opacityValue.textContent = `${backgroundOpacity}%`;
   }
 
-  saveToLocalStorage();
+  if (persist) saveToLocalStorage();
 }
 
 // 渲染导航项
 function renderNavItems() {
-  navItemsContainer.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
-  const mainTitleItems = contentItems.filter(
-    (item) => item.type === "main-title",
-  );
+  contentItems
+    .filter((item) => item.type === "main-title")
+    .forEach((item) => {
+      const navItem = document.createElement("div");
+      navItem.className = "nav-item";
+      navItem.dataset.id = item.id;
+      navItem.title = item.text;
 
-  mainTitleItems.forEach((item) => {
-    const navItem = document.createElement("div");
-    navItem.className = "nav-item";
-    navItem.dataset.id = item.id;
-    navItem.title = item.text;
+      const titleEl = document.createElement("div");
+      titleEl.className = "nav-item-title";
+      titleEl.textContent = getPreviewText(item.text, 10);
+      navItem.appendChild(titleEl);
 
-    navItem.innerHTML = `
-            <div class="nav-item-title">${getPreviewText(item.text, 10)}</div>
-        `;
-
-    navItem.addEventListener("click", () => {
-      document.querySelectorAll(".nav-item").forEach((item) => {
-        item.classList.remove("active");
-      });
-      navItem.classList.add("active");
-      scrollToItem(item.id);
+      fragment.appendChild(navItem);
     });
 
-    navItemsContainer.appendChild(navItem);
-  });
+  navItemsContainer.replaceChildren(fragment);
 }
 
 // 获取预览文本
@@ -311,76 +327,92 @@ function getPreviewText(text, maxLength) {
 
 // 渲染内容区域
 function renderContent() {
-  contentContainer.innerHTML = "";
+  contentContainer.replaceChildren();
 
   if (contentItems.length === 0) {
-    emptyState.style.display = "block";
     return;
   }
 
+  const fragment = document.createDocumentFragment();
+
   contentItems.forEach((item) => {
     if (item.type === "main-title") {
-      renderMainTitle(item);
+      renderMainTitle(item, fragment);
     } else if (item.type === "subtitle") {
-      renderSubtitle(item);
+      renderSubtitle(item, fragment);
+    } else if (item.type === "h5-title") {
+      renderExtraTitle(item, fragment, "h5-title");
+    } else if (item.type === "h6-title") {
+      renderH6Title(item, fragment);
     } else if (item.type === "content-card") {
-      renderContentCard(item);
+      renderContentCard(item, fragment);
     } else if (item.type === "image-card") {
-      renderImageCard(item);
+      renderImageCard(item, fragment);
     }
   });
 
-  emptyState.style.display = "none";
+  contentContainer.appendChild(fragment);
 }
 
-function renderMainTitle(item) {
+function renderMainTitle(item, target) {
   const mainTitle = document.createElement("div");
   mainTitle.className = "main-title";
   mainTitle.id = `item-${item.id}`;
   mainTitle.dataset.id = item.id;
   mainTitle.dataset.type = item.type;
   mainTitle.textContent = item.text;
-
-  mainTitle.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-    contextMenuTarget = { type: "main-title", id: item.id };
-    showContextMenu(e);
-  });
-
-  contentContainer.appendChild(mainTitle);
+  mainTitle.title = "双击编辑大标题";
+  target.appendChild(mainTitle);
 }
 
-function renderSubtitle(item) {
+function renderSubtitle(item, target) {
   const subtitle = document.createElement("div");
   subtitle.className = "subtitle";
   subtitle.id = `item-${item.id}`;
   subtitle.dataset.id = item.id;
   subtitle.dataset.type = item.type;
   subtitle.textContent = item.text;
-
-  subtitle.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-    contextMenuTarget = { type: "subtitle", id: item.id };
-    showContextMenu(e);
-  });
-
-  contentContainer.appendChild(subtitle);
+  subtitle.title = "双击编辑小标题";
+  target.appendChild(subtitle);
 }
 
-function renderContentCard(item) {
+function renderExtraTitle(item, target, className) {
+  const heading = document.createElement("div");
+  heading.className = `subtitle ${className}`;
+  heading.id = `item-${item.id}`;
+  heading.dataset.id = item.id;
+  heading.dataset.type = item.type;
+  heading.textContent = item.text;
+  heading.title = "双击编辑标题";
+  target.appendChild(heading);
+}
+
+function renderH6Title(item, target) {
+  renderExtraTitle(item, target, "h6-title");
+
+  if (item.children?.length) {
+    item.children.forEach((child) => {
+      const hhItem = document.createElement("div");
+      hhItem.className = "content-item hh-item";
+      hhItem.id = `item-${child.id}`;
+      hhItem.dataset.id = child.id;
+      hhItem.dataset.type = "hh-item";
+      hhItem.dataset.parentId = item.id;
+      hhItem.textContent = child.text;
+      hhItem.title = "双击编辑内容";
+      target.appendChild(hhItem);
+    });
+  }
+}
+
+function renderContentCard(item, target) {
   const contentCard = document.createElement("div");
   contentCard.className = "content-card";
   contentCard.id = `card-${item.id}`;
   contentCard.dataset.id = item.id;
   contentCard.dataset.type = "content-card";
 
-  contentCard.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-    contextMenuTarget = { type: "content-card", id: item.id };
-    showContextMenu(e);
-  });
-
-  if (item.content && item.content.length > 0) {
+  if (item.content?.length) {
     item.content.forEach((contentItem) => {
       const contentItemElement = document.createElement("div");
       contentItemElement.className = "content-item";
@@ -388,34 +420,297 @@ function renderContentCard(item) {
       contentItemElement.dataset.id = contentItem.id;
       contentItemElement.dataset.cardId = item.id;
       contentItemElement.dataset.type = "content-item";
-      contentItemElement.innerHTML = contentItem.text.replace(/\n/g, "<br>");
-
-      contentItemElement.addEventListener("click", () => {
-        navigator.clipboard.writeText(contentItem.text).then(() => {
-          showCopyNotification();
-          if (currentHighlightedItem) {
-            currentHighlightedItem.classList.remove("highlighted");
-          }
-          contentItemElement.classList.add("highlighted");
-          currentHighlightedItem = contentItemElement;
-        });
-      });
-
-      contentItemElement.addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-        contextMenuTarget = {
-          type: "content-item",
-          id: contentItem.id,
-          cardId: item.id,
-        };
-        showContextMenu(e);
-      });
-
+      contentItemElement.textContent = contentItem.text;
+      contentItemElement.title = "单击复制 · 双击编辑";
       contentCard.appendChild(contentItemElement);
     });
   }
 
-  contentContainer.appendChild(contentCard);
+  target.appendChild(contentCard);
+}
+
+let contentClickTimer = null;
+
+function getEditableText({ type, id, cardId, parentId }) {
+  if (type === "content-item") {
+    const card = contentItems.find((item) => item.id === cardId);
+    return card?.content?.find((item) => item.id === id)?.text || "";
+  }
+
+  if (type === "hh-item") {
+    const parent = contentItems.find((item) => item.id === parentId);
+    return parent?.children?.find((item) => item.id === id)?.text || "";
+  }
+
+  const item = contentItems.find((item) => item.id === id);
+  return item?.text || "";
+}
+
+function saveEditableText({ type, id, cardId, parentId }, newText) {
+  const trimmed = newText.trim();
+  if (!trimmed) return false;
+
+  if (type === "content-item") {
+    const card = contentItems.find((item) => item.id === cardId);
+    const entry = card?.content?.find((item) => item.id === id);
+    if (!entry) return false;
+    entry.text = trimmed;
+    return true;
+  }
+
+  if (type === "hh-item") {
+    const parent = contentItems.find((item) => item.id === parentId);
+    const entry = parent?.children?.find((item) => item.id === id);
+    if (!entry) return false;
+    entry.text = trimmed;
+    return true;
+  }
+
+  const item = contentItems.find((item) => item.id === id);
+  if (!item) return false;
+  item.text = trimmed;
+  return true;
+}
+
+function beginInlineContentEdit(element, meta) {
+  if (!element || element.dataset.editing === "true") return;
+  if (element.closest(".inline-edit-input, .image-title-input")) return;
+
+  const currentText = getEditableText(meta);
+  const isMultiline =
+    meta.type === "content-item" || meta.type === "hh-item";
+
+  element.dataset.editing = "true";
+  element.classList.add("is-editing");
+
+  const field = isMultiline
+    ? document.createElement("textarea")
+    : document.createElement("input");
+
+  field.className = "inline-edit-input";
+  if (isMultiline) {
+    field.rows = Math.min(8, Math.max(2, currentText.split("\n").length));
+  } else {
+    field.type = "text";
+  }
+  field.value = currentText;
+  field.maxLength = meta.type === "main-title" ? 200 : 2000;
+
+  element.style.display = "none";
+  element.insertAdjacentElement("afterend", field);
+  field.focus();
+  if (!isMultiline) field.select();
+
+  field.addEventListener("click", (e) => e.stopPropagation());
+  field.addEventListener("mousedown", (e) => e.stopPropagation());
+
+  const cancelEdit = () => {
+    field.remove();
+    element.style.display = "";
+    element.classList.remove("is-editing");
+    delete element.dataset.editing;
+  };
+
+  const commitEdit = async () => {
+    const nextText = field.value.trim();
+    if (!nextText) {
+      if (typeof Modal !== "undefined") {
+        await Modal.alert("内容不能为空", "提示");
+      } else {
+        alert("内容不能为空");
+      }
+      field.focus();
+      return;
+    }
+
+    if (!saveEditableText(meta, nextText)) {
+      cancelEdit();
+      return;
+    }
+
+    saveToLocalStorage();
+    refreshContent();
+
+    if (typeof showCopyNotification === "function") {
+      showCopyNotification("内容已更新", "content-copied");
+    }
+  };
+
+  field.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter" && (!isMultiline || (isMultiline && e.ctrlKey))) {
+      e.preventDefault();
+      field.blur();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      cancelEdit();
+    }
+  });
+
+  field.addEventListener("blur", () => {
+    if (element.dataset.editing !== "true") return;
+    commitEdit();
+  });
+}
+
+// 内容区事件委托（只绑定一次，避免每次渲染重复注册）
+function initContentInteractions() {
+  if (!contentContainer || contentContainer.dataset.interactionsBound) return;
+  contentContainer.dataset.interactionsBound = "true";
+
+  contentContainer.addEventListener("click", (e) => {
+    if (e.target.closest(".image-item-delete-btn")) {
+      e.stopPropagation();
+      e.preventDefault();
+      const imageItem = e.target.closest(".image-item");
+      if (!imageItem) return;
+
+      const cardId = parseInt(imageItem.dataset.cardId, 10);
+      const index = parseInt(imageItem.dataset.index, 10);
+      if (typeof deleteImageFromThumbnail === "function") {
+        deleteImageFromThumbnail(cardId, index);
+      }
+      return;
+    }
+
+    const imageItem = e.target.closest(".image-item");
+    if (imageItem) {
+      if (
+        e.target.closest(".image-title-edit-btn") ||
+        e.target.closest(".image-title-input")
+      ) {
+        return;
+      }
+
+      const cardId = parseInt(imageItem.dataset.cardId, 10);
+      const index = parseInt(imageItem.dataset.index, 10);
+      const card = contentItems.find((c) => c.id === cardId);
+      if (card?.images && typeof openImageViewer === "function") {
+        openImageViewer(card.images, index, cardId);
+      }
+      return;
+    }
+
+    const contentItem = e.target.closest(".content-item");
+    if (!contentItem || !contentItem.dataset.cardId) return;
+    if (contentItem.classList.contains("hh-item")) return;
+
+    if (contentClickTimer) clearTimeout(contentClickTimer);
+    contentClickTimer = setTimeout(() => {
+      contentClickTimer = null;
+
+      const cardId = parseInt(contentItem.dataset.cardId, 10);
+      const itemId = parseInt(contentItem.dataset.id, 10);
+      const card = contentItems.find((c) => c.id === cardId);
+      const contentEntry = card?.content?.find((c) => c.id === itemId);
+      if (!contentEntry) return;
+
+      navigator.clipboard.writeText(contentEntry.text).then(() => {
+        showCopyNotification();
+        if (currentHighlightedItem) {
+          currentHighlightedItem.classList.remove("highlighted");
+        }
+        contentItem.classList.add("highlighted");
+        currentHighlightedItem = contentItem;
+      });
+    }, 260);
+  });
+
+  contentContainer.addEventListener("dblclick", (e) => {
+    if (
+      e.target.closest(
+        ".image-item, .image-title-edit-btn, .image-title-input, .image-item-delete-btn, .inline-edit-input",
+      )
+    ) {
+      return;
+    }
+
+    if (contentClickTimer) {
+      clearTimeout(contentClickTimer);
+      contentClickTimer = null;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const mainTitle = e.target.closest(".main-title");
+    if (mainTitle) {
+      beginInlineContentEdit(mainTitle, {
+        type: "main-title",
+        id: parseInt(mainTitle.dataset.id, 10),
+      });
+      return;
+    }
+
+    const heading = e.target.closest(".subtitle, .h5-title, .h6-title");
+    if (heading) {
+      beginInlineContentEdit(heading, {
+        type: heading.dataset.type,
+        id: parseInt(heading.dataset.id, 10),
+      });
+      return;
+    }
+
+    const contentItem = e.target.closest(".content-item");
+    if (contentItem) {
+      if (contentItem.classList.contains("hh-item")) {
+        beginInlineContentEdit(contentItem, {
+          type: "hh-item",
+          id: parseInt(contentItem.dataset.id, 10),
+          parentId: parseInt(contentItem.dataset.parentId, 10),
+        });
+      } else if (contentItem.dataset.cardId) {
+        beginInlineContentEdit(contentItem, {
+          type: "content-item",
+          id: parseInt(contentItem.dataset.id, 10),
+          cardId: parseInt(contentItem.dataset.cardId, 10),
+        });
+      }
+    }
+  });
+
+  contentContainer.addEventListener("contextmenu", (e) => {
+    const imageItem = e.target.closest(".image-item");
+    if (imageItem) {
+      e.preventDefault();
+      const cardId = parseInt(imageItem.dataset.cardId, 10);
+      contextMenuTarget = {
+        type: "image-item",
+        id: cardId,
+        cardId,
+        imageId: parseInt(imageItem.dataset.imageId, 10),
+        imageIndex: parseInt(imageItem.dataset.index, 10),
+      };
+      showContextMenu(e);
+      return;
+    }
+
+    const target = e.target.closest(
+      ".content-item, .main-title, .subtitle, .h5-title, .h6-title, .content-card, .image-card",
+    );
+    if (!target || !target.dataset.type) return;
+
+    e.preventDefault();
+    const type = target.dataset.type;
+    const id = parseInt(target.dataset.id, 10);
+
+    if (type === "content-item") {
+      contextMenuTarget = {
+        type,
+        id,
+        cardId: parseInt(target.dataset.cardId, 10),
+      };
+    } else if (type === "hh-item") {
+      contextMenuTarget = {
+        type,
+        id,
+        parentId: parseInt(target.dataset.parentId, 10),
+      };
+    } else {
+      contextMenuTarget = { type, id };
+    }
+    showContextMenu(e);
+  });
 }
 
 // 显示右键菜单
@@ -432,33 +727,41 @@ function showContextMenu(e) {
 
   // 设置菜单项显示状态
   if (contextMenuTarget) {
-    editContextItem.style.display = "flex";
-    addContextItem.style.display = "flex";
-    deleteContextItem.style.display = "flex";
-
-    if (
+    const copyImageContextItem = document.getElementById("copyImageContextItem");
+    const editImagesItem = document.getElementById("editImagesItem");
+    const isImageTarget =
+      contextMenuTarget.type === "image-card" ||
+      contextMenuTarget.type === "image-item";
+    const isBlockTarget =
       contextMenuTarget.type === "content-card" ||
       contextMenuTarget.type === "main-title" ||
       contextMenuTarget.type === "subtitle" ||
-      contextMenuTarget.type === "image-card"
-    ) {
+      contextMenuTarget.type === "image-card" ||
+      contextMenuTarget.type === "image-item";
+
+    editContextItem.style.display =
+      contextMenuTarget.type === "image-item" ? "none" : "flex";
+    addContextItem.style.display =
+      contextMenuTarget.type === "image-item" ? "none" : "flex";
+    deleteContextItem.style.display = "flex";
+
+    if (copyImageContextItem) {
+      copyImageContextItem.style.display = isImageTarget ? "flex" : "none";
+    }
+
+    if (isBlockTarget) {
       insertAfterContextItem.style.display = "flex";
       insertMainTitleAfterItem.style.display = "flex";
       insertSubtitleAfterItem.style.display = "flex";
       insertImagesAfterItem.style.display = "flex";
-      // 新增：编辑图片选项只在图片卡片上显示
-      const editImagesItem = document.getElementById("editImagesItem");
       if (editImagesItem) {
-        editImagesItem.style.display =
-          contextMenuTarget.type === "image-card" ? "flex" : "none";
+        editImagesItem.style.display = isImageTarget ? "flex" : "none";
       }
     } else {
       insertAfterContextItem.style.display = "none";
       insertMainTitleAfterItem.style.display = "none";
       insertSubtitleAfterItem.style.display = "none";
       insertImagesAfterItem.style.display = "none";
-      // 隐藏编辑图片选项
-      const editImagesItem = document.getElementById("editImagesItem");
       if (editImagesItem) {
         editImagesItem.style.display = "none";
       }
@@ -537,10 +840,6 @@ function showContextMenu(e) {
     // 显示菜单
     contextMenu.style.display = "";
     contextMenu.classList.add("active");
-
-    console.log(
-      `菜单位置: left=${left}, top=${top}, 尺寸: ${menuWidth}x${menuHeight}, 窗口: ${windowWidth}x${windowHeight}`,
-    );
   }, 10);
 }
 
@@ -711,6 +1010,18 @@ function openEditModal() {
           modalTitle.textContent = "编辑小标题";
           textareaGroup.innerHTML = `
                         <label class="form-label">小标题内容</label>
+                        <textarea class="form-input content-textarea" rows="4">${item.text}</textarea>
+                    `;
+        } else if (type === "h5-title") {
+          modalTitle.textContent = "编辑 H5 标题";
+          textareaGroup.innerHTML = `
+                        <label class="form-label">H5 标题内容</label>
+                        <textarea class="form-input content-textarea" rows="4">${item.text}</textarea>
+                    `;
+        } else if (type === "h6-title") {
+          modalTitle.textContent = "编辑 H6 标题";
+          textareaGroup.innerHTML = `
+                        <label class="form-label">H6 标题内容</label>
                         <textarea class="form-input content-textarea" rows="4">${item.text}</textarea>
                     `;
         }
@@ -959,8 +1270,8 @@ async function saveContentItem(e) {
   // 重置表单并保存数据
   contentForm.reset();
   modalOverlay.classList.remove("active");
-  initPage();
-  saveToLocalStorage(); // 确保保存到本地存储
+  refreshContent();
+  saveToLocalStorage();
 
   // 如果是插入操作，执行滚动定位和高亮效果
   if (isInsertOperation) {
@@ -1000,21 +1311,6 @@ async function saveContentItem(e) {
       setTimeout(() => {
         newItemElement.style.background = originalBg;
       }, 1500);
-
-      // 如果是大标题，刷新导航栏
-      if (currentItemType === "main-title") {
-        if (typeof renderNavItems === "function") {
-          renderNavItems();
-          setTimeout(() => {
-            document.querySelectorAll(".nav-item").forEach((item) => {
-              item.classList.remove("active");
-              if (parseInt(item.dataset.id) === newItemId) {
-                item.classList.add("active");
-              }
-            });
-          }, 100);
-        }
-      }
     }, 300);
   }
 }
@@ -1055,8 +1351,8 @@ async function deleteContentItem() {
   }
 
   // 4. 更新界面并保存
-  initPage();
-  saveToLocalStorage(); // 记得调用保存，确保刷新后删除依然生效
+  refreshContent();
+  saveToLocalStorage();
 
   // 5. 显示删除成功通知
   if (typeof showCopyNotification === "function") {
@@ -1067,9 +1363,27 @@ async function deleteContentItem() {
 }
 
 // 设置背景
-function setBackground(type, src, isLocalFile = false) {
+function setBackground(type, src, isLocalFile = false, persist = true) {
   if (!backgroundMedia || !backgroundVideo) {
     console.error("背景媒体元素未找到");
+    return;
+  }
+
+  const unchanged =
+    currentBackground.type === type &&
+    currentBackground.src === src &&
+    currentBackground.isLocalFile === isLocalFile;
+
+  const mediaAlreadyShowing =
+    (type === "image" &&
+      backgroundMedia.src === src &&
+      backgroundMedia.style.display !== "none") ||
+    (type === "video" &&
+      backgroundVideo.src === src &&
+      backgroundVideo.style.display !== "none");
+
+  if (unchanged && type !== "none" && mediaAlreadyShowing) {
+    if (persist) saveToLocalStorage();
     return;
   }
 
@@ -1136,7 +1450,7 @@ function setBackground(type, src, isLocalFile = false) {
     backgroundVideo.load();
   }
 
-  saveToLocalStorage();
+  if (persist) saveToLocalStorage();
 }
 
 // 预览上传的文件
@@ -1498,20 +1812,16 @@ function switchTab(modalType, tabId) {
 }
 
 // 初始化导入导出功能
-// 修改后的导入导出初始化函数 - 完整版
-function initImportExport() {
-  exportBtn.addEventListener("click", () => {
+// 修改后的初始化导入导出功能
+function initImportExportCombined() {
+  // 合并按钮点击事件
+  importExportBtn.addEventListener("click", () => {
     switchTab("import-export", "export");
     updateExportPreview();
     importExportModal.classList.add("active");
   });
 
-  importBtn.addEventListener("click", () => {
-    switchTab("import-export", "import");
-    importPreview.innerHTML = "<p>导入文件预览区域</p>";
-    importExportModal.classList.add("active");
-  });
-
+  // 保持原有的标签页切换逻辑
   importExportTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       const tabId = tab.dataset.tab;
@@ -1519,6 +1829,7 @@ function initImportExport() {
     });
   });
 
+  // 保持原有的按钮事件
   exportActionBtn.addEventListener("click", exportData);
   importActionBtn.addEventListener("click", importData);
 
@@ -1534,7 +1845,7 @@ function initImportExport() {
     importFileInput.click();
   });
 
-  // 文件拖放功能
+  // 文件拖放功能保持不变
   importFileArea.addEventListener("dragover", (e) => {
     e.preventDefault();
     importFileArea.style.borderColor = "#ff3366";
@@ -1546,7 +1857,6 @@ function initImportExport() {
     importFileArea.style.background = "rgba(255, 51, 102, 0.05)";
   });
 
-  // 改为 async 以支持自定义弹窗
   importFileArea.addEventListener("drop", async (e) => {
     e.preventDefault();
     importFileArea.style.borderColor = "rgba(255, 255, 255, 0.1)";
@@ -1557,14 +1867,12 @@ function initImportExport() {
       const file = files[0];
       const fileName = file.name.toLowerCase();
 
-      // 检查是否为支持的文件格式
       if (
         fileName.endsWith(".json") ||
         fileName.endsWith(".txt") ||
         fileName.endsWith(".text") ||
         fileName.endsWith(".csv")
       ) {
-        // 使用 DataTransfer 规范化赋值
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         importFileInput.files = dataTransfer.files;
@@ -1592,6 +1900,150 @@ function initImportExport() {
     }
   });
 }
+
+// ============ 导出 / 导入格式工具 ============
+
+function escapeCsvCell(value) {
+  return `"${String(value ?? "").replace(/"/g, '""')}"`;
+}
+
+function parseCsvRow(line) {
+  const cells = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      cells.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  cells.push(current);
+  return cells.map((cell) => cell.trim());
+}
+
+function exportContentItemsToTxt(items) {
+  let text = "";
+
+  items.forEach((item) => {
+    if (item.type === "main-title") {
+      text += `### ${item.text}\n\n`;
+    } else if (item.type === "subtitle") {
+      text += `#### ${item.text}\n\n`;
+    } else if (item.type === "h5-title") {
+      text += `##### ${item.text}\n\n`;
+    } else if (item.type === "h6-title") {
+      text += `###### ${item.text}\n\n`;
+      item.children?.forEach((child) => {
+        text += `hh ${child.text}\n`;
+      });
+      text += "\n";
+    } else if (item.type === "content-card") {
+      item.content?.forEach((contentItem) => {
+        const lines = contentItem.text.split("\n");
+        lines.forEach((line, lineIndex) => {
+          text += lineIndex === 0 ? `${line}\n` : `  ${line}\n`;
+        });
+      });
+      text += "\n";
+    } else if (item.type === "image-card") {
+      item.images?.forEach((image) => {
+        if (image.src) {
+          text += `📷 ${image.filename || "image"} (${image.src})\n`;
+        }
+      });
+      text += "\n";
+    }
+  });
+
+  return text;
+}
+
+function exportContentItemsToCsv(items) {
+  let csv = "类型,内容,扩展数据,创建时间\n";
+
+  items.forEach((item) => {
+    const createdAt = item.createdAt || new Date().toISOString();
+
+    if (
+      item.type === "main-title" ||
+      item.type === "subtitle" ||
+      item.type === "h5-title" ||
+      item.type === "h6-title"
+    ) {
+      const extra =
+        item.type === "h6-title" && item.children?.length
+          ? JSON.stringify(item.children.map((c) => ({ text: c.text })))
+          : "";
+      csv += `${escapeCsvCell(item.type)},${escapeCsvCell(item.text)},${escapeCsvCell(extra)},${escapeCsvCell(createdAt)}\n`;
+    } else if (item.type === "content-card") {
+      const payload = JSON.stringify(
+        item.content?.map((c) => ({ text: c.text })) || [],
+      );
+      csv += `${escapeCsvCell(item.type)},${escapeCsvCell("")},${escapeCsvCell(payload)},${escapeCsvCell(createdAt)}\n`;
+    } else if (item.type === "image-card") {
+      const payload = JSON.stringify(
+        item.images?.map((img) => ({
+          filename: img.filename,
+          src: img.src,
+        })) || [],
+      );
+      csv += `${escapeCsvCell(item.type)},${escapeCsvCell("")},${escapeCsvCell(payload)},${escapeCsvCell(createdAt)}\n`;
+    }
+  });
+
+  return csv;
+}
+
+function syncImportedItemIds(itemsToImport) {
+  contentItems = itemsToImport;
+
+  if (itemsToImport.length > 0) {
+    const maxId = Math.max(...itemsToImport.map((item) => item.id || 0));
+    nextItemId = Math.max(nextItemId, maxId + 1);
+  }
+
+  const allSubItems = itemsToImport
+    .filter((item) => item.type === "content-card")
+    .flatMap((item) => item.content || []);
+  if (allSubItems.length > 0) {
+    const maxSubId = Math.max(...allSubItems.map((item) => item.id || 0));
+    nextContentItemId = Math.max(nextContentItemId, maxSubId + 1);
+  }
+
+  const allImages = itemsToImport
+    .filter((item) => item.type === "image-card")
+    .flatMap((item) => item.images || []);
+  if (allImages.length > 0) {
+    const maxImgId = Math.max(...allImages.map((img) => img.id || 0));
+    nextImageId = Math.max(nextImageId, maxImgId + 1);
+  }
+
+  if (typeof nextTextId !== "undefined") {
+    const allIds = [];
+    itemsToImport.forEach((item) => {
+      if (item.id) allIds.push(item.id);
+      item.content?.forEach((c) => c.id && allIds.push(c.id));
+      item.images?.forEach((img) => img.id && allIds.push(img.id));
+      item.children?.forEach((c) => c.id && allIds.push(c.id));
+    });
+    if (allIds.length > 0) {
+      nextTextId = Math.max(nextTextId, Math.max(...allIds) + 1);
+      localStorage.setItem("contentSystemNextTextId", nextTextId.toString());
+    }
+  }
+}
+
 // 更新导出数据预览
 function updateExportPreview() {
   const exportFormat = document.querySelector(
@@ -1613,69 +2065,9 @@ function updateExportPreview() {
 
     exportDataPreview.textContent = JSON.stringify(data, null, 2);
   } else if (exportFormat === "txt") {
-    let text = "";
-    contentItems.forEach((item) => {
-      if (item.type === "main-title") {
-        text += `### ${item.text}\n\n`;
-      } else if (item.type === "subtitle") {
-        text += `#### ${item.text}\n\n`;
-      } else if (item.type === "content-card") {
-        text += `【内容卡片】\n`;
-        if (item.content && item.content.length > 0) {
-          item.content.forEach((contentItem) => {
-            // 处理多行文本，保留换行
-            const lines = contentItem.text.split("\n");
-            if (lines.length === 1) {
-              text += `• ${contentItem.text}\n`;
-            } else {
-              lines.forEach((line, index) => {
-                if (line.trim()) {
-                  if (index === 0) {
-                    text += `• ${line}\n`;
-                  } else {
-                    text += `  ${line}\n`;
-                  }
-                }
-              });
-            }
-          });
-        }
-        text += "\n";
-      } else if (item.type === "image-card") {
-        text += `【图片卡片】\n`;
-        if (item.images && item.images.length > 0) {
-          item.images.forEach((image) => {
-            text += `📷 ${image.filename} (${image.src})\n`;
-          });
-        }
-        text += "\n";
-      }
-    });
-
-    exportDataPreview.textContent = text;
+    exportDataPreview.textContent = exportContentItemsToTxt(contentItems);
   } else if (exportFormat === "csv") {
-    // CSV格式：类型,内容,创建时间
-    let csv = "类型,内容,创建时间\n";
-
-    contentItems.forEach((item) => {
-      let row = `"${item.type}",`;
-
-      if (item.type === "main-title" || item.type === "subtitle") {
-        row += `"${item.text.replace(/"/g, '""')}",`;
-      } else if (item.type === "content-card") {
-        const contentText = item.content?.map((c) => c.text).join(" | ") || "";
-        row += `"${contentText.replace(/"/g, '""')}",`;
-      } else if (item.type === "image-card") {
-        const imageText =
-          item.images?.map((img) => img.filename).join(", ") || "";
-        row += `"图片: ${imageText}",`;
-      }
-
-      row += `"${item.createdAt || new Date().toISOString()}"\n`;
-      csv += row;
-    });
-
-    exportDataPreview.textContent = csv;
+    exportDataPreview.textContent = exportContentItemsToCsv(contentItems);
   }
 }
 
@@ -1716,44 +2108,7 @@ function exportData() {
     showCopyNotification();
     copyNotification.querySelector("span").textContent = "JSON数据导出成功！";
   } else if (exportFormat === "txt") {
-    let text = "";
-    contentItems.forEach((item) => {
-      if (item.type === "main-title") {
-        text += `### ${item.text}\n\n`;
-      } else if (item.type === "subtitle") {
-        text += `#### ${item.text}\n\n`;
-      } else if (item.type === "content-card") {
-        text += `【内容卡片】\n`;
-        if (item.content && item.content.length > 0) {
-          item.content.forEach((contentItem) => {
-            const lines = contentItem.text.split("\n");
-            if (lines.length === 1) {
-              text += `• ${contentItem.text}\n`;
-            } else {
-              lines.forEach((line, index) => {
-                if (line.trim()) {
-                  if (index === 0) {
-                    text += `• ${line}\n`;
-                  } else {
-                    text += `  ${line}\n`;
-                  }
-                }
-              });
-            }
-          });
-        }
-        text += "\n";
-      } else if (item.type === "image-card") {
-        text += `【图片卡片】\n`;
-        if (item.images && item.images.length > 0) {
-          item.images.forEach((image) => {
-            text += `📷 ${image.filename}\n`;
-            text += `${image.src}\n`;
-          });
-        }
-        text += "\n";
-      }
-    });
+    const text = exportContentItemsToTxt(contentItems);
 
     const dataBlob = new Blob([text], {
       type: "text/plain;charset=utf-8",
@@ -1774,26 +2129,7 @@ function exportData() {
     showCopyNotification();
     copyNotification.querySelector("span").textContent = "TXT文件导出成功！";
   } else if (exportFormat === "csv") {
-    // CSV导出
-    let csv = "类型,内容,创建时间\n";
-
-    contentItems.forEach((item) => {
-      let row = `"${item.type}",`;
-
-      if (item.type === "main-title" || item.type === "subtitle") {
-        row += `"${item.text.replace(/"/g, '""')}",`;
-      } else if (item.type === "content-card") {
-        const contentText = item.content?.map((c) => c.text).join(" | ") || "";
-        row += `"${contentText.replace(/"/g, '""')}",`;
-      } else if (item.type === "image-card") {
-        const imageText =
-          item.images?.map((img) => img.filename).join(", ") || "";
-        row += `"图片: ${imageText}",`;
-      }
-
-      row += `"${item.createdAt || new Date().toISOString()}"\n`;
-      csv += row;
-    });
+    const csv = exportContentItemsToCsv(contentItems);
 
     const dataBlob = new Blob([csv], {
       type: "text/csv;charset=utf-8",
@@ -1997,92 +2333,166 @@ function previewImportFile(file) {
 // 新增CSV解析函数
 function parseCSVContent(csvContent) {
   const parsedItems = [];
-  const lines = csvContent.split("\n");
+  const lines = csvContent.split(/\r?\n/);
 
   if (lines.length < 2) return parsedItems;
 
-  // 跳过标题行
+  const headerCells = parseCsvRow(lines[0]);
+  const hasExtraColumn =
+    headerCells.includes("扩展数据") || headerCells.length >= 4;
+
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
+    const line = lines[i];
+    if (!line.trim()) continue;
 
-    // 简单的CSV解析，处理带引号的内容
-    const cells = [];
-    let inQuotes = false;
-    let currentCell = "";
+    const cells = parseCsvRow(line);
+    if (cells.length < 2) continue;
 
-    for (let char of line) {
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        cells.push(currentCell);
-        currentCell = "";
-      } else {
-        currentCell += char;
-      }
-    }
-    cells.push(currentCell);
+    const type = cells[0];
+    const content = cells[1] || "";
+    const extra = hasExtraColumn ? cells[2] || "" : "";
+    const createdAt =
+      (hasExtraColumn ? cells[3] : cells[2]) || new Date().toISOString();
 
-    if (cells.length >= 2) {
-      const type = cells[0].replace(/"/g, "").trim();
-      const content = cells[1].replace(/"/g, "").trim();
-      const createdAt = cells[2]
-        ? cells[2].replace(/"/g, "").trim()
-        : new Date().toISOString();
+    if (!type) continue;
 
-      if (type && content) {
-        if (type === "main-title" || type === "subtitle") {
-          parsedItems.push({
-            id: nextTextId++,
-            type: type,
-            text: content,
-            order: parsedItems.length + 1,
-            parentId: null,
-            createdAt: createdAt,
-          });
-        } else if (type === "content-card") {
-          // CSV中的内容卡片可能用 | 分隔多个内容
-          const contentItems = content.split("|").map((text) => ({
-            id: nextTextId++,
-            type: "content",
-            text: text.trim(),
-          }));
+    const baseItem = {
+      id: nextTextId++,
+      order: parsedItems.length + 1,
+      parentId: null,
+      createdAt,
+    };
 
-          parsedItems.push({
-            id: nextTextId++,
-            type: "content-card",
-            content: contentItems,
-            order: parsedItems.length + 1,
-            parentId: null,
-            createdAt: createdAt,
-          });
-        } else if (type === "image-card") {
-          // CSV中的图片卡片：图片: 文件名1, 文件名2
-          const imageMatch = content.match(/图片:\s*(.+)/);
-          if (imageMatch) {
-            const filenames = imageMatch[1].split(",").map((f) => f.trim());
-            const images = filenames.map((filename) => ({
+    if (
+      type === "main-title" ||
+      type === "subtitle" ||
+      type === "h5-title" ||
+      type === "h6-title"
+    ) {
+      const item = {
+        ...baseItem,
+        type,
+        text: content,
+      };
+
+      if (type === "h6-title" && extra) {
+        try {
+          const children = JSON.parse(extra);
+          if (Array.isArray(children)) {
+            item.children = children.map((child, index) => ({
               id: nextTextId++,
-              src: `./images/${filename}`,
-              filename: filename,
-              uploadedAt: new Date().toISOString(),
+              type: "hh-item",
+              text: child.text || "",
+              order: index + 1,
+              parentId: item.id,
+              createdAt,
             }));
-
-            parsedItems.push({
-              id: nextTextId++,
-              type: "image-card",
-              images: images,
-              order: parsedItems.length + 1,
-              parentId: null,
-              createdAt: createdAt,
-            });
           }
+        } catch (_) {
+          /* 忽略无效扩展数据 */
         }
+      }
+
+      parsedItems.push(item);
+      continue;
+    }
+
+    if (type === "content-card") {
+      let contentEntries = [];
+
+      if (extra) {
+        try {
+          const parsed = JSON.parse(extra);
+          if (Array.isArray(parsed)) {
+            contentEntries = parsed.map((entry) => ({
+              id: nextTextId++,
+              type: "content",
+              text: entry.text || "",
+            }));
+          }
+        } catch (_) {
+          /* 回退到旧格式 */
+        }
+      }
+
+      if (contentEntries.length === 0 && content) {
+        contentEntries = content.split("|").map((text) => ({
+          id: nextTextId++,
+          type: "content",
+          text: text.trim(),
+        }));
+      }
+
+      if (contentEntries.length > 0) {
+        parsedItems.push({
+          ...baseItem,
+          type: "content-card",
+          content: contentEntries,
+        });
+      }
+      continue;
+    }
+
+    if (type === "image-card") {
+      let images = [];
+
+      if (extra) {
+        try {
+          const parsed = JSON.parse(extra);
+          if (Array.isArray(parsed)) {
+            images = parsed.map((img) => ({
+              id: nextTextId++,
+              src: img.src || "",
+              filename: img.filename || "image",
+              uploadedAt: createdAt,
+            }));
+          }
+        } catch (_) {
+          /* 回退到旧格式 */
+        }
+      }
+
+      if (images.length === 0 && content) {
+        const imageMatch = content.match(/图片:\s*(.+)/);
+        if (imageMatch) {
+          images = imageMatch[1].split(",").map((filename) => ({
+            id: nextTextId++,
+            src: `./images/${filename.trim()}`,
+            filename: filename.trim(),
+            uploadedAt: createdAt,
+          }));
+        }
+      }
+
+      if (images.length > 0) {
+        parsedItems.push({
+          ...baseItem,
+          type: "image-card",
+          images,
+        });
       }
     }
   }
 
+  localStorage.setItem("contentSystemNextTextId", nextTextId.toString());
   return parsedItems;
+}
+
+function buildImportConfirmMessage(itemsToImport, sourceLabel) {
+  const titles = itemsToImport.filter((item) => item.type === "main-title").length;
+  const subtitles = itemsToImport.filter((item) => item.type === "subtitle").length;
+  const h5Titles = itemsToImport.filter((item) => item.type === "h5-title").length;
+  const h6Titles = itemsToImport.filter((item) => item.type === "h6-title").length;
+  const images = itemsToImport.filter((item) => item.type === "image-card").length;
+  const contentCards = itemsToImport.filter(
+    (item) => item.type === "content-card",
+  ).length;
+
+  let message = `确定要导入 ${itemsToImport.length} 个内容项吗？\n\n${sourceLabel}解析结果：\n• ${titles} 个大标题\n• ${subtitles} 个小标题`;
+  if (h5Titles) message += `\n• ${h5Titles} 个五级标题`;
+  if (h6Titles) message += `\n• ${h6Titles} 个六级标题`;
+  message += `\n• ${images} 组图片卡\n• ${contentCards} 个内容卡片`;
+  return message;
 }
 
 // ============ 完整导入功能（集成自定义弹窗与 ID 同步） ============
@@ -2107,8 +2517,10 @@ async function importData() {
   try {
     const data = JSON.parse(parsedData);
 
-    // 检查是否从 TXT 解析而来
+    // 检查是否从 TXT / CSV 解析而来
     const isFromTxt = data.parsedFromTxt || false;
+    const isFromCSV = data.parsedFromCSV || false;
+    const isParsedImport = isFromTxt || isFromCSV;
     const itemsToImport = data.contentItems || data;
 
     // 3. 检查数据有效性
@@ -2124,20 +2536,9 @@ async function importData() {
     let confirmMessage = `确定要导入 ${itemsToImport.length} 个内容项吗？`;
 
     if (isFromTxt) {
-      const titles = itemsToImport.filter(
-        (item) => item.type === "main-title",
-      ).length;
-      const subtitles = itemsToImport.filter(
-        (item) => item.type === "subtitle",
-      ).length;
-      const images = itemsToImport.filter(
-        (item) => item.type === "image-card",
-      ).length;
-      const contentCards = itemsToImport.filter(
-        (item) => item.type === "content-card",
-      ).length;
-
-      confirmMessage = `确定要导入 ${itemsToImport.length} 个内容项吗？\n\nTXT解析结果：\n• ${titles} 个大标题\n• ${subtitles} 个小标题\n• ${images} 组图片卡\n• ${contentCards} 个内容卡片`;
+      confirmMessage = buildImportConfirmMessage(itemsToImport, "TXT");
+    } else if (isFromCSV) {
+      confirmMessage = buildImportConfirmMessage(itemsToImport, "CSV");
     }
 
     // 4. 确认导入操作
@@ -2152,34 +2553,8 @@ async function importData() {
     // 清空现有内容
     contentItems = [];
 
-    if (isFromTxt) {
-      // --- 情况 A: TXT 解析的数据导入 ---
-      contentItems = itemsToImport;
-
-      // 自动更新全局 ID 计数器，防止后续新增内容时 ID 冲突
-      // 更新主项目 ID
-      if (itemsToImport.length > 0) {
-        const maxId = Math.max(...itemsToImport.map((item) => item.id || 0));
-        nextItemId = Math.max(nextItemId, maxId + 1);
-      }
-
-      // 更新子内容项 ID (Content Card 内部项)
-      const allSubItems = itemsToImport
-        .filter((item) => item.type === "content-card")
-        .flatMap((item) => item.content || []);
-      if (allSubItems.length > 0) {
-        const maxSubId = Math.max(...allSubItems.map((item) => item.id || 0));
-        nextContentItemId = Math.max(nextContentItemId, maxSubId + 1);
-      }
-
-      // 更新图片 ID
-      const allImages = itemsToImport
-        .filter((item) => item.type === "image-card")
-        .flatMap((item) => item.images || []);
-      if (allImages.length > 0) {
-        const maxImgId = Math.max(...allImages.map((img) => img.id || 0));
-        nextImageId = Math.max(nextImageId, maxImgId + 1);
-      }
+    if (isParsedImport) {
+      syncImportedItemIds(itemsToImport);
     } else {
       // --- 情况 B: 标准 JSON 数据导入 ---
       contentItems = data.contentItems || [];
@@ -2212,7 +2587,7 @@ async function importData() {
     }
 
     // 5. 持久化与刷新页面
-    initPage();
+    refreshContent();
     saveToLocalStorage();
 
     // 6. 成功反馈
@@ -2405,26 +2780,27 @@ deleteContextItem.addEventListener("click", () => {
   contextMenu.classList.remove("active");
 });
 
+const copyImageContextItem = document.getElementById("copyImageContextItem");
+if (copyImageContextItem) {
+  copyImageContextItem.addEventListener("click", async () => {
+    contextMenu.classList.remove("active");
+    if (typeof copyImageFromContextMenu === "function") {
+      await copyImageFromContextMenu();
+    }
+  });
+}
+
 // 全局事件
 document.addEventListener("click", (e) => {
-  // 1. 触发视觉特效 (新增)
   VISUAL_EFFECTS.triggerAll(e);
-
-  // 2. 原有逻辑：重置自动隐藏计时器
   resetAutoHideTimer();
 
-  // 3. 原有逻辑：关闭右键菜单
-  // 检查是否点击了菜单内部，如果没有则关闭
-  if (contextMenu && contextMenu.classList.contains("active")) {
-    // 如果点击的不是菜单本身且不是触发菜单的元素，则关闭
+  if (contextMenu?.classList.contains("active")) {
     if (!e.target.closest("#contextMenu")) {
       contextMenu.classList.remove("active");
       contextMenuTarget = null;
     }
   }
-
-  // 4. 原有逻辑：关闭背景选择等模态框外部点击 (如果模态框代码里没处理好冒泡)
-  // 此处保留你原有的逻辑即可，通常模态框有自己的监听器
 });
 
 document.addEventListener("contextmenu", (e) => {
@@ -2432,22 +2808,22 @@ document.addEventListener("contextmenu", (e) => {
     e.target.closest(".content-item") ||
     e.target.closest(".main-title") ||
     e.target.closest(".subtitle") ||
-    e.target.closest(".content-card")
+    e.target.closest(".content-card") ||
+    e.target.closest(".image-card") ||
+    e.target.closest(".image-item")
   ) {
     e.preventDefault();
   }
 });
 
-// 自动隐藏事件
-document.addEventListener("mousemove", () => {
+function handleAutoHidePointerActivity() {
   mouseInWindow = true;
   resetAutoHideTimer();
-});
+}
 
-document.addEventListener("mouseenter", () => {
-  mouseInWindow = true;
-  resetAutoHideTimer();
-});
+document.addEventListener("mousemove", handleAutoHidePointerActivity);
+
+document.addEventListener("mouseenter", handleAutoHidePointerActivity);
 
 document.addEventListener("mouseleave", (e) => {
   if (
@@ -2462,10 +2838,8 @@ document.addEventListener("mouseleave", (e) => {
 });
 
 document.addEventListener("keydown", resetAutoHideTimer);
-document.addEventListener("click", resetAutoHideTimer);
 
-window.addEventListener("resize", () => {});
-window.addEventListener("beforeunload", saveToLocalStorage);
+window.addEventListener("beforeunload", flushLocalStorage);
 
 // ============ 全局自定义弹窗管理器 ============
 /**
@@ -2610,62 +2984,56 @@ function createRipple(x, y, size) {
   }, RIPPLE_CONFIG.animationDuration);
 }
 
-// 在您的JavaScript中添加：
-document.addEventListener("DOMContentLoaded", function () {
-  const navItems = document.querySelectorAll(".nav-item");
+// 侧边栏导航点击（事件委托：滚动 + 动画）
+function initNavItemAnimations() {
+  if (!navItemsContainer || navItemsContainer.dataset.navBound) return;
+  navItemsContainer.dataset.navBound = "true";
 
-  navItems.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      if (this.classList.contains("active")) return;
+  navItemsContainer.addEventListener("click", (e) => {
+    const item = e.target.closest(".nav-item");
+    if (!item) return;
 
-      // 移除所有active状态
-      navItems.forEach((nav) => {
-        nav.classList.remove("active", "animated", "breathing", "after-bounce");
-      });
+    const itemId = parseInt(item.dataset.id, 10);
+    if (!itemId) return;
 
-      // 添加基础active
-      this.classList.add("active");
-
-      // 延迟添加animated类，避免同时加载所有动画
-      setTimeout(() => {
-        this.classList.add("animated");
-
-        // 进一步延迟添加呼吸效果
-        setTimeout(() => {
-          this.classList.add("breathing");
-        }, 1000);
-
-        // 添加微震动效果
-        setTimeout(() => {
-          this.classList.add("after-bounce");
-        }, 1300);
-      }, 50);
+    navItemsContainer.querySelectorAll(".nav-item").forEach((nav) => {
+      nav.classList.remove("active", "animated", "breathing", "after-bounce");
     });
+
+    item.classList.add("active");
+    scrollToItem(itemId);
+
+    if (item.classList.contains("animated")) return;
+
+    setTimeout(() => {
+      item.classList.add("animated");
+      setTimeout(() => item.classList.add("breathing"), 1000);
+      setTimeout(() => item.classList.add("after-bounce"), 1300);
+    }, 50);
   });
-});
+}
 
 // 主初始化函数
 function initializeApp() {
   initBackgroundSelector();
   initOpacityControl();
-  initImportExport();
-  initPage(); // 页面内容渲染在这里完成
+  initImportExportCombined();
+  initContentInteractions();
+  initPage();
+  initNavItemAnimations();
   initAutoHideSettings();
   initImageFunctions();
 
-  // 滚动监听（如果存在）
   if (typeof initScrollSpy === "function") {
     initScrollSpy();
   }
 
-  // 窗口尺寸变化时自动关闭右键菜单
   window.addEventListener("resize", () => {
     if (contextMenu?.classList.contains("active")) {
       contextMenu.classList.remove("active");
     }
   });
 
-  // TXT 导入功能（如果存在）
   if (typeof initTxtImportFunctions === "function") {
     initTxtImportFunctions();
   }
@@ -2674,23 +3042,15 @@ function initializeApp() {
     const currentTime = Date.now();
     const deltaTime = currentTime - lastTime;
 
-    // 1. 稍微降低间隔时间（从50改为30），让尾巴更连贯
     if (deltaTime > 30) {
-      const distance = Math.sqrt(
-        Math.pow(e.clientX - lastX, 2) + Math.pow(e.clientY - lastY, 2),
-      );
-
-      // 2. 这里的 size 决定了圆环扩散后的最终大小
-      // 我们让它随速度稍微变大，但保持在一个精致的范围内
+      const distance = Math.hypot(e.clientX - lastX, e.clientY - lastY);
       const size = Math.min(
         RIPPLE_CONFIG.maxSize,
-        RIPPLE_CONFIG.baseSize + distance * 1.5, // 降低系数，让圈圈别太大
+        RIPPLE_CONFIG.baseSize + distance * 1.5,
       );
 
-      // 3. 降低距离阈值（从10改为5），这样慢速移动时也会有细腻的尾巴
       if (distance > 5) {
         createRipple(e.clientX, e.clientY, size);
-
         lastX = e.clientX;
         lastY = e.clientY;
         lastTime = currentTime;
@@ -2703,45 +3063,43 @@ function initializeApp() {
  * 滚动监听功能：自动高亮导航栏
  */
 function initScrollSpy() {
+  let scrollTicking = false;
+
   window.addEventListener(
     "scroll",
     () => {
-      let currentId = "";
-      // 获取所有的大标题元素
-      const sections = document.querySelectorAll(".main-title-item");
+      if (scrollTicking) return;
+      scrollTicking = true;
 
-      // 获取当前滚动条位置（加上一个偏移量，让触发更灵敏）
-      const scrollPosition =
-        window.pageYOffset || document.documentElement.scrollTop;
-      const offset = 150; // 触发阈值
+      requestAnimationFrame(() => {
+        scrollTicking = false;
 
-      sections.forEach((section) => {
-        const sectionTop = section.offsetTop;
-        // 如果滚动到了某个章节的范围内
-        if (scrollPosition >= sectionTop - offset) {
-          // 获取该章节对应的 ID
-          const idAttr = section.getAttribute("id");
-          if (idAttr) {
-            currentId = idAttr.replace("item-", "");
+        let currentId = "";
+        const sections = document.querySelectorAll(".main-title");
+
+        const scrollPosition =
+          window.pageYOffset || document.documentElement.scrollTop;
+        const offset = 150;
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          if (scrollPosition >= sectionTop - offset) {
+            const idAttr = section.getAttribute("id");
+            if (idAttr) {
+              currentId = idAttr.replace("item-", "");
+            }
           }
-        }
-      });
+        });
 
-      // 更新导航栏状态
-      const navItems = document.querySelectorAll(".nav-item");
+        const navItems = navItemsContainer.querySelectorAll(".nav-item");
 
-      // 如果没有匹配到任何 ID（比如在页面最顶端），默认高亮第一个（可选）
-      if (currentId === "" && navItems.length > 0) {
-        // navItems[0].classList.add("active");
-      }
-
-      navItems.forEach((nav) => {
-        // 核心修正：dataset.id 是字符串，确保对比逻辑准确
-        if (nav.dataset.id === currentId.toString()) {
-          nav.classList.add("active");
-        } else {
-          nav.classList.remove("active");
-        }
+        navItems.forEach((nav) => {
+          if (nav.dataset.id === currentId.toString()) {
+            nav.classList.add("active");
+          } else {
+            nav.classList.remove("active");
+          }
+        });
       });
     },
     { passive: true },
@@ -2750,25 +3108,8 @@ function initScrollSpy() {
 
 // 页面加载完成后初始化
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM已加载完成，开始初始化应用...");
-    initializeApp();
-
-    const editImagesItem = document.getElementById("editImagesItem");
-    if (editImagesItem) {
-      editImagesItem.addEventListener("click", () => {
-        if (contextMenuTarget && contextMenuTarget.type === "image-card") {
-          // 调用图片编辑功能
-          if (typeof openEditImageModal === "function") {
-            openEditImageModal();
-          }
-        }
-        contextMenu.classList.remove("active");
-      });
-    }
-  });
+  document.addEventListener("DOMContentLoaded", initializeApp);
 } else {
-  console.log("文档已经加载完成，立即初始化...");
   initializeApp();
 }
 
@@ -2789,6 +3130,14 @@ const VISUAL_EFFECTS = {
 
   // 入口函数
   triggerAll: function (e) {
+    if (
+      e.target.closest(
+        "textarea, input, select, button, .modal-overlay, .context-menu, .custom-modal-overlay, .import-export-modal, .background-modal, .opacity-modal",
+      )
+    ) {
+      return;
+    }
+
     const x = e.clientX;
     const y = e.clientY;
 
