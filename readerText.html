@@ -150,10 +150,35 @@
         }
       }
 
+      function showDefaultPrompt() {
+        const outputDiv = $("#output");
+        const h3List = $("#h3List");
+        outputDiv.empty();
+        h3List.empty();
+
+        const prompt = $("<div>")
+          .css({
+            maxWidth: "520px",
+            margin: "40px auto",
+            padding: "24px 28px",
+            borderRadius: "16px",
+            background: "rgba(255,255,255,0.88)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.16)",
+            lineHeight: "1.8",
+            color: "#333",
+          })
+          .html(
+            "<h3 style='margin-bottom: 12px; color:#1f4e79;'>暂无可显示内容</h3>" +
+              "<p>请先点击右下角的“选择文件”按钮载入一个 .txt 文件，或者之前保存过的内容会在这里自动恢复。</p>"
+          );
+
+        outputDiv.append(prompt);
+      }
+
       // 尝试加载上次打开的文件
       function loadLastFile() {
         const lastFileData = localStorage.getItem(STORAGE_KEY);
-        if (lastFileData && isFirstLoad) {
+        if (lastFileData) {
           try {
             const { fileName, fileContent } = JSON.parse(lastFileData);
             // 创建模拟文件对象
@@ -164,7 +189,10 @@
             processFile(file, true);
           } catch (e) {
             console.error("Failed to load last file:", e);
+            showDefaultPrompt();
           }
+        } else {
+          showDefaultPrompt();
         }
       }
 
@@ -184,11 +212,9 @@
         // 检查是否是第一次加载并尝试加载上次打开的文件
         checkFirstLoad();
         setTimeout(() => {
-          if (isFirstLoad) {
-            isLoadingLastFile = true;
-            loadLastFile();
-            isLoadingLastFile = false;
-          }
+          isLoadingLastFile = true;
+          loadLastFile();
+          isLoadingLastFile = false;
         }, 100);
 
         // ======================
@@ -1905,30 +1931,34 @@
       }
 
       body {
+        position: relative;
         background-color: #ccc;
         background-size: cover;
         background-position: center center;
         background-repeat: no-repeat;
-        background-attachment: fixed;
+        background-attachment: scroll;
       }
 
       #background-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
+        pointer-events: none;
       }
 
       #background-video,
       #background-wrapper img {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
-        margin-left: 0;
+        min-width: 100%;
+        min-height: 100%;
+        margin: 0;
         display: block;
         object-fit: cover;
+        object-position: center;
       }
 
       li {
@@ -2023,6 +2053,8 @@
         display: none;
       }
       .fileBox {
+        position: relative;
+        z-index: 1;
         width: fit-content;
         margin: 10px auto;
       }
@@ -2058,6 +2090,8 @@
       }
 
       .box {
+        position: relative;
+        z-index: 1;
         display: flex;
         margin: 10px auto;
         min-width: 300px;
