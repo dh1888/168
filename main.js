@@ -1656,7 +1656,7 @@ function setBackground(type, src, isLocalFile = false, persist = true) {
       if (backgroundVideo) {
         backgroundVideo.style.display = "block";
         backgroundVideo.style.opacity = (backgroundOpacity / 100).toFixed(2);
-        backgroundVideo.style.objectFit = "contain";
+        backgroundVideo.style.objectFit = "cover";
         backgroundVideo.style.objectPosition = "center";
         backgroundVideo
           .play()
@@ -1675,7 +1675,7 @@ function setBackground(type, src, isLocalFile = false, persist = true) {
     };
 
     backgroundVideo.src = src;
-    backgroundVideo.style.objectFit = "contain";
+    backgroundVideo.style.objectFit = "cover";
     backgroundVideo.style.objectPosition = "center";
     backgroundVideo.load();
   }
