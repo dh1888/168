@@ -515,7 +515,7 @@ function openAddImageModal(type = "add") {
   currentInsertAfterId = null;
 
   if (type === "insert" && contextMenuTarget) {
-    currentInsertAfterId = contextMenuTarget.id;
+    currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
     imageModalTitle.textContent = "插入图片";
   } else {
     imageModalTitle.textContent = "新增图片";
