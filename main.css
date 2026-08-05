@@ -224,27 +224,14 @@ body.light-mode {
   overflow: hidden;
 }
 
-#background-media {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity var(--transition-slow);
-}
-
+#background-media,
 #background-video {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* 视频完整显示，不裁剪画面；比例和屏幕不一致时上下/左右会留空，
-     露出下面 body 的默认渐变背景 */
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   opacity: 0;
   transition: opacity var(--transition-slow);
