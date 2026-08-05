@@ -29,6 +29,127 @@ let currentBackground = JSON.parse(
   localStorage.getItem("contentSystemBackground"),
 ) || DEFAULT_BACKGROUND;
 
+// 记录当前背景视频/图片使用的 blob 对象URL（本地文件直接引用，不做 base64 编码），
+// 用于在切换背景时正确释放，避免内存泄漏
+let currentBackgroundObjectUrl = null;
+
+// ==================== 本地背景文件持久化（IndexedDB） ====================
+// blob: 引用只在当前页面会话内有效，刷新后就失效了。
+// 为了让本地上传的视频/图片刷新后也能自动找回，这里把文件本体（Blob）存进 IndexedDB
+// （容量比 localStorage 大得多，通常可到几百MB甚至更高，具体取决于浏览器和磁盘剩余空间），
+// 下次打开页面时再从 IndexedDB 读出文件、重新生成一个新的有效引用地址去显示。
+// currentBackground.src 在这种情况下只存一个占位标记，真正的文件内容在 IndexedDB 里。
+const LOCAL_BG_MARKER = "idb-local-background";
+const BG_DB_NAME = "readerBackgroundStore";
+const BG_DB_VERSION = 1;
+const BG_STORE_NAME = "files";
+const BG_RECORD_KEY = "current";
+
+function openBackgroundDB() {
+  return new Promise((resolve, reject) => {
+    if (typeof indexedDB === "undefined") {
+      reject(new Error("当前环境不支持 IndexedDB"));
+      return;
+    }
+    const request = indexedDB.open(BG_DB_NAME, BG_DB_VERSION);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(BG_STORE_NAME)) {
+        db.createObjectStore(BG_STORE_NAME);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// 把本地文件（Blob）存入 IndexedDB，成功返回 true
+async function saveLocalBackgroundFile(file, type) {
+  try {
+    const db = await openBackgroundDB();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(BG_STORE_NAME, "readwrite");
+      tx.objectStore(BG_STORE_NAME).put(
+        { blob: file, type, mimeType: file.type, savedAt: Date.now() },
+        BG_RECORD_KEY,
+      );
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+    return true;
+  } catch (err) {
+    console.error("保存本地背景文件到 IndexedDB 失败:", err);
+    return false;
+  }
+}
+
+// 从 IndexedDB 读出之前保存的文件记录，没有则返回 null
+async function loadLocalBackgroundFile() {
+  try {
+    const db = await openBackgroundDB();
+    const record = await new Promise((resolve, reject) => {
+      const tx = db.transaction(BG_STORE_NAME, "readonly");
+      const req = tx.objectStore(BG_STORE_NAME).get(BG_RECORD_KEY);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+    db.close();
+    return record;
+  } catch (err) {
+    console.error("读取本地背景文件失败:", err);
+    return null;
+  }
+}
+
+// 清除已保存的本地背景文件（切换到预设/链接背景，或选择无背景时调用）
+async function clearLocalBackgroundFile() {
+  try {
+    const db = await openBackgroundDB();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(BG_STORE_NAME, "readwrite");
+      tx.objectStore(BG_STORE_NAME).delete(BG_RECORD_KEY);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch (err) {
+    console.error("清除本地背景文件失败:", err);
+  }
+}
+
+// 页面加载时恢复背景：如果之前保存的是"本地文件标记"，先去 IndexedDB 取出文件本体，
+// 重新生成一个当前会话有效的引用地址；否则按原逻辑直接应用（预设/链接背景）
+async function restoreBackgroundOnLoad() {
+  if (
+    currentBackground &&
+    currentBackground.isLocalFile &&
+    currentBackground.src === LOCAL_BG_MARKER
+  ) {
+    const record = await loadLocalBackgroundFile();
+    if (record && record.blob) {
+      const objectUrl = URL.createObjectURL(record.blob);
+      setBackground(record.type, objectUrl, true, false);
+      // 显示用的是新生成的 objectUrl，但持久化记录仍保持标记，方便下次继续复用同一份文件
+      currentBackground = {
+        type: record.type,
+        src: LOCAL_BG_MARKER,
+        isLocalFile: true,
+      };
+    } else {
+      console.warn("未找到已保存的本地背景文件，已重置为无背景。");
+      setBackground("none", "", false, false);
+    }
+  } else {
+    setBackground(
+      currentBackground.type,
+      currentBackground.src,
+      currentBackground.isLocalFile,
+      false,
+    );
+  }
+}
+
 // 透明度设置 - 从本地存储加载
 let backgroundOpacity =
   parseInt(localStorage.getItem("contentSystemOpacity")) || 80;
@@ -175,25 +296,37 @@ let mouseInWindow = true;
 let saveStorageTimer = null;
 
 function persistToLocalStorage() {
-  localStorage.setItem("contentSystemData", JSON.stringify(contentItems));
-  localStorage.setItem("contentSystemNextItemId", nextItemId.toString());
-  localStorage.setItem(
-    "contentSystemNextContentItemId",
-    nextContentItemId.toString(),
-  );
-  localStorage.setItem(
-    "contentSystemBackground",
-    JSON.stringify(currentBackground),
-  );
-  localStorage.setItem("contentSystemOpacity", backgroundOpacity.toString());
-  localStorage.setItem(
-    "contentSystemOverlayOpacity",
-    overlayOpacity.toString(),
-  );
-  localStorage.setItem("contentSystemTheme", isLightMode ? "light" : "dark");
-  localStorage.setItem("contentSystemAutoHide", autoHideEnabled.toString());
-  localStorage.setItem("contentSystemAutoHideTime", autoHideTime.toString());
-  localStorage.setItem("contentSystemNextImageId", nextImageId.toString());
+  try {
+    localStorage.setItem("contentSystemData", JSON.stringify(contentItems));
+    localStorage.setItem("contentSystemNextItemId", nextItemId.toString());
+    localStorage.setItem(
+      "contentSystemNextContentItemId",
+      nextContentItemId.toString(),
+    );
+    localStorage.setItem(
+      "contentSystemBackground",
+      JSON.stringify(currentBackground),
+    );
+    localStorage.setItem("contentSystemOpacity", backgroundOpacity.toString());
+    localStorage.setItem(
+      "contentSystemOverlayOpacity",
+      overlayOpacity.toString(),
+    );
+    localStorage.setItem("contentSystemTheme", isLightMode ? "light" : "dark");
+    localStorage.setItem("contentSystemAutoHide", autoHideEnabled.toString());
+    localStorage.setItem("contentSystemAutoHideTime", autoHideTime.toString());
+    localStorage.setItem("contentSystemNextImageId", nextImageId.toString());
+  } catch (err) {
+    console.error("本地存储保存失败:", err);
+    // 常见原因：背景视频/图片（尤其是本地上传的视频）以 base64 形式存储，
+    // 超出了浏览器 localStorage 的容量限制，导致这次保存整体失败。
+    if (typeof Modal !== "undefined" && Modal.alert) {
+      Modal.alert(
+        "本次内容未能保存到本地存储，可能是背景视频/图片文件过大超出了浏览器存储限制。建议改用“自定义链接”方式设置背景视频，或更换更小的文件。",
+        "保存失败",
+      );
+    }
+  }
 }
 
 function saveToLocalStorage() {
@@ -290,12 +423,7 @@ function initPage() {
   }
 
   refreshContent();
-  setBackground(
-    currentBackground.type,
-    currentBackground.src,
-    currentBackground.isLocalFile,
-    false,
-  );
+  restoreBackgroundOnLoad();
   setOpacity(backgroundOpacity, overlayOpacity, false);
   setTheme(isLightMode, false);
   persistToLocalStorage();
@@ -1437,6 +1565,9 @@ async function deleteContentItem() {
 }
 
 // 设置背景
+// 注意：本地上传的图片/视频使用 URL.createObjectURL 生成的 blob: 引用（而非 base64），
+// 这类引用只在"当前页面会话"内有效——浏览器刷新或重新打开页面后会自动失效，
+// 需要用户重新选择一次本地文件；这是浏览器安全机制决定的，无法绕开（网页无法获取本地文件的真实磁盘路径）。
 function setBackground(type, src, isLocalFile = false, persist = true) {
   if (!backgroundMedia || !backgroundVideo) {
     console.error("背景媒体元素未找到");
@@ -1459,6 +1590,17 @@ function setBackground(type, src, isLocalFile = false, persist = true) {
   if (unchanged && type !== "none" && mediaAlreadyShowing) {
     if (persist) saveToLocalStorage();
     return;
+  }
+
+  // 切换背景前，释放上一个不再使用的本地 blob 引用，避免内存泄漏
+  // （用 currentBackgroundObjectUrl 而不是 currentBackground.src 来追踪，
+  // 因为持久化到本地存储的可能是 IndexedDB 标记，而不是实际生效的 blob 地址）
+  if (currentBackgroundObjectUrl && currentBackgroundObjectUrl !== src) {
+    URL.revokeObjectURL(currentBackgroundObjectUrl);
+    currentBackgroundObjectUrl = null;
+  }
+  if (typeof src === "string" && src.startsWith("blob:")) {
+    currentBackgroundObjectUrl = src;
   }
 
   backgroundMedia.style.display = "none";
@@ -1491,6 +1633,13 @@ function setBackground(type, src, isLocalFile = false, persist = true) {
     };
     backgroundMedia.onerror = function () {
       console.error("背景图片加载失败:", src);
+      if (isLocalFile && typeof src === "string" && src.startsWith("blob:")) {
+        // 本地文件的 blob 引用刷新页面后会失效，这是预期行为，自动回退到无背景
+        console.warn(
+          "本地图片背景引用已失效（页面刷新后浏览器不再保留），已自动重置为无背景，请重新选择文件。",
+        );
+        setBackground("none", "", false);
+      }
     };
 
     backgroundMedia.src = src;
@@ -1516,6 +1665,13 @@ function setBackground(type, src, isLocalFile = false, persist = true) {
     };
     backgroundVideo.onerror = function () {
       console.error("背景视频加载失败:", src);
+      if (isLocalFile && typeof src === "string" && src.startsWith("blob:")) {
+        // 本地文件的 blob 引用刷新页面后会失效，这是预期行为，自动回退到无背景
+        console.warn(
+          "本地视频背景引用已失效（页面刷新后浏览器不再保留），已自动重置为无背景，请重新选择文件。",
+        );
+        setBackground("none", "", false);
+      }
     };
 
     backgroundVideo.src = src;
@@ -1740,6 +1896,7 @@ function initBackgroundSelector() {
         const src = selectedOption.dataset.src || "";
         setBackground(type, src, false);
         backgroundModal.classList.remove("active");
+        clearLocalBackgroundFile();
       }
     } else if (activeTab === "upload") {
       const file = backgroundFileInput.files[0];
@@ -1757,13 +1914,25 @@ function initBackgroundSelector() {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const type = isImage ? "image" : "video";
-        setBackground(type, e.target.result, true);
-        backgroundModal.classList.remove("active");
-      };
-      reader.readAsDataURL(file);
+      // 直接用 URL.createObjectURL 引用本地文件用于立即显示，而不是读成 base64 字符串。
+      // 注：浏览器出于安全考虑不允许网页读取本地文件的真实磁盘路径，
+      // objectURL（blob:开头）是浏览器提供的、等效于"直接引用这个本地文件"的安全方式，
+      // 但它只在当前页面会话内有效。为了刷新页面后也能自动找回，
+      // 同时把文件本体异步存进 IndexedDB，下次加载时重新生成一个新的有效引用。
+      const type = isImage ? "image" : "video";
+      const objectUrl = URL.createObjectURL(file);
+      setBackground(type, objectUrl, true, false);
+      backgroundModal.classList.remove("active");
+
+      const saved = await saveLocalBackgroundFile(file, type);
+      if (saved) {
+        currentBackground = { type, src: LOCAL_BG_MARKER, isLocalFile: true };
+        saveToLocalStorage();
+      } else {
+        console.warn(
+          "本地背景文件未能持久化保存（可能是文件过大超出浏览器存储配额），仅本次会话内有效，刷新页面后需要重新选择。",
+        );
+      }
     } else if (activeTab === "custom") {
       const url = customBackgroundInput.value.trim();
       if (!url) {
@@ -1775,6 +1944,7 @@ function initBackgroundSelector() {
         const type = url.match(/\.(mp4|webm|ogg)$/i) ? "video" : "image";
         setBackground(type, url, false);
         backgroundModal.classList.remove("active");
+        clearLocalBackgroundFile();
       } else {
         await Modal.alert(
           "请输入有效的链接，支持常见格式：\njpg, png, gif, webp, mp4, webm",
