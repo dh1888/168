@@ -1948,7 +1948,13 @@
       }
 
       #background-wrapper {
-        position: absolute;
+        /*
+          【修复点4】原来是 position: absolute，会相对 body 的高度计算 inset:0。
+          打开长文件后 body 被内容撑高，导致这个容器也被拉得又高又长，
+          背景图用 object-fit:cover 去覆盖这个畸形容器，视觉上就变成了被放大裁切。
+          改成 fixed，始终锚定在浏览器视口，不再受页面内容高度影响。
+        */
+        position: fixed;
         inset: 0;
         z-index: 0;
         overflow: hidden;
