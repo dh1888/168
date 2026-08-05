@@ -786,7 +786,9 @@ function showContextMenu(e) {
       contextMenuTarget.type === "main-title" ||
       contextMenuTarget.type === "subtitle" ||
       contextMenuTarget.type === "image-card" ||
-      contextMenuTarget.type === "image-item";
+      contextMenuTarget.type === "image-item" ||
+      contextMenuTarget.type === "content-item" ||
+      contextMenuTarget.type === "hh-item";
 
     editContextItem.style.display =
       contextMenuTarget.type === "image-item" ? "none" : "flex";
@@ -1109,7 +1111,7 @@ function openInsertAfterModal() {
 
   const { type, id } = contextMenuTarget;
   currentItemType = "content-card";
-  currentInsertAfterId = id;
+  currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -1135,7 +1137,7 @@ function openInsertMainTitleAfterModal() {
 
   const { type, id } = contextMenuTarget;
   currentItemType = "main-title";
-  currentInsertAfterId = id;
+  currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -1161,7 +1163,7 @@ function openInsertSubtitleAfterModal() {
 
   const { type, id } = contextMenuTarget;
   currentItemType = "subtitle";
-  currentInsertAfterId = id;
+  currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -1193,6 +1195,20 @@ function addNewTextarea() {
 }
 
 // 在指定项目后面插入新卡片
+// 根据右键菜单目标，计算“插入到其后面”应该使用的顶层内容 id
+// content-item 是卡片内部的一行文字，本身不在顶层 contentItems 里，
+// 所以要用它所属卡片的 cardId；hh-item 同理，要用其所属小标题的 parentId。
+function getInsertAnchorId(target) {
+  if (!target) return null;
+  if (target.type === "content-item") {
+    return target.cardId;
+  }
+  if (target.type === "hh-item") {
+    return target.parentId;
+  }
+  return target.id;
+}
+
 function insertContentAfter(targetId, newItem) {
   const targetIndex = contentItems.findIndex((item) => item.id === targetId);
 
