@@ -175,27 +175,6 @@
         outputDiv.append(prompt);
       }
 
-      // 尝试加载上次打开的文件
-      function loadLastFile() {
-        const lastFileData = localStorage.getItem(STORAGE_KEY);
-        if (lastFileData) {
-          try {
-            const { fileName, fileContent } = JSON.parse(lastFileData);
-            // 创建模拟文件对象
-            const file = new File([fileContent], fileName, {
-              type: "text/plain",
-            });
-            isLoadingLastFile = true;
-            processFile(file, true);
-          } catch (e) {
-            console.error("Failed to load last file:", e);
-            showDefaultPrompt();
-          }
-        } else {
-          showDefaultPrompt();
-        }
-      }
-
       // 保存文件到本地存储
       function saveFileToStorage(fileName, fileContent) {
         const fileData = {
@@ -229,6 +208,33 @@
 
           processFile(file);
         });
+
+        /**
+         * 尝试加载上次打开的文件
+         * 【修复点1】这个函数原来定义在 $(document).ready 外部（全局作用域），
+         * 导致它调用不到同样定义在 ready 内部的局部函数 processFile，
+         * 每次自动恢复都会直接报 ReferenceError，恢复功能完全失效。
+         * 现在把它移到 ready 内部，和 processFile 处于同一作用域，即可正常访问。
+         */
+        function loadLastFile() {
+          const lastFileData = localStorage.getItem(STORAGE_KEY);
+          if (lastFileData) {
+            try {
+              const { fileName, fileContent } = JSON.parse(lastFileData);
+              // 创建模拟文件对象
+              const file = new File([fileContent], fileName, {
+                type: "text/plain",
+              });
+              isLoadingLastFile = true;
+              processFile(file, true);
+            } catch (e) {
+              console.error("Failed to load last file:", e);
+              showDefaultPrompt();
+            }
+          } else {
+            showDefaultPrompt();
+          }
+        }
 
         /**
          * 处理文件内容
@@ -1937,6 +1943,8 @@
         background-position: center center;
         background-repeat: no-repeat;
         background-attachment: scroll;
+        /* 【修复点2】给页面底部留出空间，避免正文最后一部分被固定的时间栏遮住 */
+        padding-bottom: 40px;
       }
 
       #background-wrapper {
@@ -2397,6 +2405,8 @@
         background-color: #777777bb;
         color: yellow;
         font-size: 18px;
+        /* 【修复点2】提高层级，避免被其它特效元素（量子粒子/图片查看器等）盖住 */
+        z-index: 100;
       }
       .bottom > div {
         flex: 1;
@@ -2404,6 +2414,14 @@
         text-align: center;
       }
 
+      /*
+        【修复点3】背景媒体元素。
+        原代码只覆盖了 position/width/height/z-index，
+        全局的 `img { border-radius:15px; cursor:pointer; transform:scale(1.1) on hover }`
+        规则依然会命中切到图片模式的 #background-video，
+        导致背景图四角有圆角裁切、且鼠标悬停在页面任意位置都会莫名放大 10%。
+        这里显式覆盖这些属性，并禁用 hover 缩放。
+      */
       #background-video {
         position: fixed;
         top: 0;
@@ -2411,7 +2429,15 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: center;
         z-index: -1;
+        margin: 0;
+        border-radius: 0;
+        cursor: default;
+        transition: none;
+      }
+      #background-video:hover {
+        transform: none;
       }
 
       @keyframes pulseHighlight {
