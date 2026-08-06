@@ -170,8 +170,8 @@
             const prompt = $("<div>")
                 .addClass("defaultPromptCard")
                 .css({
-                    maxWidth: "640px",
-                    margin: "40px auto",
+                    maxWidth: "1100px",
+                    margin: "10px auto",
                     padding: "24px 28px",
                     borderRadius: "16px",
                     background: "rgba(255,255,255,0.88)",
@@ -3767,9 +3767,12 @@
                     const opacityValueLabel = $("#opacityValueLabel");
                     const hideTimeInput = $("#hideTimeInput");
                     const $body = $("body");
+                    // 【新增】内容区域：鼠标停留在这里面时，不能自动隐藏工具栏/菜单
+                    const $contentArea = $(".box1");
 
                     let idleTimer = null;
                     let currentHideTime = 0; // 秒，0 表示不自动隐藏
+                    let mouseInContent = false; // 鼠标当前是否停留在内容区域内
 
                     function applyOpacityValue(val) {
                         document.documentElement.style.setProperty("--ui-opacity", val / 100);
@@ -3779,7 +3782,8 @@
                     function resetIdleTimer() {
                         $body.removeClass("immersiveHidden");
                         if (idleTimer) clearTimeout(idleTimer);
-                        if (currentHideTime > 0) {
+                        // 鼠标在内容区域里面时，不开启倒计时，避免鼠标静止不动也被自动隐藏
+                        if (currentHideTime > 0 && !mouseInContent) {
                             idleTimer = setTimeout(function () {
                                 $body.addClass("immersiveHidden");
                             }, currentHideTime * 1000);
@@ -3791,6 +3795,16 @@
                         "mousemove.immersive mousedown.immersive keydown.immersive touchstart.immersive wheel.immersive",
                         resetIdleTimer
                     );
+
+                    // 鼠标进入/离开内容区域：进入时暂停自动隐藏倒计时，离开时才重新开始计时
+                    $contentArea.on("mouseenter.immersive", function () {
+                        mouseInContent = true;
+                        resetIdleTimer();
+                    });
+                    $contentArea.on("mouseleave.immersive", function () {
+                        mouseInContent = false;
+                        resetIdleTimer();
+                    });
 
                     // ---- 初始化：读取已保存的设置并生效 ----
                     const savedSettings = loadUiSettings();
@@ -3912,6 +3926,41 @@
                         if (iePanel.hasClass("open")) {
                             iePanel.removeClass("open");
                         }
+                    });
+                })();
+
+                // ======================
+                // 【新增】清除按钮：清空本地保存的内容（文件内容/手动新增/自定义背景/界面设置等），
+                // 确认后刷新页面，恢复到最初的"使用说明"状态
+                // ======================
+                (function initClearButton() {
+                    $("#btnClear").on("click", function () {
+                        showConfirmDialog(
+                            "确定要清除本地保存的所有内容吗？包括已导入/新增的内容、自定义背景和界面设置，清除后会立即刷新页面，此操作不可撤销。",
+                            "清除确认",
+                            "清除并刷新"
+                        ).then((ok) => {
+                            if (!ok) return;
+
+                            try {
+                                localStorage.clear();
+                            } catch (e) {
+                                console.warn("清除 localStorage 失败:", e);
+                            }
+                            try {
+                                sessionStorage.clear();
+                            } catch (e) {
+                                console.warn("清除 sessionStorage 失败:", e);
+                            }
+
+                            // 自定义背景视频存在 IndexedDB 里，localStorage.clear() 覆盖不到，需要单独清除
+                            idbDeleteBgVideo().finally(function () {
+                                showToast("已清除，正在刷新... 🧹");
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 300);
+                            });
+                        });
                     });
                 })();
 
@@ -5357,6 +5406,11 @@
             background: linear-gradient(135deg, #2193b0, #6dd5ed);
         }
 
+        /* 【新增】清除按钮：用醒目的红色渐变，提示这是一个有风险的操作 */
+        #btnClear.toolbarBtn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+
         .toolbarBtn:hover {
             filter: brightness(1.15);
             transform: translateY(-1px);
@@ -6275,7 +6329,6 @@
             background: rgba(200, 30, 30, 0.9);
         }
     </style>
-
 </head>
 
 
@@ -6290,6 +6343,8 @@
                 class="toolbarBtnText">透明度</span></button>
         <button class="toolbarBtn" id="btnBtn4" title="导入/出"><span class="toolbarBtnIcon">📤</span><span
                 class="toolbarBtnText">导入/出</span></button>
+        <button class="toolbarBtn" id="btnClear" title="清除本地存储的内容并刷新"><span class="toolbarBtnIcon">🧹</span><span
+                class="toolbarBtnText">清除</span></button>
 
         <!-- 【新增】右侧时间显示 + 国家时区切换 -->
         <div class="toolbarTimeWrap" id="toolbarTimeWrap">
