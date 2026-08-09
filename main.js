@@ -165,6 +165,7 @@ if (savedTheme === null) {
 
 // DOM元素
 const navItemsContainer = document.getElementById("navItems");
+const navScrollContainer = document.querySelector(".nav-container"); // 侧边栏可滚动的外层容器
 const contentContainer = document.getElementById("contentContainer");
 const contentArea = document.getElementById("contentArea");
 const emptyState = document.getElementById("emptyState");
@@ -383,12 +384,60 @@ function updateActiveNavFromScroll() {
     }
   });
 
+  let activeNavEl = null;
   navItems.forEach((nav) => {
     const isActive = nav.dataset.id === String(currentId);
     nav.classList.toggle("active", isActive);
-    if (!isActive) {
+    if (isActive) {
+      activeNavEl = nav;
+    } else {
       nav.classList.remove("animated", "breathing", "after-bounce");
     }
+  });
+
+  autoScrollSidebarToActiveNav(activeNavEl);
+}
+
+/**
+ * 侧边栏导航跟随滚动：当前高亮项若进入顶部或底部 20% 的边缘区域，
+ * 自动滚动侧边栏，把上方/下方被遮挡的菜单项显示出来。
+ */
+function autoScrollSidebarToActiveNav(activeNavEl) {
+  if (!navScrollContainer || !activeNavEl) return;
+
+  const containerHeight = navScrollContainer.clientHeight;
+  if (!containerHeight) return;
+
+  // 用元素在容器内的相对位置计算，避免 getBoundingClientRect 在页面滚动/缩放时的误差
+  const itemTop = activeNavEl.offsetTop - navScrollContainer.scrollTop;
+  const itemBottom = itemTop + activeNavEl.offsetHeight;
+
+  const edgeZone = containerHeight * 0.2; // 顶部/底部各 20% 的触发区
+  const topLimit = edgeZone;
+  const bottomLimit = containerHeight - edgeZone;
+
+  let delta = 0;
+  if (itemTop < topLimit) {
+    // 高亮项进入顶部 20% 区域 → 向上滚动，露出上方菜单
+    delta = itemTop - topLimit;
+  } else if (itemBottom > bottomLimit) {
+    // 高亮项进入底部 20% 区域 → 向下滚动，露出下方菜单
+    delta = itemBottom - bottomLimit;
+  }
+
+  if (delta === 0) return;
+
+  const maxScrollTop = navScrollContainer.scrollHeight - containerHeight;
+  const targetScrollTop = Math.max(
+    0,
+    Math.min(maxScrollTop, navScrollContainer.scrollTop + delta)
+  );
+
+  if (Math.abs(targetScrollTop - navScrollContainer.scrollTop) < 1) return;
+
+  navScrollContainer.scrollTo({
+    top: targetScrollTop,
+    behavior: "smooth",
   });
 }
 
@@ -1121,6 +1170,7 @@ function openAddModal(type) {
   modalTitle.textContent = title;
   submitBtn.innerHTML = '<i class="fas fa-save"></i> 保存';
   modalOverlay.classList.add("active");
+  modalOverlay.classList.add("add-mode"); // 仅在“新增”入口下显示Tab选项卡
 
   setTimeout(() => {
     const firstTextarea = document.querySelector(".content-textarea");
@@ -1132,6 +1182,7 @@ function openAddModal(type) {
 function openEditModal() {
   if (!contextMenuTarget) return;
 
+  modalOverlay.classList.remove("add-mode"); // 编辑时不显示Tab选项卡
   const { type, id, cardId } = contextMenuTarget;
   textareaContainer.innerHTML = "";
 
@@ -1240,6 +1291,7 @@ function openInsertAfterModal() {
   const { type, id } = contextMenuTarget;
   currentItemType = "content-card";
   currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
+  modalOverlay.classList.remove("add-mode"); // 插入时不显示Tab选项卡
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -1266,6 +1318,7 @@ function openInsertMainTitleAfterModal() {
   const { type, id } = contextMenuTarget;
   currentItemType = "main-title";
   currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
+  modalOverlay.classList.remove("add-mode"); // 插入时不显示Tab选项卡
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -1292,6 +1345,7 @@ function openInsertSubtitleAfterModal() {
   const { type, id } = contextMenuTarget;
   currentItemType = "subtitle";
   currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
+  modalOverlay.classList.remove("add-mode"); // 插入时不显示Tab选项卡
 
   textareaContainer.innerHTML = `
         <div class="form-group textarea-group">
@@ -2953,6 +3007,49 @@ addMainTitleBtn.addEventListener("click", () => openAddModal("main-title"));
 addSubtitleBtn.addEventListener("click", () => openAddModal("subtitle"));
 addContentBtn.addEventListener("click", () => openAddModal("content-card"));
 themeToggleBtn.addEventListener("click", toggleTheme);
+
+// 清除缓存按钮：清空本应用存储的所有数据（localStorage + 背景图片所在的 IndexedDB），
+// 然后刷新页面，恢复到第一次打开时的初始状态
+const clearCacheBtn = document.getElementById("clearCacheBtn");
+if (clearCacheBtn) {
+  clearCacheBtn.addEventListener("click", async () => {
+    const confirmed = await Modal.confirm(
+      "确定要清除缓存吗？这将删除所有已保存的内容、背景图片、主题等设置，且无法恢复。",
+      "清除缓存",
+    );
+    if (!confirmed) return;
+
+    // 先移除 beforeunload 监听，避免 location.reload() 触发页面卸载时
+    // 又把内存里的旧数据（contentItems 等）重新写回 localStorage，
+    // 导致下面的 localStorage.clear() 被"复活"抵消，页面刷新后内容没有被清空。
+    window.removeEventListener("beforeunload", flushLocalStorage);
+    if (saveStorageTimer) {
+      clearTimeout(saveStorageTimer);
+      saveStorageTimer = null;
+    }
+
+    // 清空 localStorage 中本应用的全部数据（内容、背景选择、主题、时区等）
+    localStorage.clear();
+
+    // 背景图片的本地文件是存放在 IndexedDB 里的，localStorage.clear() 清不到，需要单独删除
+    const finishClear = () => location.reload();
+
+    if (typeof indexedDB === "undefined") {
+      finishClear();
+      return;
+    }
+
+    try {
+      const deleteRequest = indexedDB.deleteDatabase(BG_DB_NAME);
+      deleteRequest.onsuccess = finishClear;
+      deleteRequest.onerror = finishClear;
+      deleteRequest.onblocked = finishClear;
+    } catch (err) {
+      console.error("清除背景图片缓存失败:", err);
+      finishClear();
+    }
+  });
+}
 
 closeModal.addEventListener("click", () => {
   modalOverlay.classList.remove("active");

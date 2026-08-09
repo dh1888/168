@@ -517,8 +517,10 @@ function openAddImageModal(type = "add") {
   if (type === "insert" && contextMenuTarget) {
     currentInsertAfterId = getInsertAnchorId(contextMenuTarget);
     imageModalTitle.textContent = "插入图片";
+    imageModal.classList.remove("add-mode"); // 插入时不显示Tab选项卡
   } else {
     imageModalTitle.textContent = "新增图片";
+    imageModal.classList.add("add-mode"); // 仅在“新增”入口下显示Tab选项卡
   }
 
   clearImagePreview();
@@ -555,6 +557,7 @@ function openEditImageModal() {
 
   // 设置模态框标题
   imageModalTitle.textContent = `编辑图片 (${item.images.length} 张)`;
+  imageModal.classList.remove("add-mode"); // 编辑时不显示Tab选项卡
 
   // 清空预览区
   clearImagePreview();

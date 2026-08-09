@@ -452,6 +452,14 @@ body.light-mode .control-btn.opacity-control {
   color: white;
 }
 
+.control-btn.clear-cache-btn {
+  background: var(--gradient-danger);
+}
+
+body.light-mode .control-btn.clear-cache-btn {
+  background: var(--gradient-danger-light);
+}
+
 /* ==================== 左侧边栏 ==================== */
 .sidebar {
   width: var(--sidebar-width);
@@ -528,16 +536,12 @@ body.light-mode .sidebar-subtitle {
 .nav-container {
   position: relative;
   flex: 1;
-  overflow: hidden;
-  top: 2%;
-  bottom: 2%;
+  min-height: 0; /* 关键：让 flex 子项的高度真正被内容撑不满时也能触发滚动，而不是被拉伸/裁剪 */
+  overflow-x: hidden;
+  overflow-y: auto; /* 始终可滚动，而不是仅 hover 时才可滚动 */
   margin-left: 10px;
   scrollbar-width: none;
   -ms-overflow-style: none;
-}
-
-.nav-container:hover {
-  overflow-y: auto;
 }
 
 .nav-container::-webkit-scrollbar {
@@ -1293,6 +1297,8 @@ body.light-mode .modal-overlay {
   background: var(--gradient-dark-bg-alt);
   width: 90%;
   max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
   border-radius: var(--radius-2xl);
   padding: 20px;
   box-shadow: var(--shadow-3xl);
@@ -1315,6 +1321,53 @@ body.light-mode .import-export-modal-content {
 .modal-overlay.active .opacity-modal-content,
 .modal-overlay.active .import-export-modal-content {
   transform: translateY(0);
+}
+
+/* “新增内容”弹窗：内容项一多就会超出弹窗高度，这里让文本区域列表单独滚动，
+   弹窗头部（标题/Tab选项卡）和底部按钮始终保持可见，不随内容一起滚走 */
+#modalOverlay .modal-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 整体不滚动，交由内部的 textareaContainer 滚动 */
+}
+
+#modalOverlay .modal-header,
+#modalOverlay .add-new-tabs-slot {
+  flex-shrink: 0;
+}
+
+#modalOverlay #contentForm {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#modalOverlay #textareaContainer {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 6px;
+  margin-right: -6px;
+}
+
+#modalOverlay #addMoreBtn,
+#modalOverlay #submitBtn {
+  flex-shrink: 0;
+}
+
+#modalOverlay #textareaContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#modalOverlay #textareaContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#modalOverlay #textareaContainer::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
 }
 
 /* 模态框头部 */
@@ -3554,4 +3607,271 @@ body.light-mode #importPreview {
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-light);
   color: var(--text-light);
+}
+
+/* ==================== 新增弹窗内的Tab选项卡 ==================== */
+.add-new-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.position-btn.add-new-btn {
+  background: var(--gradient-primary);
+}
+
+body.light-mode .position-btn.add-new-btn {
+  background: var(--gradient-primary-light);
+}
+
+.add-new-wrapper.open .position-btn.add-new-btn i {
+  transform: rotate(45deg);
+}
+
+.position-btn.add-new-btn i {
+  transition: transform var(--transition-fast);
+}
+
+/* Tab栏插槽：默认收起，只有当前弹窗处于“新增”模式时才显示
+   （编辑/插入等场景不显示，由 main.js / image.js 切换 .add-mode 类控制） */
+.add-new-tabs-slot {
+  display: none;
+}
+
+.modal-overlay.add-mode .add-new-tabs-slot {
+  display: block;
+  margin-bottom: 14px;
+}
+
+/* Tab选项卡：横向铺满一行，点击可在同一个弹窗里直接切换，无需先关闭再打开 */
+.add-new-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.add-new-tab {
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center !important;
+  align-items: center;
+  gap: 4px !important;
+  height: 60px;
+  padding: 0 4px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  opacity: 0.65;
+  transition:
+    opacity var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.add-new-tab i {
+  font-size: 1.1rem;
+}
+
+.add-new-tab:hover {
+  opacity: 0.9;
+}
+
+/* 选中态：完全不透明 + 一圈高亮描边，原有渐变底色/图标/文字保持不变 */
+.add-new-tab.active {
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.55),
+    var(--shadow-sm);
+}
+
+body.light-mode .add-new-tab.active {
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.35),
+    var(--shadow-sm);
+}
+
+.add-new-tab .btn-label {
+  display: inline-block !important;
+}
+
+@media (max-width: 480px) {
+  .add-new-tab {
+    height: 52px;
+    font-size: 0.7rem;
+  }
+
+  .add-new-tab i {
+    font-size: 1rem;
+  }
+}
+
+
+/* ==================== 世界时钟（右上角）==================== */
+.world-clock-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.control-btn.world-clock-btn {
+  background: var(--gradient-dark-bg-alt);
+  gap: 8px;
+  min-width: 128px;
+}
+
+body.light-mode .control-btn.world-clock-btn {
+  background: var(--gradient-purple-light);
+}
+
+.world-clock-wrapper.open .control-btn.world-clock-btn i {
+  transform: rotate(15deg);
+}
+
+.control-btn.world-clock-btn i {
+  transition: transform var(--transition-fast);
+}
+
+.clock-zone-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.clock-time-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.world-clock-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 190px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--bg-dark-solid);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast),
+    visibility var(--transition-fast);
+  z-index: 5000;
+}
+
+body.light-mode .world-clock-menu {
+  background: var(--bg-light-solid);
+  border: 1px solid var(--border-light);
+}
+
+.world-clock-menu.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.world-clock-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 7px 10px;
+  background: transparent;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+body.light-mode .world-clock-option {
+  color: var(--text-light);
+}
+
+.world-clock-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.light-mode .world-clock-option:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.world-clock-option.active {
+  background: var(--gradient-tertiary);
+  color: white;
+}
+
+body.light-mode .world-clock-option.active {
+  background: var(--gradient-tertiary-light);
+  color: white;
+}
+
+.world-clock-option .zone-offset {
+  font-size: 0.68rem;
+  opacity: 0.75;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.world-clock-option .zone-time-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.world-clock-option .zone-time {
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .control-btn.world-clock-btn {
+    width: auto;
+    min-width: 0;
+    height: 34px;
+    padding: 0 10px;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .clock-zone-label {
+    display: none;
+  }
+
+  .clock-time-label {
+    display: inline-block;
+    font-size: 0.72rem;
+  }
+
+  .world-clock-menu {
+    min-width: 170px;
+  }
+}
+
+@media (max-width: 520px) {
+  .control-btn.world-clock-btn {
+    height: 32px;
+    padding: 0 8px;
+  }
+
+  .clock-time-label {
+    font-size: 0.68rem;
+  }
 }
