@@ -944,6 +944,23 @@
             addRow() { this.insertRowAt(this.rows); }
             addColumn() { this.insertColumnAt(this.cols); }
             addRowWithValues(values) { this.insertRowAt(this.rows, values); }
+            _shiftRowStyleForInsert(rowStyle, rIndex) {
+                const next = {};
+                Object.keys(rowStyle || {}).forEach(k => {
+                    const r = Number(k);
+                    next[r >= rIndex ? r + 1 : r] = rowStyle[k];
+                });
+                return next;
+            }
+            _shiftRowStyleForRemove(rowStyle, rIndex) {
+                const next = {};
+                Object.keys(rowStyle || {}).forEach(k => {
+                    const r = Number(k);
+                    if (r === rIndex) return;
+                    next[r > rIndex ? r - 1 : r] = rowStyle[k];
+                });
+                return next;
+            }
             insertRowAt(rIndex, values) {
                 const newOrigins = new Map();
                 for (const [key, cell] of this.origins) {
@@ -957,6 +974,7 @@
                 }
                 this.origins = newOrigins;
                 this.rows += 1;
+                this.rowStyle = this._shiftRowStyleForInsert(this.rowStyle, rIndex);
                 if (values) {
                     for (let c = 0; c < this.cols; c++) this.origins.set(rIndex + ',' + c, { value: values[c] || '', rowSpan: 1, colSpan: 1, style: {} });
                 }
@@ -994,6 +1012,7 @@
                 }
                 this.origins = newOrigins;
                 this.rows -= 1;
+                this.rowStyle = this._shiftRowStyleForRemove(this.rowStyle, rIndex);
             }
             _removeColumn(cIndex) {
                 const newOrigins = new Map();
@@ -2092,4 +2111,4 @@
     </script>
 </body>
 
-</html> 
+</html>
