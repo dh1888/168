@@ -1761,6 +1761,39 @@
             g.clearContentSelection();
         });
 
+        /* ---------------- Type-to-edit: selecting a single cell/line and typing starts editing directly ---------------- */
+        document.addEventListener('keydown', e => {
+            if (e.isComposing) return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            const active = document.activeElement;
+            if (active && (active.isContentEditable || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) return;
+            if (batchDialog.open || appModal.open) return;
+            if (!window.activeTarget) return;
+
+            const isPrintable = e.key.length === 1;
+            const isEnterOrF2 = e.key === 'Enter' || e.key === 'F2';
+            if (!isPrintable && !isEnterOrF2) return;
+
+            if (window.activeTarget.type === 'grid') {
+                const g = grids[window.activeTarget.id];
+                if (!g || !g.cellSelection) return;
+                const { r1, c1, r2, c2 } = g.cellSelection;
+                if (r1 !== r2 || c1 !== c2) return;
+                if (g.editingKey === r1 + ',' + c1) return;
+                e.preventDefault();
+                if (isPrintable) g.editCell(r1, c1, e.key);
+                g.startEdit(r1, c1);
+            } else if (window.activeTarget.type === 'notice') {
+                if (notice.selected.size !== 1) return;
+                const idx = Array.from(notice.selected)[0];
+                if (notice.editingIdx === idx) return;
+                e.preventDefault();
+                if (isPrintable) notice.lines[idx] = e.key;
+                notice.editingIdx = idx;
+                notice.render();
+            }
+        });
+
         function buildGridMenu(gridId, mode, r, c) {
             const g = grids[gridId];
             const items = [];
