@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排班表编辑器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --paper: #f5f4ef;
+            --card: #ffffff;
+            --ink: #1c2b28;
+            --muted: #7a8a84;
+            --line: #dfe4e0;
+
+            --old-1: #0e7c6b;
+            --old-1-dark: #0a5c4f;
+            --old-1-light: #1a9c86;
+            --old-2: #e6f5f1;
+            --old-3: #c7ece1;
+
+            --new-1: #33509e;
+            --new-1-dark: #253b78;
+            --new-1-light: #4a68b8;
+            --new-2: #eaeffb;
+            --new-3: #cdd9f5;
+
+            --gold: #e3a53c;
+            --gold-soft: #fbe7c2;
+            --rose: #fbe3e6;
+            --rose-line: #f3c3cb;
+            --rose-text: #b83a52;
+            --rose-light: #e2748f;
+
+            --pink-strong: #e85d8a;
+            --pink-grad: linear-gradient(135deg, #fde3ec, #f7b8cf);
+
+            --shadow-sm: 0 1px 2px rgba(20, 40, 35, .06);
+            --shadow-md: 0 6px 20px -6px rgba(20, 40, 35, .16);
+            --shadow-lg: 0 16px 40px -12px rgba(20, 40, 35, .24);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 4px 20px 10px;
+            font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background:
+                radial-gradient(1200px 500px at 10% -10%, rgba(14, 124, 107, .06), transparent 60%),
+                radial-gradient(1000px 500px at 100% 0%, rgba(51, 80, 158, .06), transparent 55%),
+                var(--paper);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+        }
+
+
+        h1 {
+            font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 6px;
+            letter-spacing: .2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--old-1), var(--new-1));
+            box-shadow: 0 0 0 4px rgba(14, 124, 107, .12);
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 12.5px;
+            line-height: 1.9;
+            max-width: 720px;
+        }
+
+        .sub kbd {
+            font-family: "Space Grotesk", monospace;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-bottom-width: 2px;
+            border-radius: 5px;
+            padding: 1px 6px;
+            font-size: 11px;
+            color: var(--ink);
+        }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .legend-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--muted);
+            background: #fff;
+            border: 1px solid var(--line);
+            padding: 6px 12px;
+            border-radius: 999px;
+            box-shadow: var(--shadow-sm);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .legend-chip:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .legend-chip i {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        /* ---------------- Toolbar ---------------- */
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            background: rgba(245, 244, 239, .94);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            align-self: stretch;
+            background: var(--line);
+            margin: 2px 2px;
+        }
+
+        .tb-title {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-right: 2px;
+            white-space: nowrap;
+        }
+
+        .tb-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--old-1-dark);
+            background: #fff;
+            border: 1px solid var(--line);
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .toolbar button {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            cursor: pointer;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+
+        .toolbar button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+            background: var(--old-2);
+        }
+
+        .toolbar button:active {
+            transform: translateY(0);
+        }
+
+        .toolbar button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .toolbar select {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 5px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .tb-color {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .tb-color input[type=color] {
+            width: 28px;
+            height: 24px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0;
+            cursor: pointer;
+            background: none;
+        }
+
+        .swatch-toggle-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .swatch-toggle-btn {
+            font-family: inherit;
+            font-size: 13px;
+            padding: 5px 9px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            cursor: pointer;
+            transition: all .15s;
+            line-height: 1;
+        }
+
+        .swatch-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+            background: var(--old-2);
+        }
+
+        .swatch-toggle-btn.active {
+            background: var(--gold-soft);
+            border-color: var(--gold);
+        }
+
+        .swatch-row {
+            display: none;
+            align-items: center;
+            gap: 3px;
+            padding: 5px 6px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 70;
+            box-shadow: var(--shadow-lg);
+            flex-wrap: wrap;
+            width: 138px;
+            animation: menuIn .12s ease;
+        }
+
+        .swatch-row.open {
+            display: flex;
+        }
+
+        .swatch-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid rgba(20, 30, 28, .18);
+            padding: 0;
+            cursor: pointer;
+            transition: transform .1s ease, box-shadow .1s ease;
+            flex: none;
+        }
+
+        .swatch-btn:hover {
+            transform: scale(1.2);
+            box-shadow: var(--shadow-sm);
+            z-index: 1;
+        }
+
+        .swatch-btn:active {
+            transform: scale(1.05);
+        }
+
+        .boards {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .board {
+            flex: 1 1 500px;
+            min-width: 440px;
+            background: var(--card);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--line);
+            transition: box-shadow .25s ease, transform .25s ease;
+            animation: riseIn .4s ease both;
+        }
+
+        .board:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .board-head {
+            padding: 14px 16px 12px;
+            background: linear-gradient(120deg, var(--old-1-light) 0%, var(--old-1) 50%, var(--old-1-dark) 100%);
+            box-shadow: inset 0 -2px 0 rgba(227, 165, 60, .55);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .board.blue .board-head {
+            background: linear-gradient(120deg, var(--new-1-light) 0%, var(--new-1) 50%, var(--new-1-dark) 100%);
+        }
+
+        .board-head .title {
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: .3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .board-head .title .code {
+            font-family: "Space Grotesk", monospace;
+            font-weight: 500;
+            font-size: 11px;
+            background: rgba(255, 255, 255, .18);
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: .5px;
+        }
+
+        .board-head .title-text,
+        .board-head .title .code {
+            outline: none;
+            border-radius: 4px;
+            cursor: default;
+        }
+
+        .board-head .title-text[contenteditable="true"],
+        .board-head .title .code[contenteditable="true"] {
+            cursor: text;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .6);
+            background: rgba(255, 255, 255, .16);
+            padding: 0 4px;
+        }
+
+        .status-pill {
+            font-size: 11px;
+            background: rgba(255, 255, 255, .15);
+            padding: 4px 10px;
+            border-radius: 999px;
+            min-width: 90px;
+            text-align: center;
+            opacity: .85;
+            transition: opacity .2s, background .2s;
+        }
+
+        .status-pill.active {
+            opacity: 1;
+            background: var(--pink-strong);
+            color: #fff;
+            font-weight: 600;
+        }
+
+
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+
+        td,
+        th {
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        td {
+            padding: 10px 12px;
+            font-size: 13px;
+            vertical-align: middle;
+            position: relative;
+            outline: none;
+            transition: background .12s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        td.hdr {
+            padding-top: 11px;
+            padding-bottom: 11px;
+        }
+
+        td[contenteditable="false"] {
+            cursor: pointer;
+        }
+
+        td[contenteditable="true"] {
+            cursor: text;
+        }
+
+        tr:hover td.datarow-even,
+        tr:hover td.datarow-odd {
+            filter: brightness(0.98);
+        }
+
+        td.hdr {
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(180deg, var(--old-1) 0%, var(--old-1-dark) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 -2px 0 rgba(227, 165, 60, .4);
+            letter-spacing: .3px;
+        }
+
+        .board.blue td.hdr {
+            background: linear-gradient(180deg, var(--new-1) 0%, var(--new-1-dark) 100%);
+        }
+
+        td.datarow-even {
+            background: var(--old-2);
+        }
+
+        .board.blue td.datarow-even {
+            background: var(--new-2);
+        }
+
+        td.datarow-odd {
+            background: #fff;
+        }
+
+        td.reviewrow {
+            background: var(--gold-soft);
+            font-weight: 500;
+        }
+
+        td.editing {
+            box-shadow: inset 0 0 0 2px var(--gold), 0 0 0 3px rgba(227, 165, 60, .18);
+            background: #fffef8 !important;
+            animation: pop .12s ease;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(.98);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        td.cellsel {
+            background: var(--pink-grad) !important;
+            box-shadow: inset 0 0 0 1px var(--pink-strong);
+            color: #000 !important;
+        }
+
+        .edit-hint {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            font-size: 9px;
+            color: var(--muted);
+            opacity: 0;
+            transition: opacity .15s;
+            pointer-events: none;
+            background: #fff;
+            border-radius: 3px;
+            padding: 0 3px;
+        }
+
+        td[contenteditable="false"]:hover .edit-hint {
+            opacity: .8;
+        }
+
+        .notice {
+            margin-top: 24px;
+            background: var(--card);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--rose-line);
+            box-shadow: var(--shadow-md);
+            transition: box-shadow .25s ease;
+        }
+
+        .notice:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .notice .board-head {
+            background: linear-gradient(135deg, var(--rose-light) 0%, #d9647a 55%, var(--rose-text) 100%);
+        }
+
+        .notice-line {
+            padding: 11px 18px 11px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--rose-line);
+            border-left: 2px solid transparent;
+            transition: background .15s, border-color .15s;
+        }
+
+        .notice-line:hover {
+            background: var(--rose);
+            border-left-color: var(--rose-text);
+        }
+
+        .notice-line:last-child {
+            border-bottom: none;
+        }
+
+        .notice-line .txt {
+            flex: 1;
+            outline: none;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 3px 6px;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: pre-wrap;
+        }
+
+        .notice-line .txt[contenteditable="true"] {
+            box-shadow: inset 0 0 0 2px var(--gold);
+            background: #fffef8;
+            cursor: text;
+        }
+
+        .notice-line.selected {
+            background: var(--pink-grad);
+            border-left-color: var(--pink-strong);
+        }
+
+        .notice-line.selected .txt {
+            color: #000;
+        }
+
+        /* context menu */
+        #ctxMenu {
+            position: fixed;
+            z-index: 9999;
+            display: none;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            padding: 6px;
+            min-width: 200px;
+            font-size: 13px;
+            max-height: 80vh;
+            overflow: auto;
+            animation: menuIn .12s ease;
+        }
+
+        @keyframes menuIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .ctx-item {
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .1s;
+        }
+
+        .ctx-item:hover {
+            background: var(--old-2);
+        }
+
+        .ctx-item.disabled {
+            color: #c3ccc8;
+            cursor: default;
+        }
+
+        .ctx-item.disabled:hover {
+            background: none;
+        }
+
+        .ctx-sep {
+            height: 1px;
+            background: var(--line);
+            margin: 5px 6px;
+        }
+
+        dialog {
+            border: none;
+            border-radius: 14px;
+            padding: 0;
+            width: 440px;
+            max-width: 90vw;
+            box-shadow: var(--shadow-lg);
+        }
+
+        dialog .dhead {
+            padding: 16px 20px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--line);
+            font-size: 15px;
+        }
+
+        dialog .dbody {
+            padding: 16px 20px;
+        }
+
+        dialog textarea {
+            width: 100%;
+            height: 150px;
+            font-family: "Space Grotesk", monospace;
+            font-size: 12px;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        dialog textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(227, 165, 60, .25);
+            border-color: var(--gold);
+        }
+
+        dialog .hint {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        dialog .dfoot {
+            padding: 12px 20px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        dialog .dfoot button {
+            padding: 7px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            cursor: pointer;
+            font-size: 12.5px;
+            transition: all .15s;
+            font-family: inherit;
+        }
+
+        dialog .dfoot button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        dialog .dfoot button.primary {
+            background: var(--old-1);
+            color: #fff;
+            border-color: var(--old-1);
+        }
+
+        dialog .dfoot button.danger {
+            background: var(--rose-text);
+            color: #fff;
+            border-color: var(--rose-text);
+        }
+
+        dialog .dbody .modal-msg {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--ink);
+        }
+
+        dialog .dbody .field {
+            margin-bottom: 14px;
+        }
+
+        dialog .dbody .field:last-child {
+            margin-bottom: 0;
+        }
+
+        dialog .dbody .flabel {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        dialog .dbody input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--ink);
+            background: #fff;
+        }
+
+        dialog .dbody input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(227, 165, 60, .25);
+            border-color: var(--gold);
+        }
+
+        ::backdrop {
+            background: rgba(20, 30, 28, .35);
+            backdrop-filter: blur(1px);
+        }
+
+        @media(max-width:900px) {
+            .board {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="toolbar" id="toolbar">
+        <div class="toolbar-group">
+            <span class="tb-label" id="activeTargetLabel">未选择</span>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+            <button id="undoBtn" onclick="undo()" title="撤销 (Ctrl+Z)" disabled>↩ 撤销</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+            <button id="copyImageBtn" onclick="copyAsImage()" title="生成纵向长图并复制到剪贴板">🖼 复制图片</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+            <span class="tb-title">表格：</span>
+            <button onclick="toolbarAction('addRowEnd')">+行(末尾)</button>
+            <button onclick="toolbarAction('addColEnd')">+列(末尾)</button>
+            <button onclick="toolbarAction('insertRowAbove')">↑插入行</button>
+            <button onclick="toolbarAction('insertRowBelow')">↓插入行</button>
+            <button onclick="toolbarAction('deleteRow')">🗑删除行</button>
+            <button onclick="toolbarAction('insertColLeft')">←插入列</button>
+            <button onclick="toolbarAction('insertColRight')">→插入列</button>
+            <button onclick="toolbarAction('deleteCol')">🗑删除列</button>
+            <button onclick="toolbarAction('merge')">⛓合并</button>
+            <button onclick="toolbarAction('unmerge')">✂取消合并</button>
+            <button onclick="toolbarAction('clearContent')">🧹删除内容</button>
+            <button onclick="toolbarAction('batchAdd')">📋批量新增</button>
+            <button onclick="toolbarAction('addEmployee')">👤新增员工</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+            <span class="tb-title">注意事项：</span>
+            <button onclick="noticeToolbarAction('addEnd')">+新增行</button>
+            <button onclick="noticeToolbarAction('insertAbove')">↑插入</button>
+            <button onclick="noticeToolbarAction('insertBelow')">↓插入</button>
+            <button onclick="noticeToolbarAction('deleteSelected')">🗑删除选中</button>
+            <button onclick="noticeToolbarAction('batchAdd')">📋批量新增</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+            <span class="tb-title">格式：</span>
+            <select id="fontSizeSelect" onchange="applyFontSize(this.value); this.value='';">
+                <option value="">字号</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+            </select>
+            <label class="tb-color">字体<input type="color" id="fontColorInput" value="#1c2b28"
+                    onchange="applyFontColor(this.value)"></label>
+            <div class="swatch-toggle-wrap">
+                <button type="button" class="swatch-toggle-btn" id="fontSwatchToggleBtn"
+                    onclick="toggleSwatchRow(event,'fontSwatchRow')" title="字体颜色快选">🎨</button>
+                <div class="swatch-row" id="fontSwatchRow" title="字体颜色快选"></div>
+            </div>
+            <label class="tb-color">背景<input type="color" id="bgColorInput" value="#ffffff"
+                    onchange="applyBgColor(this.value)"></label>
+            <div class="swatch-toggle-wrap">
+                <button type="button" class="swatch-toggle-btn" id="bgSwatchToggleBtn"
+                    onclick="toggleSwatchRow(event,'bgSwatchRow')" title="背景颜色快选">🎨</button>
+                <div class="swatch-row" id="bgSwatchRow" title="背景颜色快选"></div>
+            </div>
+            <button onclick="clearFormat()">清除格式</button>
+            <button onclick="addNewModule()">➕新增模块</button>
+            <button onclick="deleteActiveModule()">🗑删除模块</button>
+        </div>
+    </div>
+
+    <div class="boards" id="boards"></div>
+
+    <div class="notice" id="noticeBoard">
+        <div class="board-head">
+            <div class="title">🚨 岗位注意事项</div>
+            <div class="status-pill" id="noticeStatus">右键新增/删除</div>
+        </div>
+        <div id="noticeLines"></div>
+    </div>
+
+    <div id="ctxMenu"></div>
+
+    <dialog id="batchDialog">
+        <div class="dhead">批量新增</div>
+        <div class="dbody">
+            <textarea id="batchInput"
+                placeholder="每行一条记录&#10;表格中：列之间用英文逗号 , 或制表符分隔，例如：出款,阿花,25S、D16,A02、X06&#10;注意事项：每行文字直接作为一条注意事项"></textarea>
+            <div class="hint">每一行文本变成一条新记录；不足的列留空。</div>
+        </div>
+        <div class="dfoot">
+            <button onclick="batchDialog.close()">取消</button>
+            <button class="primary" id="batchConfirmBtn">确认新增</button>
+        </div>
+    </dialog>
+
+    <dialog id="appModal">
+        <div class="dhead" id="appModalTitle"></div>
+        <div class="dbody" id="appModalBody"></div>
+        <div class="dfoot" id="appModalFoot"></div>
+    </dialog>
+
+    <script>
+        /* ---------------- style helper ---------------- */
+        function styleToCss(style) {
+            if (!style) return '';
+            const parts = [];
+            if (style.fontSize) parts.push('font-size:' + style.fontSize + 'px');
+            if (style.color) parts.push('color:' + style.color);
+            if (style.bg) parts.push('background:' + style.bg);
+            return parts.length ? (' style="' + parts.join(';') + '"') : '';
+        }
+
+        /* ---------------- Table Grid Engine ---------------- */
+        class TableGrid {
+            constructor(id, opts) {
+                this.id = id;
+                this.container = document.getElementById(id);
+                this.rows = opts.rows;
+                this.cols = opts.cols;
+                this.headerRows = opts.headerRows || 0;
+                this.origins = new Map(); // "r,c" -> {value, rowSpan, colSpan, style}
+                this.rowStyle = opts.rowStyle || {};
+                this.cellSelection = null;
+                this.anchor = null;
+                this.editingKey = null;
+                this.onSelectionChange = opts.onSelectionChange || (() => { });
+                (opts.cells || []).forEach(c => {
+                    this.origins.set(c.r + ',' + c.c, { value: c.v || '', rowSpan: c.rs || 1, colSpan: c.cs || 1, style: c.style || {} });
+                });
+                this._fillDefaults();
+                this.render();
+            }
+            _coverage() {
+                const covered = Array.from({ length: this.rows }, () => Array(this.cols).fill(false));
+                for (const [key, cell] of this.origins) {
+                    const [r, c] = key.split(',').map(Number);
+                    for (let i = 0; i < cell.rowSpan; i++)
+                        for (let j = 0; j < cell.colSpan; j++) {
+                            if (i === 0 && j === 0) continue;
+                            if (r + i < this.rows && c + j < this.cols) covered[r + i][c + j] = true;
+                        }
+                }
+                return covered;
+            }
+            _fillDefaults() {
+                const covered = this._coverage();
+                for (let r = 0; r < this.rows; r++)
+                    for (let c = 0; c < this.cols; c++) {
+                        const key = r + ',' + c;
+                        if (!covered[r][c] && !this.origins.has(key)) this.origins.set(key, { value: '', rowSpan: 1, colSpan: 1, style: {} });
+                    }
+            }
+            addRow() { this.insertRowAt(this.rows); }
+            addColumn() { this.insertColumnAt(this.cols); }
+            addRowWithValues(values) { this.insertRowAt(this.rows, values); }
+            insertRowAt(rIndex, values) {
+                const newOrigins = new Map();
+                for (const [key, cell] of this.origins) {
+                    let [r, c] = key.split(',').map(Number);
+                    if (r < rIndex) {
+                        if (r + cell.rowSpan > rIndex) cell.rowSpan += 1;
+                        newOrigins.set(r + ',' + c, cell);
+                    } else {
+                        newOrigins.set((r + 1) + ',' + c, cell);
+                    }
+                }
+                this.origins = newOrigins;
+                this.rows += 1;
+                if (values) {
+                    for (let c = 0; c < this.cols; c++) this.origins.set(rIndex + ',' + c, { value: values[c] || '', rowSpan: 1, colSpan: 1, style: {} });
+                }
+                this._fillDefaults();
+                this.clearSelections();
+                this.render();
+            }
+            insertColumnAt(cIndex) {
+                const newOrigins = new Map();
+                for (const [key, cell] of this.origins) {
+                    let [r, c] = key.split(',').map(Number);
+                    if (c < cIndex) {
+                        if (c + cell.colSpan > cIndex) cell.colSpan += 1;
+                        newOrigins.set(r + ',' + c, cell);
+                    } else {
+                        newOrigins.set(r + ',' + (c + 1), cell);
+                    }
+                }
+                this.origins = newOrigins;
+                this.cols += 1;
+                this._fillDefaults();
+                this.clearSelections();
+                this.render();
+            }
+            deleteRow(rIndex) { this._removeRow(rIndex); this.clearSelections(); this.render(); }
+            deleteColumn(cIndex) { this._removeColumn(cIndex); this.clearSelections(); this.render(); }
+            _removeRow(rIndex) {
+                const newOrigins = new Map();
+                for (const [key, cell] of this.origins) {
+                    let [r, c] = key.split(',').map(Number);
+                    if (r === rIndex && r + cell.rowSpan - 1 === rIndex) continue;
+                    if (r <= rIndex && r + cell.rowSpan - 1 >= rIndex) cell.rowSpan -= 1;
+                    if (r > rIndex) r -= 1;
+                    newOrigins.set(r + ',' + c, cell);
+                }
+                this.origins = newOrigins;
+                this.rows -= 1;
+            }
+            _removeColumn(cIndex) {
+                const newOrigins = new Map();
+                for (const [key, cell] of this.origins) {
+                    let [r, c] = key.split(',').map(Number);
+                    if (c === cIndex && c + cell.colSpan - 1 === cIndex) continue;
+                    if (c <= cIndex && c + cell.colSpan - 1 >= cIndex) cell.colSpan -= 1;
+                    if (c > cIndex) c -= 1;
+                    newOrigins.set(r + ',' + c, cell);
+                }
+                this.origins = newOrigins;
+                this.cols -= 1;
+            }
+            mergeSelected() {
+                const sel = this.cellSelection;
+                if (!sel) return;
+                const r1 = Math.min(sel.r1, sel.r2), r2 = Math.max(sel.r1, sel.r2);
+                const c1 = Math.min(sel.c1, sel.c2), c2 = Math.max(sel.c1, sel.c2);
+                if (r1 === r2 && c1 === c2) return;
+                let values = [];
+                let firstStyle = {};
+                const newOrigins = new Map();
+                for (const [key, cell] of this.origins) {
+                    const [r, c] = key.split(',').map(Number);
+                    if (r >= r1 && r <= r2 && c >= c1 && c <= c2) {
+                        if (cell.value) values.push(cell.value);
+                        if (r === r1 && c === c1) firstStyle = cell.style || {};
+                        continue;
+                    }
+                    newOrigins.set(key, cell);
+                }
+                newOrigins.set(r1 + ',' + c1, { value: values.join('，'), rowSpan: r2 - r1 + 1, colSpan: c2 - c1 + 1, style: firstStyle });
+                this.origins = newOrigins;
+                this.clearSelections(); this.render();
+            }
+            unmergeCell(r, c) {
+                const key = r + ',' + c;
+                const cell = this.origins.get(key);
+                if (!cell || (cell.rowSpan === 1 && cell.colSpan === 1)) return;
+                const val = cell.value;
+                const style = cell.style || {};
+                this.origins.delete(key);
+                for (let i = 0; i < cell.rowSpan; i++)
+                    for (let j = 0; j < cell.colSpan; j++)
+                        this.origins.set((r + i) + ',' + (c + j), { value: (i === 0 && j === 0) ? val : '', rowSpan: 1, colSpan: 1, style: (i === 0 && j === 0) ? style : {} });
+                this.render();
+            }
+            clearSelections() {
+                this.cellSelection = null; this.anchor = null;
+                this.onSelectionChange(this);
+            }
+            applyStyleToCell(r, c, style) {
+                const cell = this.origins.get(r + ',' + c);
+                if (cell) cell.style = Object.assign({}, style);
+                this.render();
+            }
+            applyStyleToSelection(partial) {
+                if (!this.cellSelection) return false;
+                const { r1, c1, r2, c2 } = this.cellSelection;
+                const rmin = Math.min(r1, r2), rmax = Math.max(r1, r2), cmin = Math.min(c1, c2), cmax = Math.max(c1, c2);
+                for (const [key, cell] of this.origins) {
+                    const [r, c] = key.split(',').map(Number);
+                    if (r >= rmin && r <= rmax && c >= cmin && c <= cmax) {
+                        cell.style = Object.assign({}, cell.style, partial);
+                    }
+                }
+                this.render();
+                return true;
+            }
+            clearStyleSelection() {
+                if (!this.cellSelection) return false;
+                const { r1, c1, r2, c2 } = this.cellSelection;
+                const rmin = Math.min(r1, r2), rmax = Math.max(r1, r2), cmin = Math.min(c1, c2), cmax = Math.max(c1, c2);
+                for (const [key, cell] of this.origins) {
+                    const [r, c] = key.split(',').map(Number);
+                    if (r >= rmin && r <= rmax && c >= cmin && c <= cmax) cell.style = {};
+                }
+                this.render();
+                return true;
+            }
+            clearContentSelection() {
+                if (!this.cellSelection) return false;
+                const { r1, c1, r2, c2 } = this.cellSelection;
+                const rmin = Math.min(r1, r2), rmax = Math.max(r1, r2), cmin = Math.min(c1, c2), cmax = Math.max(c1, c2);
+                for (const [key, cell] of this.origins) {
+                    const [r, c] = key.split(',').map(Number);
+                    if (r >= rmin && r <= rmax && c >= cmin && c <= cmax) cell.value = '';
+                }
+                this.render();
+                return true;
+            }
+            clearCellContent(r, c) {
+                const cell = this.origins.get(r + ',' + c);
+                if (cell) cell.value = '';
+                this.render();
+            }
+            getAnchorStyle() {
+                if (!this.anchor) return null;
+                const cell = this.origins.get(this.anchor.r + ',' + this.anchor.c);
+                return cell ? Object.assign({}, cell.style) : null;
+            }
+            _rowClass(r) {
+                if (this.rowStyle[r]) return this.rowStyle[r];
+                if (r < this.headerRows) return 'hdr';
+                return (r - this.headerRows) % 2 === 0 ? 'datarow-even' : 'datarow-odd';
+            }
+            render() {
+                const covered = this._coverage();
+                let html = `<div class="table-scroll"><table data-grid="${this.id}"><colgroup>` +
+                    Array.from({ length: this.cols }).map((_, idx) => (idx === 0 || idx === 1) ? '<col style="width:80px">' : '<col>').join('') + '</colgroup>';
+                for (let r = 0; r < this.rows; r++) {
+                    html += '<tr>';
+                    for (let c = 0; c < this.cols; c++) {
+                        if (covered[r][c]) continue;
+                        const cell = this.origins.get(r + ',' + c);
+                        if (!cell) continue;
+                        const cls = [this._rowClass(r)];
+                        if (this._inSelection(r, c)) cls.push('cellsel');
+                        const isEditingThisCell = this.editingKey === r + ',' + c;
+                        if (isEditingThisCell) cls.push('editing');
+                        const attrs = [];
+                        if (cell.rowSpan > 1) attrs.push(`rowspan="${cell.rowSpan}"`);
+                        if (cell.colSpan > 1) attrs.push(`colspan="${cell.colSpan}"`);
+                        const isHeaderCell = r < this.headerRows;
+                        const styleAttr = styleToCss(cell.style);
+                        html += `<td class="${cls.join(' ')}"${styleAttr} ${attrs.join(' ')} contenteditable="${isEditingThisCell}"
+          data-r="${r}" data-c="${c}"
+          onclick="window.__gridClickCell(event,'${this.id}',${r},${c})"
+          ondblclick="window.__gridDblClick(event,'${this.id}',${r},${c})"
+          onblur="window.__gridBlur(event,'${this.id}',${r},${c})"
+          onkeydown="window.__gridKeydown(event,'${this.id}',${r},${c})"
+          oninput="window.__gridEdit('${this.id}',${r},${c},this.innerText)"
+          >${this._escape(cell.value)}${(isHeaderCell || isEditingThisCell) ? '' : '<span class="edit-hint">双击编辑</span>'}</td>`;
+                    }
+                    html += '</tr>';
+                }
+                html += '</table></div>';
+                this.container.innerHTML = html;
+                if (this.editingKey) {
+                    const [er, ec] = this.editingKey.split(',').map(Number);
+                    const el = this.container.querySelector(`td[data-r="${er}"][data-c="${ec}"]`);
+                    if (el) { el.focus(); placeCaretAtEnd(el); }
+                }
+                if (typeof schedulePersist === 'function') schedulePersist();
+            }
+            _inSelection(r, c) {
+                if (!this.cellSelection) return false;
+                const { r1, c1, r2, c2 } = this.cellSelection;
+                const rmin = Math.min(r1, r2), rmax = Math.max(r1, r2), cmin = Math.min(c1, c2), cmax = Math.max(c1, c2);
+                return r >= rmin && r <= rmax && c >= cmin && c <= cmax;
+            }
+            _escape(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+            editCell(r, c, val) { const cell = this.origins.get(r + ',' + c); if (cell) cell.value = val; }
+            clickCell(e, r, c) {
+                if (this.editingKey === r + ',' + c) return; // already editing this cell, let caret move
+                clearOtherSelections(this.id);
+                setActiveTarget({ type: 'grid', id: this.id });
+                if (e.shiftKey && this.anchor) {
+                    this.cellSelection = { r1: this.anchor.r, c1: this.anchor.c, r2: r, c2: c };
+                } else {
+                    this.anchor = { r, c };
+                    this.cellSelection = { r1: r, c1: c, r2: r, c2: c };
+                }
+                this.onSelectionChange(this);
+                this.render();
+            }
+            startEdit(r, c) {
+                if (this.editingKey && this.editingKey !== r + ',' + c) this.editingKey = null;
+                clearOtherSelections(this.id);
+                setActiveTarget({ type: 'grid', id: this.id });
+                this.editingKey = r + ',' + c;
+                this.cellSelection = { r1: r, c1: c, r2: r, c2: c };
+                this.anchor = { r, c };
+                this.render();
+            }
+            stopEdit(r, c, val) {
+                if (this.editingKey !== r + ',' + c) return;
+                this.editCell(r, c, val);
+                this.editingKey = null;
+                this.render();
+            }
+        }
+
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+
+        window.__gridEdit = (id, r, c, val) => { grids[id].editCell(r, c, val); };
+        window.__gridClickCell = (e, id, r, c) => { grids[id].clickCell(e, r, c); };
+        window.__gridDblClick = (e, id, r, c) => { e.preventDefault(); grids[id].startEdit(r, c); };
+        window.__gridBlur = (e, id, r, c) => { grids[id].stopEdit(r, c, e.currentTarget.innerText); };
+        window.__gridKeydown = (e, id, r, c) => {
+            if (e.key === 'Enter' && e.altKey) {
+                e.preventDefault();
+                document.execCommand('insertLineBreak');
+                return;
+            }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); }
+            if (e.key === 'Escape') { e.currentTarget.blur(); }
+        };
+        const grids = {};
+        const boardMeta = {};
+        const boardOrder = [];
+        let moduleSeq = 0;
+        function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ---------------- Unified modal (alert / confirm / form) ---------------- */
+        const appModal = document.getElementById('appModal');
+        const appModalTitle = document.getElementById('appModalTitle');
+        const appModalBody = document.getElementById('appModalBody');
+        const appModalFoot = document.getElementById('appModalFoot');
+        function closeAppModal(result) {
+            if (appModal.__resolve) {
+                const resolve = appModal.__resolve;
+                appModal.__resolve = null;
+                resolve(result);
+            }
+            if (appModal.open) appModal.close();
+        }
+        appModal.addEventListener('close', () => closeAppModal(null));
+        function showAlert(message, title) {
+            return new Promise(resolve => {
+                appModal.__resolve = resolve;
+                appModalTitle.textContent = title || '提示';
+                appModalBody.innerHTML = `<div class="modal-msg">${escapeHtml(message)}</div>`;
+                appModalFoot.innerHTML = `<button class="primary" id="modalOkBtn">好的</button>`;
+                appModal.showModal();
+                const okBtn = document.getElementById('modalOkBtn');
+                okBtn.onclick = () => closeAppModal(true);
+                okBtn.focus();
+            });
+        }
+        function showConfirm(message, opts) {
+            opts = opts || {};
+            return new Promise(resolve => {
+                appModal.__resolve = resolve;
+                appModalTitle.textContent = opts.title || '请确认';
+                appModalBody.innerHTML = `<div class="modal-msg">${escapeHtml(message)}</div>`;
+                appModalFoot.innerHTML = `<button id="modalCancelBtn">${escapeHtml(opts.cancelText || '取消')}</button>` +
+                    `<button class="${opts.danger ? 'danger' : 'primary'}" id="modalOkBtn">${escapeHtml(opts.okText || '确定')}</button>`;
+                appModal.showModal();
+                document.getElementById('modalCancelBtn').onclick = () => closeAppModal(false);
+                const okBtn = document.getElementById('modalOkBtn');
+                okBtn.onclick = () => closeAppModal(true);
+                okBtn.focus();
+            });
+        }
+        function showFormDialog(title, fields) {
+            return new Promise(resolve => {
+                appModal.__resolve = resolve;
+                appModalTitle.textContent = title;
+                appModalBody.innerHTML = fields.map((f, i) => `
+          <div class="field">
+            <label class="flabel">${escapeHtml(f.label)}</label>
+            <input type="text" id="modalField${i}" value="${escapeHtml(f.value || '')}" placeholder="${escapeHtml(f.placeholder || '')}">
+          </div>
+        `).join('');
+                appModalFoot.innerHTML = `<button id="modalCancelBtn">取消</button><button class="primary" id="modalOkBtn">确定</button>`;
+                appModal.showModal();
+                const collect = () => {
+                    const result = {};
+                    fields.forEach((f, i) => { result[f.key] = document.getElementById('modalField' + i).value; });
+                    return result;
+                };
+                document.getElementById('modalCancelBtn').onclick = () => closeAppModal(null);
+                document.getElementById('modalOkBtn').onclick = () => closeAppModal(collect());
+                const inputs = appModalBody.querySelectorAll('input');
+                inputs.forEach(inp => {
+                    inp.addEventListener('keydown', e => {
+                        if (e.key === 'Enter') { e.preventDefault(); closeAppModal(collect()); }
+                    });
+                });
+                if (inputs[0]) { inputs[0].focus(); inputs[0].select(); }
+            });
+        }
+
+        function startEditBoardMeta(e, id, field) {
+            e.preventDefault();
+            const el = e.currentTarget;
+            el.setAttribute('contenteditable', 'true');
+            el.focus();
+            placeCaretAtEnd(el);
+        }
+        function stopEditBoardMeta(e, id, field, val) {
+            const el = e.currentTarget;
+            if (el.getAttribute('contenteditable') !== 'true') return;
+            el.setAttribute('contenteditable', 'false');
+            const text = (val != null ? val : el.innerText).trim();
+            if (!boardMeta[id]) boardMeta[id] = {};
+            boardMeta[id][field] = text;
+            el.innerText = text;
+            if (typeof schedulePersist === 'function') schedulePersist();
+        }
+        function boardMetaKeydown(e, id, field) {
+            if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); }
+            if (e.key === 'Escape') {
+                e.currentTarget.innerText = (boardMeta[id] && boardMeta[id][field]) || '';
+                e.currentTarget.blur();
+            }
+        }
+
+        function clearOtherSelections(exceptGridId) {
+            Object.keys(grids).forEach(id => {
+                if (id !== exceptGridId && grids[id].cellSelection) {
+                    grids[id].cellSelection = null;
+                    grids[id].anchor = null;
+                    grids[id].onSelectionChange(grids[id]);
+                    grids[id].render();
+                }
+            });
+            if (exceptGridId !== 'notice' && typeof notice !== 'undefined' && notice.selected.size) {
+                notice.selected.clear();
+                notice.render();
+            }
+        }
+
+        function clearAllSelections() {
+            Object.values(grids).forEach(g => {
+                if (g.cellSelection) {
+                    g.cellSelection = null;
+                    g.anchor = null;
+                    g.onSelectionChange(g);
+                    g.render();
+                }
+            });
+            if (typeof notice !== 'undefined' && notice.selected.size) {
+                notice.selected.clear();
+                notice.render();
+            }
+        }
+
+        function updateStatusPill(g) {
+            const wrap = document.querySelector(`[data-grid-id="${g.id}"] .status-pill`);
+            if (!wrap) return;
+            if (g.cellSelection && !(g.cellSelection.r1 === g.cellSelection.r2 && g.cellSelection.c1 === g.cellSelection.c2)) {
+                const r1 = Math.min(g.cellSelection.r1, g.cellSelection.r2), r2 = Math.max(g.cellSelection.r1, g.cellSelection.r2);
+                const c1 = Math.min(g.cellSelection.c1, g.cellSelection.c2), c2 = Math.max(g.cellSelection.c1, g.cellSelection.c2);
+                wrap.textContent = `已选中 ${(r2 - r1 + 1) * (c2 - c1 + 1)} 格 · 右键可合并`;
+                wrap.classList.add('active');
+            } else {
+                wrap.textContent = '右键操作 · 双击编辑 · 按shift选中合并 · 按ESC退出选中';
+                wrap.classList.remove('active');
+            }
+        }
+
+        function buildBoard(id, theme, title, codeText, rows3, reviewNames) {
+            const wrap = document.createElement('div');
+            wrap.className = 'board' + (theme === 'blue' ? ' blue' : '');
+            wrap.dataset.gridId = id;
+            wrap.innerHTML = `
+        <div class="board-head">
+          <div class="title">
+            <span class="title-text" contenteditable="false"
+              ondblclick="startEditBoardMeta(event,'${id}','title')"
+              onblur="stopEditBoardMeta(event,'${id}','title',this.innerText)"
+              onkeydown="boardMetaKeydown(event,'${id}','title')">${escapeHtml(title)}</span><span class="code" contenteditable="false"
+              ondblclick="startEditBoardMeta(event,'${id}','code')"
+              onblur="stopEditBoardMeta(event,'${id}','code',this.innerText)"
+              onkeydown="boardMetaKeydown(event,'${id}','code')">${escapeHtml(codeText)}</span>
+          </div>
+          <div class="status-pill">右键操作 · 双击编辑</div>
+        </div>
+      
+        <div id="${id}"></div>`;
+            boardMeta[id] = { title, code: codeText, theme: (theme === 'blue' ? 'blue' : 'teal') };
+            if (!boardOrder.includes(id)) boardOrder.push(id);
+            document.getElementById('boards').appendChild(wrap);
+
+            const cells = [
+                { r: 0, c: 0, v: '岗位' },
+                { r: 0, c: 1, v: '姓名' },
+                { r: 0, c: 2, v: '主看/NV chính' },
+                { r: 0, c: 3, v: '备/NV phụ' },
+            ];
+            rows3.forEach((row, i) => {
+                cells.push({ r: 1 + i, c: 0, v: row[0] });
+                cells.push({ r: 1 + i, c: 1, v: row[1] });
+                cells.push({ r: 1 + i, c: 2, v: row[2] });
+                cells.push({ r: 1 + i, c: 3, v: row[3] });
+            });
+            const reviewRowIndex = 1 + rows3.length;
+            cells.push({ r: reviewRowIndex, c: 0, v: '审查' });
+            cells.push({ r: reviewRowIndex, c: 1, v: reviewNames, rs: 1, cs: 3 });
+
+            const g = new TableGrid(id, {
+                rows: reviewRowIndex + 1, cols: 4, headerRows: 1, cells,
+                rowStyle: { [reviewRowIndex]: 'reviewrow' },
+                onSelectionChange: updateStatusPill
+            });
+            grids[id] = g;
+        }
+
+        async function addNewModule() {
+            const result = await showFormDialog('新增模块', [
+                { key: 'title', label: '模块名称', value: '新模块', placeholder: '如：老站/新站' },
+                { key: 'code', label: '代号（可选）', value: '', placeholder: '如：25S-05X-D16' },
+            ]);
+            if (!result) return;
+            const title = (result.title || '').trim() || '新模块';
+            const code = (result.code || '').trim();
+            moduleSeq++;
+            const id = 'boardCustom_' + Date.now() + '_' + moduleSeq;
+            const theme = (boardOrder.length % 2 === 0) ? 'teal' : 'blue';
+            buildBoard(id, theme, title, code, [['出款', '', '', '']], '');
+            setActiveTarget({ type: 'grid', id });
+            if (typeof schedulePersist === 'function') schedulePersist();
+        }
+
+        async function quickAddEmployee(gridId) {
+            const result = await showFormDialog('新增员工岗位', [
+                { key: 'pos', label: '岗位', value: '', placeholder: '如：出款' },
+                { key: 'name', label: '姓名', value: '', placeholder: '' },
+            ]);
+            if (!result) return;
+            grids[gridId].addRowWithValues([(result.pos || '').trim(), (result.name || '').trim(), '', '']);
+        }
+
+        let batchTargetId = null;
+        const batchDialog = document.getElementById('batchDialog');
+        function openBatchFor(id) {
+            batchTargetId = id; window.__batchNotice = false;
+            document.getElementById('batchInput').value = '';
+            batchDialog.showModal();
+        }
+        document.getElementById('batchConfirmBtn').onclick = () => {
+            const text = document.getElementById('batchInput').value;
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            if (window.__batchNotice) {
+                lines.forEach(line => notice.addLine(line));
+            } else if (batchTargetId) {
+                lines.forEach(line => {
+                    const parts = line.split(/\t|,|，/).map(s => s.trim());
+                    grids[batchTargetId].addRowWithValues(parts);
+                });
+            }
+            batchDialog.close();
+        };
+
+        /* ---------------- Notice list ---------------- */
+        const notice = {
+            lines: [
+                '吃饭或打卡活动需互相协调好，每个站点必须留一人负责处理订单，确保站点订单正常处理  \n Trong thời gian ăn uống hoặc tham gia hoạt động chấm công, mọi người cần chủ động phối hợp và sắp xếp với nhau. Mỗi điểm làm việc phải luôn có ít nhất một người ở lại để phụ trách xử lý đơn hàng, đảm bảo đơn hàng được xử lý bình thường và không bị gián đoạn.',
+                '⚠️注意：提款2000或以上需发审核群、新无优惠以及领取宝箱都需要发审核群 \n ⚠️ Lưu ý: Các giao dịch rút tiền từ 2.000 trở lên phải gửi vào nhóm xét duyệt để kiểm tra. Ngoài ra, tài khoản mới không có ưu đãi và các trường hợp nhận rương báu cũng đều phải gửi vào nhóm xét duyệt.',
+                '⚠️注意：11点也是巴西0点，日切需要查看昨日是否有订单遗漏未处理  \n ⚠️ Lưu ý: 11 giờ cũng là 00:00 theo giờ Brazil. Khi thực hiện chốt ngày, cần kiểm tra lại xem ngày hôm qua có đơn hàng nào bị bỏ sót hoặc chưa được xử lý hay không.',
+                '各自看好所负责的站点，如有其他站点需要帮忙的情况，需提供帮助，大家互相支持配合  \n Mỗi người cần phụ trách và theo dõi tốt khu vực mình được phân công. Nếu các điểm khác cần hỗ trợ, mọi người cần chủ động phối hợp và hỗ trợ lẫn nhau, cùng nhau đảm bảo công việc được diễn ra thuận lợi.  '
+            ],
+            styles: [{}, {}, {}, {}],
+            selected: new Set(),
+            editingIdx: null,
+            render() {
+                const el = document.getElementById('noticeLines');
+                el.innerHTML = this.lines.map((t, i) => `
+      <div class="notice-line ${this.selected.has(i) ? 'selected' : ''}" data-idx="${i}" onclick="notice.rowClick(event, ${i})">
+        <div class="txt" contenteditable="${this.editingIdx === i}"${styleToCss(this.styles[i])}
+             ondblclick="notice.startEdit(event, ${i})"
+             onblur="notice.stopEdit(${i}, this.innerText)"
+             onkeydown="notice.keydown(event, ${i})"
+             oninput="notice.edit(${i}, this.innerText)">${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</div>
+      </div>
+    `).join('');
+                const pill = document.getElementById('noticeStatus');
+                if (this.selected.size) { pill.textContent = `已选中 ${this.selected.size} 条`; pill.classList.add('active'); }
+                else { pill.textContent = '右键新增/删除'; pill.classList.remove('active'); }
+                if (this.editingIdx !== null) {
+                    const txt = el.querySelector(`.notice-line[data-idx="${this.editingIdx}"] .txt`);
+                    if (txt) placeCaretAtEnd(txt);
+                }
+                if (typeof schedulePersist === 'function') schedulePersist();
+            },
+            rowClick(e, i) {
+                if (e.target.classList.contains('txt') && this.editingIdx === i) return;
+                clearOtherSelections('notice');
+                setActiveTarget({ type: 'notice' });
+                if (this.selected.has(i)) this.selected.delete(i); else this.selected.add(i);
+                this.render();
+            },
+            startEdit(e, i) { e.stopPropagation(); setActiveTarget({ type: 'notice' }); this.editingIdx = i; this.render(); },
+            stopEdit(i, val) { if (this.editingIdx !== i) return; this.lines[i] = val; this.editingIdx = null; this.render(); },
+            keydown(e, i) {
+                if (e.key === 'Enter' && e.altKey) {
+                    e.preventDefault();
+                    document.execCommand('insertLineBreak');
+                    return;
+                }
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); }
+                if (e.key === 'Escape') e.currentTarget.blur();
+            },
+            edit(i, val) { this.lines[i] = val; },
+            addLine(text = '') { this.lines.push(text); this.styles.push({}); this.render(); },
+            insertLineAt(idx, text = '') { this.lines.splice(idx, 0, text); this.styles.splice(idx, 0, {}); this.selected.clear(); this.render(); },
+            deleteLine(idx) { this.lines.splice(idx, 1); this.styles.splice(idx, 1); this.selected.clear(); this.render(); },
+            deleteSelected() {
+                if (this.selected.size === 0) return;
+                const keepLines = [], keepStyles = [];
+                this.lines.forEach((l, i) => {
+                    if (!this.selected.has(i)) { keepLines.push(l); keepStyles.push(this.styles[i] || {}); }
+                });
+                this.lines = keepLines; this.styles = keepStyles;
+                this.selected.clear(); this.render();
+            },
+            applyStyleSelected(partial) {
+                if (this.selected.size === 0) return false;
+                this.selected.forEach(i => { this.styles[i] = Object.assign({}, this.styles[i] || {}, partial); });
+                this.render();
+                return true;
+            },
+            clearStyleSelected() {
+                if (this.selected.size === 0) return false;
+                this.selected.forEach(i => { this.styles[i] = {}; });
+                this.render();
+                return true;
+            },
+            openBatch() {
+                batchTargetId = null; window.__batchNotice = true;
+                document.getElementById('batchInput').value = '';
+                batchDialog.showModal();
+            }
+        };
+        notice.render();
+
+        /* ---------------- Toolbar (top bar) ---------------- */
+        function setActiveTarget(t) {
+            window.activeTarget = t;
+            const el = document.getElementById('activeTargetLabel');
+            if (!el) return;
+            if (t && t.type === 'grid') el.textContent = '当前：' + ((boardMeta[t.id] && boardMeta[t.id].title) || t.id);
+            else if (t && t.type === 'notice') el.textContent = '当前：共同注意事项';
+            else el.textContent = '未选择';
+        }
+
+        function clearCellOrSelectionContent(gridId, r, c) {
+            const g = grids[gridId];
+            if (!g) return;
+            const sel = g.cellSelection;
+            if (sel) {
+                const rmin = Math.min(sel.r1, sel.r2), rmax = Math.max(sel.r1, sel.r2);
+                const cmin = Math.min(sel.c1, sel.c2), cmax = Math.max(sel.c1, sel.c2);
+                if (r >= rmin && r <= rmax && c >= cmin && c <= cmax) { g.clearContentSelection(); return; }
+            }
+            g.clearCellContent(r, c);
+        }
+        function toolbarAction(kind) {
+            if (!window.activeTarget || window.activeTarget.type !== 'grid') { showAlert('请先在表格中点击选中一个单元格'); return; }
+            const g = grids[window.activeTarget.id];
+            const sel = g.cellSelection;
+            switch (kind) {
+                case 'addRowEnd': g.addRow(); break;
+                case 'addColEnd': g.addColumn(); break;
+                case 'insertRowAbove': if (!sel) { showAlert('请先选中单元格'); return; } g.insertRowAt(Math.min(sel.r1, sel.r2)); break;
+                case 'insertRowBelow': if (!sel) { showAlert('请先选中单元格'); return; } g.insertRowAt(Math.max(sel.r1, sel.r2) + 1); break;
+                case 'deleteRow': if (!sel) { showAlert('请先选中单元格'); return; } g.deleteRow(Math.min(sel.r1, sel.r2)); break;
+                case 'insertColLeft': if (!sel) { showAlert('请先选中单元格'); return; } g.insertColumnAt(Math.min(sel.c1, sel.c2)); break;
+                case 'insertColRight': if (!sel) { showAlert('请先选中单元格'); return; } g.insertColumnAt(Math.max(sel.c1, sel.c2) + 1); break;
+                case 'deleteCol': if (!sel) { showAlert('请先选中单元格'); return; } g.deleteColumn(Math.min(sel.c1, sel.c2)); break;
+                case 'merge': if (!sel || (sel.r1 === sel.r2 && sel.c1 === sel.c2)) { showAlert('请先按住 Shift 点击选中多个单元格'); return; } g.mergeSelected(); break;
+                case 'unmerge': if (!sel) { showAlert('请先选中单元格'); return; } g.unmergeCell(Math.min(sel.r1, sel.r2), Math.min(sel.c1, sel.c2)); break;
+                case 'clearContent': if (!g.clearContentSelection()) showAlert('请先选中单元格'); break;
+                case 'batchAdd': openBatchFor(g.id); break;
+                case 'addEmployee': quickAddEmployee(g.id); break;
+            }
+        }
+
+        function noticeToolbarAction(kind) {
+            setActiveTarget({ type: 'notice' });
+            switch (kind) {
+                case 'addEnd': notice.addLine(); break;
+                case 'insertAbove': {
+                    if (notice.selected.size !== 1) { showAlert('请先选中一行注意事项'); return; }
+                    const idx = Array.from(notice.selected)[0];
+                    notice.insertLineAt(idx, '');
+                    break;
+                }
+                case 'insertBelow': {
+                    if (notice.selected.size !== 1) { showAlert('请先选中一行注意事项'); return; }
+                    const idx = Array.from(notice.selected)[0];
+                    notice.insertLineAt(idx + 1, '');
+                    break;
+                }
+                case 'deleteSelected':
+                    if (notice.selected.size === 0) { showAlert('请先选中要删除的行'); return; }
+                    notice.deleteSelected();
+                    break;
+                case 'batchAdd': notice.openBatch(); break;
+            }
+        }
+
+        function applyStyleGeneric(partial) {
+            if (!window.activeTarget) { showAlert('请先选中单元格或注意事项行'); return; }
+            if (window.activeTarget.type === 'grid') {
+                const g = grids[window.activeTarget.id];
+                if (!g.applyStyleToSelection(partial)) showAlert('请先选中单元格');
+            } else {
+                if (!notice.applyStyleSelected(partial)) showAlert('请先选中注意事项行');
+            }
+        }
+        function applyFontSize(px) { if (!px) return; applyStyleGeneric({ fontSize: px }); }
+        function applyFontColor(hex) {
+            applyStyleGeneric({ color: hex });
+            const input = document.getElementById('fontColorInput');
+            if (input) input.value = hex;
+            closeSwatchRows();
+        }
+        function applyBgColor(hex) {
+            applyStyleGeneric({ bg: hex });
+            const input = document.getElementById('bgColorInput');
+            if (input) input.value = hex;
+            closeSwatchRows();
+        }
+        function clearFormat() {
+            if (!window.activeTarget) { showAlert('请先选中单元格或注意事项行'); return; }
+            if (window.activeTarget.type === 'grid') {
+                const g = grids[window.activeTarget.id];
+                if (!g.clearStyleSelection()) showAlert('请先选中单元格');
+            } else {
+                if (!notice.clearStyleSelected()) showAlert('请先选中注意事项行');
+            }
+        }
+
+        /* ---------------- Quick color swatches (per color family) ---------------- */
+        const FONT_SWATCHES = [
+            { name: '黑', hex: '#1c2b28' },
+            { name: '深灰', hex: '#4a4a4a' },
+            { name: '灰', hex: '#7a8a84' },
+            { name: '红', hex: '#c0392b' },
+            { name: '橙', hex: '#d9752b' },
+            { name: '金黄', hex: '#b8860b' },
+            { name: '绿', hex: '#0e7c6b' },
+            { name: '青', hex: '#178a94' },
+            { name: '蓝', hex: '#33509e' },
+            { name: '紫', hex: '#6f4a9c' },
+            { name: '粉', hex: '#c8447a' },
+            { name: '白', hex: '#ffffff' }
+        ];
+        const BG_SWATCHES = [
+            { name: '白', hex: '#ffffff' },
+            { name: '浅灰', hex: '#eef0ee' },
+            { name: '浅红', hex: '#fbe3e6' },
+            { name: '浅橙', hex: '#fde3cf' },
+            { name: '浅黄', hex: '#fff3c9' },
+            { name: '浅绿', hex: '#e6f5f1' },
+            { name: '浅青', hex: '#c7ece1' },
+            { name: '浅蓝', hex: '#eaeffb' },
+            { name: '浅紫', hex: '#ece3f7' },
+            { name: '浅粉', hex: '#fde3ec' },
+            { name: '金', hex: '#fbe7c2' },
+            { name: '深色', hex: '#1c2b28' }
+        ];
+        function renderSwatchRow(containerId, list, applyFn) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = list.map(s =>
+                `<button type="button" class="swatch-btn" style="background:${s.hex}" title="${escapeHtml(s.name)} ${s.hex}" onclick="${applyFn}('${s.hex}')"></button>`
+            ).join('');
+        }
+        renderSwatchRow('fontSwatchRow', FONT_SWATCHES, 'applyFontColor');
+        renderSwatchRow('bgSwatchRow', BG_SWATCHES, 'applyBgColor');
+
+        /* ---------------- Swatch popover toggle ---------------- */
+        function closeSwatchRows() {
+            document.querySelectorAll('.swatch-row.open').forEach(r => r.classList.remove('open'));
+            document.querySelectorAll('.swatch-toggle-btn.active').forEach(b => b.classList.remove('active'));
+        }
+        function toggleSwatchRow(e, rowId) {
+            e.stopPropagation();
+            const row = document.getElementById(rowId);
+            if (!row) return;
+            const willOpen = !row.classList.contains('open');
+            closeSwatchRows();
+            if (willOpen) {
+                row.classList.add('open');
+                const btn = e.currentTarget;
+                if (btn) btn.classList.add('active');
+            }
+        }
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.swatch-row') || e.target.closest('.swatch-toggle-btn')) return;
+            closeSwatchRows();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeSwatchRows();
+        });
+
+        /* ---------------- Context menu ---------------- */
+        const ctxMenuEl = document.getElementById('ctxMenu');
+        function showContextMenu(x, y, items) {
+            ctxMenuEl.innerHTML = '';
+            items.forEach(it => {
+                if (it.sep) { const d = document.createElement('div'); d.className = 'ctx-sep'; ctxMenuEl.appendChild(d); return; }
+                const d = document.createElement('div');
+                d.className = 'ctx-item' + (it.disabled ? ' disabled' : '');
+                d.textContent = it.label;
+                if (!it.disabled) d.onclick = () => { hideContextMenu(); it.action(); };
+                ctxMenuEl.appendChild(d);
+            });
+            ctxMenuEl.style.display = 'block';
+            const menuW = ctxMenuEl.offsetWidth, menuH = ctxMenuEl.offsetHeight;
+            const vw = window.innerWidth, vh = window.innerHeight;
+            ctxMenuEl.style.left = Math.min(x, vw - menuW - 8) + 'px';
+            ctxMenuEl.style.top = Math.min(y, vh - menuH - 8) + 'px';
+        }
+        function hideContextMenu() { ctxMenuEl.style.display = 'none'; }
+        document.addEventListener('click', hideContextMenu);
+        document.addEventListener('click', function (e) {
+            const inCell = e.target.closest('td[data-r]');
+            const inNotice = e.target.closest('.notice-line');
+            const inDialog = e.target.closest('dialog');
+            const inMenu = e.target.closest('#ctxMenu');
+            const inToolbar = e.target.closest('#toolbar');
+            if (inCell || inNotice || inDialog || inMenu || inToolbar) return;
+            clearAllSelections();
+        });
+        document.addEventListener('scroll', hideContextMenu, true);
+        window.addEventListener('resize', hideContextMenu);
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Escape') return;
+            hideContextMenu();
+            Object.values(grids).forEach(g => {
+                if (g.cellSelection) {
+                    g.cellSelection = null;
+                    g.anchor = null;
+                    g.onSelectionChange(g);
+                    g.render();
+                }
+            });
+            if (notice.selected.size) {
+                notice.selected.clear();
+                notice.render();
+            }
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Delete') return;
+            const active = document.activeElement;
+            if (active && (active.isContentEditable || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+            if (!window.activeTarget || window.activeTarget.type !== 'grid') return;
+            const g = grids[window.activeTarget.id];
+            if (!g || !g.cellSelection) return;
+            e.preventDefault();
+            g.clearContentSelection();
+        });
+
+        function buildGridMenu(gridId, mode, r, c) {
+            const g = grids[gridId];
+            const items = [];
+            if (mode === 'cell') {
+                items.push({ label: '✏ 双击此格编辑', disabled: true });
+                items.push({ sep: true });
+                items.push({ label: '⬆ 在上方插入行', action: () => g.insertRowAt(r) });
+                items.push({ label: '⬇ 在下方插入行', action: () => g.insertRowAt(r + 1) });
+                items.push({ label: '🗑 删除本行', action: () => g.deleteRow(r) });
+                items.push({ sep: true });
+                items.push({ label: '⬅ 在左侧插入列', action: () => g.insertColumnAt(c) });
+                items.push({ label: '➡ 在右侧插入列', action: () => g.insertColumnAt(c + 1) });
+                items.push({ label: '🗑 删除本列', action: () => g.deleteColumn(c) });
+                items.push({ sep: true });
+                const sel = g.cellSelection;
+                const canMerge = sel && !(sel.r1 === sel.r2 && sel.c1 === sel.c2);
+                items.push({ label: '⛓ 合并选中单元格', disabled: !canMerge, action: () => g.mergeSelected() });
+                const cellObj = g.origins.get(r + ',' + c);
+                const canUnmerge = cellObj && (cellObj.rowSpan > 1 || cellObj.colSpan > 1);
+                items.push({ label: '✂ 取消合并本单元格', disabled: !canUnmerge, action: () => g.unmergeCell(r, c) });
+                items.push({ sep: true });
+                items.push({ label: canMerge ? '🧹 删除选中内容' : '🧹 删除内容', action: () => clearCellOrSelectionContent(gridId, r, c) });
+                items.push({ sep: true });
+            }
+            items.push({ label: '＋ 新增行（末尾）', action: () => g.addRow() });
+            items.push({ label: '＋ 新增列（末尾）', action: () => g.addColumn() });
+            items.push({ label: '📋 批量新增行…', action: () => openBatchFor(gridId) });
+            items.push({ sep: true });
+            items.push({ label: '👤 新增员工岗位…', action: () => quickAddEmployee(gridId) });
+            items.push({ sep: true });
+            items.push({ label: '🗑 删除整个模块…', action: () => deleteModule(gridId) });
+            return items;
+        }
+
+        function buildNoticeMenu(idx) {
+            const items = [];
+            if (idx !== null) {
+                items.push({ label: '✏ 双击此行编辑', disabled: true });
+                items.push({ sep: true });
+                items.push({ label: '⬆ 在上方插入一行', action: () => notice.insertLineAt(idx, '') });
+                items.push({ label: '⬇ 在下方插入一行', action: () => notice.insertLineAt(idx + 1, '') });
+                items.push({ label: '🗑 删除本行', action: () => notice.deleteLine(idx) });
+                items.push({ sep: true });
+            }
+            items.push({ label: '＋ 新增一行（末尾）', action: () => notice.addLine() });
+            items.push({ label: '📋 批量新增…', action: () => notice.openBatch() });
+            items.push({ label: `🗑 删除选中行（${notice.selected.size}）`, disabled: notice.selected.size === 0, action: () => notice.deleteSelected() });
+            return items;
+        }
+
+        document.addEventListener('contextmenu', function (e) {
+            const noticeSection = e.target.closest('#noticeBoard');
+            if (noticeSection) {
+                e.preventDefault();
+                const line = e.target.closest('.notice-line');
+                const idx = line ? Number(line.dataset.idx) : null;
+                showContextMenu(e.pageX, e.pageY, buildNoticeMenu(idx));
+                return;
+            }
+            const table = e.target.closest('table[data-grid]');
+            const board = e.target.closest('.board');
+            if (table) {
+                e.preventDefault();
+                const gridId = table.dataset.grid;
+                const td = e.target.closest('td[data-r]');
+                let mode = 'general', r = null, c = null;
+                if (td) { mode = 'cell'; r = Number(td.dataset.r); c = Number(td.dataset.c); }
+                showContextMenu(e.pageX, e.pageY, buildGridMenu(gridId, mode, r, c));
+                return;
+            }
+            if (board) {
+                e.preventDefault();
+                showContextMenu(e.pageX, e.pageY, buildGridMenu(board.dataset.gridId, 'general', null, null));
+                return;
+            }
+        });
+
+        /* ---------------- Persistence (localStorage) ---------------- */
+        const STORAGE_KEY = 'schedule_editor_state_v1';
+        var persistTimer = null;
+        function schedulePersist() {
+            if (persistTimer) clearTimeout(persistTimer);
+            persistTimer = setTimeout(persistAll, 150);
+        }
+        function serializeGrid(g) {
+            return {
+                rows: g.rows, cols: g.cols, headerRows: g.headerRows,
+                rowStyle: g.rowStyle,
+                cells: Array.from(g.origins.entries()).map(([key, cell]) => {
+                    const [r, c] = key.split(',').map(Number);
+                    return { r, c, v: cell.value, rs: cell.rowSpan, cs: cell.colSpan, style: cell.style || {} };
+                })
+            };
+        }
+        function buildStateObject() {
+            const state = { grids: {}, notice: notice.lines, noticeStyles: notice.styles, boardMeta: {}, boardOrder: boardOrder.slice() };
+            Object.keys(grids).forEach(id => { state.grids[id] = serializeGrid(grids[id]); });
+            Object.keys(boardMeta).forEach(id => { state.boardMeta[id] = Object.assign({}, boardMeta[id]); });
+            return state;
+        }
+        function ensureBoardsFromSaved(saved) {
+            if (!saved || !saved.grids) return;
+            const order = Array.isArray(saved.boardOrder) ? saved.boardOrder : Object.keys(saved.grids);
+            order.forEach(id => {
+                if (grids[id] || !saved.grids[id]) return;
+                const meta = (saved.boardMeta && saved.boardMeta[id]) || {};
+                const theme = meta.theme === 'blue' ? 'blue' : 'teal';
+                buildBoard(id, theme, meta.title || id, meta.code || '', [['出款', '', '', '']], '');
+            });
+        }
+        function applyBoardMetaToDom(id) {
+            const wrap = document.querySelector(`[data-grid-id="${id}"]`);
+            if (!wrap) return;
+            const meta = boardMeta[id];
+            if (!meta) return;
+            const titleEl = wrap.querySelector('.title-text');
+            const codeEl = wrap.querySelector('.title .code');
+            if (titleEl && titleEl.getAttribute('contenteditable') !== 'true') titleEl.innerText = meta.title || '';
+            if (codeEl && codeEl.getAttribute('contenteditable') !== 'true') codeEl.innerText = meta.code || '';
+        }
+        function restoreBoardMeta(saved) {
+            if (!saved) return;
+            Object.keys(saved).forEach(id => {
+                boardMeta[id] = Object.assign({}, boardMeta[id], saved[id]);
+                applyBoardMetaToDom(id);
+            });
+        }
+        function persistAll() {
+            try {
+                const json = JSON.stringify(buildStateObject());
+                localStorage.setItem(STORAGE_KEY, json);
+                pushUndoSnapshot(json);
+            } catch (e) { /* 存储不可用时静默忽略 */ }
+        }
+        function loadPersisted() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function restoreGridFromSaved(g, saved) {
+            g.rows = saved.rows;
+            g.cols = saved.cols;
+            g.headerRows = saved.headerRows;
+            g.rowStyle = saved.rowStyle || {};
+            g.origins = new Map();
+            (saved.cells || []).forEach(c => {
+                g.origins.set(c.r + ',' + c.c, { value: c.v || '', rowSpan: c.rs || 1, colSpan: c.cs || 1, style: c.style || {} });
+            });
+            g._fillDefaults();
+            g.clearSelections();
+            g.render();
+        }
+        function restoreAll() {
+            const saved = loadPersisted();
+            if (!saved) return;
+            ensureBoardsFromSaved(saved);
+            Object.keys(grids).forEach(id => {
+                if (saved.grids && saved.grids[id]) restoreGridFromSaved(grids[id], saved.grids[id]);
+            });
+            if (Array.isArray(saved.notice)) {
+                notice.lines = saved.notice;
+                notice.styles = Array.isArray(saved.noticeStyles) && saved.noticeStyles.length === saved.notice.length
+                    ? saved.noticeStyles
+                    : notice.lines.map(() => ({}));
+                notice.selected.clear();
+                notice.render();
+            }
+            restoreBoardMeta(saved.boardMeta);
+        }
+
+        /* ---------------- Init boards from the source image ---------------- */
+        buildBoard('boardOld', 'teal', '老站', '25S-05X-D16-A02-N06-BR8',
+            [
+                ['出款', '', '', ''],
+                ['出款', '', '', ''],
+                ['出款', '', '', ''],
+            ], '');
+
+        buildBoard('boardNew', 'blue', '新站', 'i05-73B-666BR-X06-NA5-Win168',
+            [
+                ['出款', '', '', ''],
+                ['出款', '', '', ''],
+                ['出款', '', '', ''],
+            ], '');
+
+        /* ---------------- Undo (Ctrl+Z) ---------------- */
+        const undoStack = [];
+        const UNDO_LIMIT = 100;
+        function updateUndoButtonState() {
+            const btn = document.getElementById('undoBtn');
+            if (btn) btn.disabled = undoStack.length <= 1;
+        }
+        function pushUndoSnapshot(json) {
+            if (window.__restoringUndo) return;
+            const top = undoStack[undoStack.length - 1];
+            if (top === json) return;
+            undoStack.push(json);
+            if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+            updateUndoButtonState();
+        }
+        function removeBoard(id) {
+            const wrap = document.querySelector(`[data-grid-id="${id}"]`);
+            if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+            delete grids[id];
+            delete boardMeta[id];
+            const idx = boardOrder.indexOf(id);
+            if (idx !== -1) boardOrder.splice(idx, 1);
+        }
+        async function deleteModule(gridId) {
+            if (!grids[gridId]) return;
+            const title = (boardMeta[gridId] && boardMeta[gridId].title) || gridId;
+            const ok = await showConfirm(`确定要删除模块"${title}"吗？`, { title: '删除模块', okText: '删除', danger: true });
+            if (!ok) return;
+            removeBoard(gridId);
+            if (window.activeTarget && window.activeTarget.type === 'grid' && window.activeTarget.id === gridId) {
+                const firstId = Object.keys(grids)[0];
+                setActiveTarget(firstId ? { type: 'grid', id: firstId } : null);
+            }
+            if (typeof schedulePersist === 'function') schedulePersist();
+        }
+        function deleteActiveModule() {
+            if (!window.activeTarget || window.activeTarget.type !== 'grid') { showAlert('请先点击选中要删除的模块（表格）'); return; }
+            deleteModule(window.activeTarget.id);
+        }
+        function applyFullState(state) {
+            window.__restoringUndo = true;
+            ensureBoardsFromSaved(state);
+            Object.keys(grids).forEach(id => {
+                if (!(state.grids && state.grids[id])) { removeBoard(id); return; }
+                restoreGridFromSaved(grids[id], state.grids[id]);
+            });
+            if (Array.isArray(state.notice)) {
+                notice.lines = state.notice;
+                notice.styles = Array.isArray(state.noticeStyles) && state.noticeStyles.length === state.notice.length
+                    ? state.noticeStyles
+                    : state.notice.map(() => ({}));
+                notice.selected.clear();
+                notice.editingIdx = null;
+                notice.render();
+            }
+            restoreBoardMeta(state.boardMeta);
+            if (window.activeTarget && window.activeTarget.type === 'grid' && !grids[window.activeTarget.id]) {
+                const firstId = Object.keys(grids)[0];
+                setActiveTarget(firstId ? { type: 'grid', id: firstId } : null);
+            }
+            window.__restoringUndo = false;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(buildStateObject())); } catch (e) { /* 忽略 */ }
+            updateUndoButtonState();
+        }
+        function undo() {
+            if (undoStack.length <= 1) return;
+            undoStack.pop();
+            const prevJson = undoStack[undoStack.length - 1];
+            hideContextMenu();
+            applyFullState(JSON.parse(prevJson));
+        }
+        document.addEventListener('keydown', function (e) {
+            const key = e.key ? e.key.toLowerCase() : '';
+            if ((e.ctrlKey || e.metaKey) && key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+        });
+
+        /* ---------------- Copy as vertical image ---------------- */
+        const IMG_COLOR_PROPS = ['backgroundColor', 'backgroundImage', 'color', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'boxShadow'];
+        function inlineComputedStyles(srcRoot, cloneRoot) {
+            const srcEls = [srcRoot, ...srcRoot.querySelectorAll('*')];
+            const cloneEls = [cloneRoot, ...cloneRoot.querySelectorAll('*')];
+            for (let i = 0; i < srcEls.length && i < cloneEls.length; i++) {
+                const cs = window.getComputedStyle(srcEls[i]);
+                IMG_COLOR_PROPS.forEach(p => {
+                    try { cloneEls[i].style[p] = cs[p]; } catch (e) { /* 忽略不支持的属性 */ }
+                });
+            }
+        }
+        function cleanCloneForImage(root) {
+            root.querySelectorAll('.edit-hint').forEach(el => el.remove());
+            root.querySelectorAll('.status-pill').forEach(el => el.remove());
+            root.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            root.querySelectorAll('.cellsel').forEach(el => el.classList.remove('cellsel'));
+            root.querySelectorAll('.editing').forEach(el => el.classList.remove('editing'));
+            root.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            root.style.boxShadow = 'none';
+            root.style.transform = 'none';
+            root.style.animation = 'none';
+        }
+        async function copyAsImage() {
+            const btn = document.getElementById('copyImageBtn');
+            const resetBtn = () => { if (btn) { btn.disabled = false; btn.textContent = '🖼 复制图片'; } };
+            if (typeof html2canvas === 'undefined') { showAlert('图片生成组件加载失败，请检查网络后重试'); return; }
+            if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'position:fixed;left:-99999px;top:0;width:760px;background:#f5f4ef;padding:28px;display:flex;flex-direction:column;gap:22px;font-family:inherit;';
+            try {
+                document.querySelectorAll('#boards .board').forEach(b => {
+                    const clone = b.cloneNode(true);
+                    inlineComputedStyles(b, clone);
+                    cleanCloneForImage(clone);
+                    clone.style.width = '100%';
+                    clone.style.minWidth = '0';
+                    clone.style.flex = 'none';
+                    wrapper.appendChild(clone);
+                });
+                const noticeEl = document.getElementById('noticeBoard');
+                if (noticeEl) {
+                    const noticeClone = noticeEl.cloneNode(true);
+                    inlineComputedStyles(noticeEl, noticeClone);
+                    cleanCloneForImage(noticeClone);
+                    noticeClone.style.marginTop = '0';
+                    wrapper.appendChild(noticeClone);
+                }
+                document.body.appendChild(wrapper);
+                const canvas = await html2canvas(wrapper, { backgroundColor: '#f5f4ef', scale: 2, useCORS: true });
+                document.body.removeChild(wrapper);
+                canvas.toBlob(async (blob) => {
+                    if (!blob) { showAlert('生成图片失败，请重试'); resetBtn(); return; }
+                    try {
+                        if (navigator.clipboard && window.ClipboardItem) {
+                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                            if (btn) btn.textContent = '✅ 已复制到剪贴板';
+                        } else {
+                            throw new Error('clipboard-unavailable');
+                        }
+                    } catch (err) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = '排班表.png';
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        if (btn) btn.textContent = '⬇ 已下载图片';
+                    }
+                    setTimeout(resetBtn, 1800);
+                }, 'image/png');
+            } catch (e) {
+                console.error(e);
+                if (wrapper.parentNode) document.body.removeChild(wrapper);
+                showAlert('生成图片失败，请重试');
+                resetBtn();
+            }
+        }
+
+        restoreAll();
+        setActiveTarget({ type: 'grid', id: 'boardOld' });
+        undoStack.push(JSON.stringify(buildStateObject()));
+        updateUndoButtonState();
+    </script>
+</body>
+
+</html> 
