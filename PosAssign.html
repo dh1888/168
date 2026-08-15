@@ -815,6 +815,8 @@
             <button onclick="toolbarAction('clearContent')">🧹删除内容</button>
             <button onclick="toolbarAction('batchAdd')">📋批量新增</button>
             <button onclick="toolbarAction('addEmployee')">👤新增员工</button>
+            <button onclick="toolbarAction('copyCells')" title="复制选中单元格 (Ctrl+C)">📄复制</button>
+            <button onclick="toolbarAction('pasteCells')" title="粘贴到选中单元格 (Ctrl+V)">📥粘贴</button>
         </div>
         <div class="toolbar-sep"></div>
         <div class="toolbar-group">
@@ -1145,6 +1147,8 @@
           onblur="window.__gridBlur(event,'${this.id}',${r},${c})"
           onkeydown="window.__gridKeydown(event,'${this.id}',${r},${c})"
           oninput="window.__gridEdit('${this.id}',${r},${c},this.innerText)"
+          onmousedown="window.__gridMouseDown(event,'${this.id}',${r},${c})"
+          onmouseenter="window.__gridMouseEnter(event,'${this.id}',${r},${c})"
           >${this._escape(cell.value)}${(isHeaderCell || isEditingThisCell) ? '' : '<span class="edit-hint">双击编辑</span>'}</td>`;
                     }
                     html += '</tr>';
@@ -1221,11 +1225,114 @@
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); }
             if (e.key === 'Escape') { e.currentTarget.blur(); }
         };
+
+        /* ---------------- Drag-to-select (mouse) ---------------- */
+        window.__dragState = { active: false, gridId: null, startR: null, startC: null };
+        window.__gridMouseDown = (e, id, r, c) => {
+            if (e.button !== 0) return; // left button only
+            const g = grids[id];
+            if (!g) return;
+            if (g.editingKey === r + ',' + c) { window.__dragState.active = false; return; } // let native text selection work inside the cell being edited
+            const anyEditing = Object.values(grids).some(gr => gr.editingKey !== null) || (typeof notice !== 'undefined' && notice.editingIdx !== null);
+            if (!anyEditing) e.preventDefault(); // avoid native text-drag-select while cell-dragging; skip when something else is mid-edit so blur can still fire normally
+            window.__dragState = { active: true, gridId: id, startR: r, startC: c };
+        };
+        window.__gridMouseEnter = (e, id, r, c) => {
+            const ds = window.__dragState;
+            if (!ds || !ds.active || ds.gridId !== id) return;
+            if (e.buttons !== 1) { ds.active = false; return; } // button released outside the element
+            const g = grids[id];
+            if (!g || g.editingKey !== null) return;
+            if (ds.startR === r && ds.startC === c) return; // no-op, single cell already selected on mousedown-equivalent
+            clearOtherSelections(id);
+            setActiveTarget({ type: 'grid', id });
+            g.anchor = { r: ds.startR, c: ds.startC };
+            g.cellSelection = { r1: ds.startR, c1: ds.startC, r2: r, c2: c };
+            g.onSelectionChange(g);
+            g.render();
+        };
+        document.addEventListener('mouseup', () => { if (window.__dragState) window.__dragState.active = false; });
+
         const grids = {};
         const boardMeta = {};
         const boardOrder = [];
         let moduleSeq = 0;
         function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ---------------- Copy / paste for grid cells ---------------- */
+        window.__internalClipboard = '';
+        function copyGridSelection(g) {
+            if (!g || !g.cellSelection) return;
+            const { r1, c1, r2, c2 } = g.cellSelection;
+            const rmin = Math.min(r1, r2), rmax = Math.max(r1, r2), cmin = Math.min(c1, c2), cmax = Math.max(c1, c2);
+            const rowsOut = [];
+            for (let r = rmin; r <= rmax; r++) {
+                const rowVals = [];
+                for (let c = cmin; c <= cmax; c++) {
+                    const cell = g.origins.get(r + ',' + c);
+                    rowVals.push(cell ? cell.value : '');
+                }
+                rowsOut.push(rowVals.join('\t'));
+            }
+            const text = rowsOut.join('\n');
+            window.__internalClipboard = text;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(() => { });
+            }
+        }
+        async function pasteGridSelection(g) {
+            if (!g || !g.cellSelection) return;
+            let text = '';
+            try {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    text = await navigator.clipboard.readText();
+                }
+            } catch (err) { /* 权限不足或不可用，回退到内部剪贴板 */ }
+            if (!text) text = window.__internalClipboard || '';
+            if (!text) return;
+            text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            if (text.endsWith('\n')) text = text.slice(0, -1);
+            const rowsIn = text.split('\n').map(row => row.split('\t'));
+            const sel = g.cellSelection;
+            const rmin = Math.min(sel.r1, sel.r2), rmax = Math.max(sel.r1, sel.r2);
+            const cmin = Math.min(sel.c1, sel.c2), cmax = Math.max(sel.c1, sel.c2);
+            const srcRows = rowsIn.length;
+            const srcCols = Math.max(...rowsIn.map(row => row.length));
+            if (srcRows === 1 && srcCols === 1) {
+                const val = rowsIn[0][0] || '';
+                for (let r = rmin; r <= rmax; r++) {
+                    for (let c = cmin; c <= cmax; c++) {
+                        if (r < g.rows && c < g.cols) g.editCell(r, c, val);
+                    }
+                }
+            } else {
+                for (let i = 0; i < srcRows; i++) {
+                    const r = rmin + i;
+                    if (r >= g.rows) break;
+                    for (let j = 0; j < srcCols; j++) {
+                        const c = cmin + j;
+                        if (c >= g.cols) break;
+                        g.editCell(r, c, rowsIn[i][j] !== undefined ? rowsIn[i][j] : '');
+                    }
+                }
+            }
+            g.render();
+        }
+        document.addEventListener('keydown', function (e) {
+            const key = e.key ? e.key.toLowerCase() : '';
+            if (!(e.ctrlKey || e.metaKey)) return;
+            if (key !== 'c' && key !== 'v') return;
+            const active = document.activeElement;
+            const inEditable = active && (active.isContentEditable || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+            if (inEditable) return;
+            if ((typeof batchDialog !== 'undefined' && batchDialog.open) || (typeof appModal !== 'undefined' && appModal.open)) return;
+            if (!window.activeTarget || window.activeTarget.type !== 'grid') return;
+            const g = grids[window.activeTarget.id];
+            if (!g || !g.cellSelection) return;
+            e.preventDefault();
+            if (key === 'c') copyGridSelection(g);
+            else pasteGridSelection(g);
+        });
 
         /* ---------------- Unified modal (alert / confirm / form) ---------------- */
         const appModal = document.getElementById('appModal');
@@ -1361,7 +1468,7 @@
                 wrap.textContent = `已选中 ${(r2 - r1 + 1) * (c2 - c1 + 1)} 格 · 右键可合并`;
                 wrap.classList.add('active');
             } else {
-                wrap.textContent = '右键操作 · 双击编辑 · 按shift选中合并 · 按ESC退出选中';
+                wrap.textContent = '右键操作 · 双击编辑 · 拖动/按shift多选 · 按ESC退出选中';
                 wrap.classList.remove('active');
             }
         }
@@ -1575,11 +1682,13 @@
                 case 'insertColLeft': if (!sel) { showAlert('请先选中单元格'); return; } g.insertColumnAt(Math.min(sel.c1, sel.c2)); break;
                 case 'insertColRight': if (!sel) { showAlert('请先选中单元格'); return; } g.insertColumnAt(Math.max(sel.c1, sel.c2) + 1); break;
                 case 'deleteCol': if (!sel) { showAlert('请先选中单元格'); return; } g.deleteColumn(Math.min(sel.c1, sel.c2)); break;
-                case 'merge': if (!sel || (sel.r1 === sel.r2 && sel.c1 === sel.c2)) { showAlert('请先按住 Shift 点击选中多个单元格'); return; } g.mergeSelected(); break;
+                case 'merge': if (!sel || (sel.r1 === sel.r2 && sel.c1 === sel.c2)) { showAlert('请先拖动鼠标或按住 Shift 点击选中多个单元格'); return; } g.mergeSelected(); break;
                 case 'unmerge': if (!sel) { showAlert('请先选中单元格'); return; } g.unmergeCell(Math.min(sel.r1, sel.r2), Math.min(sel.c1, sel.c2)); break;
                 case 'clearContent': if (!g.clearContentSelection()) showAlert('请先选中单元格'); break;
                 case 'batchAdd': openBatchFor(g.id); break;
                 case 'addEmployee': quickAddEmployee(g.id); break;
+                case 'copyCells': if (!sel) { showAlert('请先选中单元格'); return; } copyGridSelection(g); break;
+                case 'pasteCells': if (!sel) { showAlert('请先选中单元格'); return; } pasteGridSelection(g); break;
             }
         }
 
@@ -1816,6 +1925,9 @@
                 items.push({ label: '✂ 取消合并本单元格', disabled: !canUnmerge, action: () => g.unmergeCell(r, c) });
                 items.push({ sep: true });
                 items.push({ label: canMerge ? '🧹 删除选中内容' : '🧹 删除内容', action: () => clearCellOrSelectionContent(gridId, r, c) });
+                items.push({ sep: true });
+                items.push({ label: '📄 复制 (Ctrl+C)', action: () => copyGridSelection(g) });
+                items.push({ label: '📥 粘贴 (Ctrl+V)', action: () => pasteGridSelection(g) });
                 items.push({ sep: true });
             }
             items.push({ label: '＋ 新增行（末尾）', action: () => g.addRow() });
