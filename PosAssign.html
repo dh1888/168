@@ -1233,8 +1233,39 @@
             const g = grids[id];
             if (!g) return;
             if (g.editingKey === r + ',' + c) { window.__dragState.active = false; return; } // let native text selection work inside the cell being edited
+
             const anyEditing = Object.values(grids).some(gr => gr.editingKey !== null) || (typeof notice !== 'undefined' && notice.editingIdx !== null);
-            if (!anyEditing) e.preventDefault(); // avoid native text-drag-select while cell-dragging; skip when something else is mid-edit so blur can still fire normally
+
+            if (anyEditing) {
+                // 有格子正在编辑：不要依赖原生的 blur→click 流程（那样会因为整表重绘丢失点击目标，
+                // 需要点两次才生效）。改为在 mousedown 这一步就把正在编辑的内容保存好、
+                // 立刻切换选中到新点击的格子，一次点击直接完成。
+                e.preventDefault();
+                const activeEl = document.activeElement;
+                const liveVal = (activeEl && activeEl.isContentEditable) ? activeEl.innerText : null;
+                Object.values(grids).forEach(gr => {
+                    if (gr.editingKey !== null) {
+                        const [er, ec] = gr.editingKey.split(',').map(Number);
+                        const val = (liveVal !== null) ? liveVal : (gr.origins.get(er + ',' + ec) || {}).value;
+                        gr.editingKey = null;
+                        gr.editCell(er, ec, val);
+                    }
+                });
+                if (typeof notice !== 'undefined' && notice.editingIdx !== null) {
+                    const idxEditing = notice.editingIdx;
+                    const val = (liveVal !== null) ? liveVal : notice.lines[idxEditing];
+                    notice.editingIdx = null;
+                    notice.lines[idxEditing] = val;
+                }
+                Object.values(grids).forEach(gr => gr.render());
+                if (typeof notice !== 'undefined') notice.render();
+
+                g.clickCell(e, r, c);
+                window.__dragState = { active: true, gridId: id, startR: r, startC: c };
+                return;
+            }
+
+            e.preventDefault(); // avoid native text-drag-select while cell-dragging
             window.__dragState = { active: true, gridId: id, startR: r, startC: c };
         };
         window.__gridMouseEnter = (e, id, r, c) => {
@@ -1332,6 +1363,38 @@
             e.preventDefault();
             if (key === 'c') copyGridSelection(g);
             else pasteGridSelection(g);
+        });
+
+        /* ---------------- Tab 切换单元格（选中或编辑状态均可用） ---------------- */
+        function getAdjacentCell(g, r, c, dir) {
+            const keys = Array.from(g.origins.keys()).map(k => k.split(',').map(Number));
+            keys.sort((a, b) => (a[0] - b[0]) || (a[1] - b[1]));
+            const idx = keys.findIndex(([kr, kc]) => kr === r && kc === c);
+            if (idx === -1) return null;
+            let nidx = idx + dir;
+            if (nidx < 0) nidx = keys.length - 1;      // Shift+Tab 在第一格时循环到最后一格
+            if (nidx >= keys.length) nidx = 0;          // Tab 在最后一格时循环回第一格
+            return keys[nidx];
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Tab') return;
+            if ((typeof batchDialog !== 'undefined' && batchDialog.open) || (typeof appModal !== 'undefined' && appModal.open)) return;
+            if (!window.activeTarget || window.activeTarget.type !== 'grid') return;
+            const g = grids[window.activeTarget.id];
+            if (!g || !g.cellSelection) return;
+            const { r1, c1, r2, c2 } = g.cellSelection;
+            if (r1 !== r2 || c1 !== c2) return; // 多格选中时不处理，避免和合并等操作冲突
+
+            e.preventDefault();
+
+            // 如果当前正在编辑这个格子，先把已输入内容存下来
+            const active = document.activeElement;
+            if (g.editingKey === r1 + ',' + c1 && active && active.isContentEditable) {
+                g.editCell(r1, c1, active.innerText);
+            }
+
+            const next = getAdjacentCell(g, r1, c1, e.shiftKey ? -1 : 1);
+            if (next) g.startEdit(next[0], next[1]);
         });
 
         /* ---------------- Unified modal (alert / confirm / form) ---------------- */
